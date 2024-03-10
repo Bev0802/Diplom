@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Список продуктов</title>
+    <link rel="stylesheet" href="/css/style.css"> <!-- Если у вас есть CSS файл для стилей -->
+</head>
+<body>
+<h2>Продукты</h2>
+<div>
+    <table>
+        <thead>
+        <tr>
+            <th>Название</th>
+            <th>Описание</th>
+            <td>Количество</td>
+            <th>Цена</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="product : ${products}">
+            <td th:text="${product.name}">Название продукта</td>
+            <td th:text="${product.description}">Описание продукта</td>
+            <td th:text="${product.quantity}">Количество</td>
+            <td th:text="${product.price}">Цена продукта</td>
+        </tr>
+        </tbody>
+    </table>
+</div>
+</body>
+</html>

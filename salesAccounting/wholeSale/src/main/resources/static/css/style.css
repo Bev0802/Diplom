@@ -1,0 +1,144 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    background-color: #041f3a; /* Темный фон для страницы */
+}
+
+h1 {
+    font-family: 'Noto Serif', serif;
+    font-weight: 700; /* Полужирный шрифт для заголовка */
+    text-align: center; /* Выравнивание текста по центру */
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    margin-top: 20px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    border-radius: 10px;
+}
+
+table, th, td {
+    font-size: 16px; /* Увеличиваем размер шрифта */
+    font-weight: 500;
+    border: 1px solid #0b345d;
+    text-align: left;
+    padding: 8px;
+    border-top: 2px solid #0b345d;
+    border-bottom: 2px solid #0b345d;
+}
+
+th {
+    background-color: #57a2b9;
+    color: black;
+}
+
+tr:nth-child(even) {
+    background-color: #7f9ea8;
+}
+
+tr:hover {
+    background-color: #57a2b9;
+}
+
+a, a:visited {
+    color: #007bff;
+    text-decoration: none;
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+.button {
+    display: inline-block;
+    padding: 10px 15px;
+    margin-top: 20px;
+    background-color: #0b345d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+}
+
+.button:hover {
+    /* Стили для состояния наведения на кнопку */
+    background-color: #5145a0;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.3);
+}
+
+.button-group {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Интервал между кнопками */
+}
+
+
+.container {
+    margin: 50px auto;
+    padding: 30px;
+    background-color: #3e7098; /* Цвет фона контейнера */
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Небольшая тень для эффекта "всплывания" */
+    max-width: 1000px; /* Максимальная ширина контейнера */
+    border-radius: 10px;
+}
+
+.form-container {
+    background-color: #57A2B9FF; /* Цвет фона контейнера формы */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень для контейнера */
+    max-width: 400px; /* Максимальная ширина контейнера формы */
+    margin: 0 auto; /* Центрирование контейнера */
+}
+img {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    width: 400px;
+    height: auto;
+}
+/*поле поиска*/
+.search-form {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: #57A2B9FF; /* Цвет фона формы поиска */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.search-input {
+    flex-grow: 1;
+    margin-right: 10px; /* Отступ справа от инпута */
+    padding: 10px;
+    border: 2px solid #0b345d;
+    border-radius: 10px;
+    background-color: #ffffff;
+    color: #333;
+}
+
+.search-button {
+    background-color: #0b345d; /* Синий цвет кнопки */
+    color: white; /* Цвет иконки */
+    border: none; /* Убрать границу */
+    padding: 10px; /* Внутренние отступы */
+    border-radius: 20%; /* Сделать кнопку круглой */
+    cursor: pointer; /* Курсор в виде указателя */
+    width: 40px; /* Ширина кнопки */
+    height: 40px; /* Высота кнопки */
+    display: flex; /* Использовать Flexbox для выравнивания иконки */
+    justify-content: center; /* Горизонтальное выравнивание */
+    align-items: center; /* Вертикальное выравнивание */
+    transition: background-color 0.3s; /* Плавное изменение цвета фона */
+}
+.search-button:hover {
+    background-color: #0056b3; /* Темно-синий цвет при наведении */
+}
+
+.search-button img {
+    width: 35px; /* Размер иконки лупы */
+    height: 35px;
+}
