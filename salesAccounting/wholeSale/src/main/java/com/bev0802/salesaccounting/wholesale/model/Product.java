@@ -6,14 +6,33 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-@Data
-@NoArgsConstructor
-@AllArgsConstructor
+/**
+ * Класс представляет собой модель продукта в системе.
+ * Содержит основную информацию о продукте, такую как его идентификатор, наименование, описание, количество и цену.
+ */
+@Data // Lombok аннотация для генерации геттеров, сеттеров, toString, equals и hashCode методов.
+@NoArgsConstructor // Lombok аннотация для генерации конструктора без аргументов.
+@AllArgsConstructor // Lombok аннотация для генерации конструктора со всеми аргументами.
 public class Product {
+    /**
+     * Уникальный идентификатор продукта.
+     */
     private Long id;
+    /**
+     * Наименование продукта.
+     */
     private String name;
+    /**
+     * Описание продукта.
+     */
     private String description;
+    /**
+     * Количество продукта в наличии.
+     */
     private BigDecimal quantity;
+    /**
+     * Цена продукта.
+     */
     private BigDecimal price;
 
 }

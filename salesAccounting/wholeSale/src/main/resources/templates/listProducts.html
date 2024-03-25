@@ -1,31 +1,85 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Список продуктов</title>
-    <link rel="stylesheet" href="/css/style.css"> <!-- Если у вас есть CSS файл для стилей -->
+    <title>Номенклатура</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="http://localhost:8081/style.css">
+    <script src="http://localhost:8081/script.js"></script>
 </head>
 <body>
-<h2>Продукты</h2>
-<div>
-    <table>
-        <thead>
-        <tr>
-            <th>Название</th>
-            <th>Описание</th>
-            <td>Количество</td>
-            <th>Цена</th>
-        </tr>
-        </thead>
-        <tbody>
-        <tr th:each="product : ${products}">
-            <td th:text="${product.name}">Название продукта</td>
-            <td th:text="${product.description}">Описание продукта</td>
-            <td th:text="${product.quantity}">Количество</td>
-            <td th:text="${product.price}">Цена продукта</td>
-        </tr>
-        </tbody>
-    </table>
+<div class="container">
+    <h1 class="main-heading">Номенклатура</h1>
+    <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
+    <a href="/product/new" class="button mt-3" title="Создать новую позицию">Создать</a>
+    <div class="row">
+        <div class="col-md-8">
+            <div class="products-list">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Код</th>
+                        <th>Наименование</th>
+                        <th>Количество</th>
+                        <th>Цена</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr th:each="product : ${products}">
+                        <td th:text="${product.id}">ID</td>
+                        <td th:text="${product.name}">Наименование</td>
+                        <td th:text="${product.quantity}">Количество</td>
+                        <td th:text="${product.price}">Цена</td>
+                        <td>
+                            <a th:href="@{/product/{id}(id=${product.id})}" class="btn" title="Подробнее"><i class="fas fa-info-circle"></i></a>
+                            <a th:href="@{/product/clone/{id}(id=${product.id})}" class="btn" title="Копировать"><i class="fas fa-copy"></i></a>
+                            <form th:action="@{/product/delete/{id}(id=${product.id})}" method="post" class="d-inline">
+                                <button class="btn" title="Удалить"><i class="fas fa-trash-alt"></i></button>
+                            </form>
+                        </td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Блок фильтра -->
+            <div class="filter-block">
+                <h3>Фильтр</h3>
+                <form th:action="@{/product/filteredSearch}" method="get" accept-charset="UTF-8">
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Наименование</label>
+                        <input type="text" id="name" name="name" class="form-control" th:value="${name}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="available" class="form-label">Наличие</label>
+                        <select id="available" name="available" class="form-select">
+                            <option value="">Выберите...</option>
+                            <option value="true">В наличии</option>
+                            <option value="false">Нет в наличии</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startPrice" class="form-label">Цена от</label>
+                        <input type="number" id="startPrice" name="startPrice" class="form-control" min="0" th:value="${startPrice}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endPrice" class="form-label">Цена до</label>
+                        <input type="number" id="endPrice" name="endPrice" class="form-control" min="0" th:value="${endPrice}">
+                    </div>
+                    <button type="submit" class="button">Применить</button>
+
+
+                </form>
+            </div>
+        </div>
+    </div>
+
 </div>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js" integrity="sha384-KyZXEAg3QhqLMpG8r+8fhAXLRk2vvoC2f3B09zVXn8CA5QIVfZOJ3BCsw2P0p/We" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.1/dist/umd/popper.min.js" integrity="sha384-SRv3p/S5j4KxkrqZ0v3f5C00N4iaFbH5rbMozKtHwvGjGzC2Wv9nwyw5G5fJRy00" crossorigin="anonymous"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.min.js" integrity="sha384-cuW9g5iBZB5/lSymb8zJ/9+n00HVh4aP8F3lL3TlJQ7UzL+V3P4+O5qzB93AiS/4" crossorigin="anonymous"></script>
 </body>
 </html>

@@ -96,8 +96,14 @@ public class ProductService {
         }
 
         // Фильтр по наличию
-        if (Boolean.TRUE.equals(available)) {
-            spec = spec.and(ProductSpecifications.quantityGreaterThanZero());
+        if (available != null) {
+            if (available) {
+                // Добавляем условие, что количество товара больше нуля
+                spec = spec.and(ProductSpecifications.quantityGreaterThanZero());
+            } else {
+                // Добавляем условие, что количество товара равно нулю или товар не указан как доступный
+                spec = spec.and(ProductSpecifications.quantityEqualToZero());
+            }
         }
 
         // Фильтр по цене
@@ -116,13 +122,15 @@ public class ProductService {
      * @throws ProductInStockException если продукт в наличии и не может быть удален.
      */
     public void deleteProduct(Long id) {
+
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
-
-        if (product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+        if (product.getQuantity() != null && product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
             throw new ProductInStockException("Product with id " + id + " is in stock and cannot be deleted");
         }
-
+//        if (product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+//            throw new ProductInStockException("Product with id " + id + " is in stock and cannot be deleted");
+//        }
         log.info("Deleting product: {}", product);
         productRepository.delete(product);
     }

@@ -46,6 +46,15 @@ public class ProductSpecifications {
             return criteriaBuilder.between(root.get("price"), startPrice, endPrice);
         };
     }
+
+    /**
+     * Создаёт спецификацию для поиска продуктов, количество которых равно нулю.
+     *
+     * @return Спецификация для использования в запросе.
+     */
+    public static Specification<Product> quantityEqualToZero() {
+        return (root, query, criteriaBuilder) -> criteriaBuilder.equal(root.get("quantity"), BigDecimal.ZERO);
+    }
 }
 
 

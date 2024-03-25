@@ -9,16 +9,22 @@ h1 {
     text-align: center; /* Выравнивание текста по центру */
 }
 
+h3 {
+    font-family: 'Noto Serif', serif;
+    font-weight: 600; /* Полужирный шрифт для заголовка */
+    text-align: center; /* Выравнивание текста по центру */
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
-    margin-top: 20px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    margin-top: 10px;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
     border-radius: 10px;
 }
 
 table, th, td {
-    font-size: 16px; /* Увеличиваем размер шрифта */
+    font-size: 15px; /* Увеличиваем размер шрифта */
     font-weight: 500;
     border: 1px solid #0b345d;
     text-align: left;
@@ -30,6 +36,8 @@ table, th, td {
 th {
     background-color: #57a2b9;
     color: black;
+    font-size: 18px;
+    font-weight: 600;
 }
 
 tr:nth-child(even) {
@@ -37,12 +45,12 @@ tr:nth-child(even) {
 }
 
 tr:hover {
-    background-color: #57a2b9;
+    background-color: #6d60c2;
 }
 
 a, a:visited {
-    color: #007bff;
-    text-decoration: none;
+    color: #335d9d;
+
 }
 
 a:hover {
@@ -59,19 +67,37 @@ a:hover {
     border-radius: 10px;
     text-decoration: none;
     font-size: 16px;
-    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
 }
 
 .button:hover {
     /* Стили для состояния наведения на кнопку */
-    background-color: #5145a0;
-    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.3);
+    background-color: #60b3c2;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.5);
 }
 
 .button-group {
     display: flex;
     align-items: center;
     gap: 10px; /* Интервал между кнопками */
+}
+
+.btn {
+    display: inline-block;
+    padding: 5px 5px;
+    margin: auto;
+    background-color: #0b345d;
+    color: white;
+    border: none;
+    border-radius: 10px;
+    text-decoration: none;
+    box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
+}
+
+.btn:hover {
+    /* Стили для состояния наведения на кнопку */
+    background-color: #60b3c2;
+    box-shadow: 0 6px 12px 0 rgba(0, 0, 0, 0.5);
 }
 
 
@@ -85,13 +111,24 @@ a:hover {
 }
 
 .form-container {
-    background-color: #57A2B9FF; /* Цвет фона контейнера формы */
+    background-color: #3e7098; /* Цвет фона контейнера формы */
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень для контейнера */
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
     max-width: 400px; /* Максимальная ширина контейнера формы */
     margin: 0 auto; /* Центрирование контейнера */
 }
+
+.filter-block{
+background-color: #3e7098; /* Цвет фона контейнера формы */
+padding: 20px;
+border-radius: 10px;
+box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+max-width: 400px; /* Максимальная ширина контейнера формы */
+margin: auto; /* Центрирование контейнера */
+}
+
+
 img {
     display: block;
     margin-left: auto;
@@ -141,4 +178,55 @@ img {
 .search-button img {
     width: 35px; /* Размер иконки лупы */
     height: 35px;
+}
+
+/* Стиль для контейнера формы */
+.form-detail-container {
+    background-color: #3e7098; /* Цвет фона формы */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); /* Тень для формы */
+    max-width: 600px; /* Максимальная ширина контейнера формы */
+    margin: 40px auto; /* Центрирование формы на странице с верхним и нижним отступом */
+    color: #b0d5fa; /* Цвет текста */
+}
+
+.selected {
+    background-color: #6d60c2;
+}
+/* Стиль для заголовка формы */
+.form-detail-heading {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+/* Стиль для кнопок в форме */
+.form-detail-button {
+    display: inline-block;
+    margin: 10px 5px; /* Отступы вокруг кнопок */
+}
+
+/* Применение стилей для элементов формы (инпутов, лейблов) */
+.form-detail-container label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-detail-container input[type="text"],
+.form-detail-container textarea,
+.form-detail-container input[type="number"] {
+    width: 100%;
+    padding: 8px;
+    margin-bottom: 20px; /* Отступ снизу для каждого элемента формы */
+    border: 1px solid #0b345d;
+    border-radius: 5px;
+}
+
+/* Стиль для улучшения визуального отображения textarea */
+.form-detail-container textarea {
+    height: 100px; /* Высота textarea */
+}
+
+.selected {
+    background-color: #6d60c2;
 }

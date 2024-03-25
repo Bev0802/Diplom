@@ -15,6 +15,7 @@ import java.util.List;
  * REST контроллер для управления товарами в базе данных.
  * Предоставляет API для создания, получения, обновления и удаления товаров.
  */
+
 @RestController
 @RequestMapping("/api/products")
 public class ProductController {

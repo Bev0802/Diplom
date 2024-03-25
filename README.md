@@ -2,6 +2,13 @@
 
 ## по специализации: Разработчик — Веб-разработка на Java
 
+<h1>Теоритическая чать</h1>
+
+[Тема: Разработка микросервисной платформы для управления цепочками поставок 
+на базе Spring Boot и Cloud с интеграцией блокчейн технологий](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
+
+Работа размещена на docs.google.com.
+
 <h1>Практическая часть</h1>
 
 Для демонстрации своих практических навыков полученных в результае обучения мной разработано микропоцессоное веб-приложение [salesAccounting](salesAccounting):
@@ -11,7 +18,7 @@
 
 ## 1 этап: Разработка Сервера API
 
-# productDB
+# [productDB](salesAccounting/productDB)
 
 ## Описание проекта
 
@@ -25,10 +32,17 @@
 - Spring Data JPA
 - Spring Web
 - Spring Cloud Config Server
+- Spring Boot Admin
 - Spring Cloud Netflix Eureka Client
-- H2 Database
+- H2 Database(на время разработки в дальнейшем подключу postgres)
 - Lombok
-- JUnit (для тестирования)
+- JUnit
+- Mockito
+- Prometheus 
+- Grafana
+- Docker
+- DockerCompous
+- Kubernetes (если разберусь)
 
 ## Структура проекта
 ```shell
@@ -77,3 +91,7 @@ mvn spring-boot:run
 ```shell
 mvn javadoc:javadoc
 ```
+
+## 2 этап: Разработка web-клинета API
+
+# [wholeSale](salesAccounting/wholeSale)
