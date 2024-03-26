@@ -60,6 +60,22 @@ public class ProductController {
         }
     }
     /**
+     * Возвращает список товаров, принадлежащих определенной организации.
+     * @param organizationId ID организации, которой принадлежат товары.
+     * @return Список товаров, принадлежащих организации.
+     */
+    @GetMapping("/organization/{organizationId}")
+    public ResponseEntity<List<Product>> getProductsByOrganization(@PathVariable Long organizationId) {
+        List<Product> products = productService.findByOrganizationId(organizationId);
+        if (products != null && !products.isEmpty()) {
+            return ResponseEntity.ok(products);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
+    /**
      * Возвращает список товаров, соответствующих заданному имени.
      *
      * @param name Имя товара для поиска.
@@ -75,6 +91,7 @@ public class ProductController {
      *
      * @return Список доступных товаров.
      */
+
     @GetMapping("/available")
     public List<Product> getAvailableProducts() {
         return productService.getAvailableProducts();

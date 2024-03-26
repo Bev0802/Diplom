@@ -154,6 +154,14 @@ public class ProductService {
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
     }
 
+    /**
+     * Возвращает список товаров, принадлежащих определенной организации.
+     * @param organizationId ID организации, которой принадлежат товары.
+     * @return Список товаров, принадлежащих организации.
+     */
+    public List<Product> findByOrganizationId(Long organizationId) {
+        return productRepository.findByOrganizationId(organizationId);
+    }
 }
 
 

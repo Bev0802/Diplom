@@ -118,6 +118,15 @@ a:hover {
     margin: 0 auto; /* Центрирование контейнера */
 }
 
+.menu-block{
+    background-color: #3e7098; /* Цвет фона контейнера формы */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+    max-width: 200px; /* Максимальная ширина контейнера формы */
+    margin: auto; /* Центрирование контейнера */
+}
+
 .filter-block{
 background-color: #3e7098; /* Цвет фона контейнера формы */
 padding: 20px;
@@ -127,6 +136,14 @@ max-width: 400px; /* Максимальная ширина контейнера 
 margin: auto; /* Центрирование контейнера */
 }
 
+.menu-block{
+    background-color: #3e7098; /* Цвет фона контейнера формы */
+    padding: 10px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+    max-width: 250px; /* Максимальная ширина контейнера формы */
+    margin: 0  0 0 0; /* Центрирование контейнера */
+}
 
 img {
     display: block;

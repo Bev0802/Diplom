@@ -13,7 +13,6 @@ import java.math.BigDecimal;
  * количество на складе и цену.
  */
 @Entity
-@Table(name = "products")
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -44,5 +43,11 @@ public class Product {
      * Цена товара.
      */
     private BigDecimal price;
+    /**
+     * Организация которой принадлежит этот продукт
+     */
+    @ManyToOne
+    @JoinColumn(name = "organization_id")
+    private Organization organization;
 }
 
