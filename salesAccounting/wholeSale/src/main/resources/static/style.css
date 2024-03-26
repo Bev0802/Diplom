@@ -49,7 +49,7 @@ tr:hover {
 }
 
 a, a:visited {
-    color: #335d9d;
+    color: #9bd3f6;
 
 }
 
@@ -85,12 +85,11 @@ a:hover {
 .btn {
     display: inline-block;
     padding: 5px 5px;
-    margin: auto;
-    background-color: #0b345d;
+    margin: 5px;
+    /*background-color: #0b345d;*/
     color: white;
     border: none;
     border-radius: 10px;
-    text-decoration: none;
     box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.5);
 }
 

@@ -7,6 +7,8 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="http://localhost:8081/style.css">
     <script src="http://localhost:8081/script.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
 </head>
 <body>
 <div class="container">
@@ -16,23 +18,43 @@
     <div class="row">
         <div class="col-md-4">
             <div class="filter-block">
-                <h3>Меню</h3>
-                <a href="listProducts.html" class="button" title="открыть список номенклатуры">Номенклатура</a>
-
+                <h5>Документы</h5>
+                <div class="mb-3">
+                <a href="/product/" class="btn" title="открыть список Счета">Счет на оплату</a>
+                <a href="/product/" class="btn" title="открыть список Поступления">Поступления товаров</a>
+                <a href="/product/" class="btn" title="открыть список Реализаций">Реализация товаров</a>
+                </div>
+                <h5>Справочники</h5>
+                <a href="/product/" class="btn" title="открыть список номенклатуры">Номенклатура</a>
+                <a href="/product/" class="btn" title="открыть список Контрагенты">Контрагенты</a>
+                <h5>Отчеты</h5>
+                <a href="/product/" class="btn" title="сформировать Отчеты о продажах">Отчет о продажах</a>
+                <a href="/product/" class="btn" title="сформировать Отчеты о покупках">Отчет о покупках</a>
             </div>
         </div>
         <div class="col-md-8">
             <div class="form-container">
                 <h3>Добро пожаловать!</h3>
                 <form action="/login" method="post">
-                    <label for="inn">ИНН</label>
-                    <input type="text" id="inn" name="inn" required>
-
-                    <label for="password">Пароль</label>
-                    <input type="password" id="password" name="password" required>
-
-                    <button type="submit" class="button">Вход</button>
-                    <button type="button" class="button" onclick="location.href='register.html'">Регистрация</button>
+                    <form>
+                        <div class="mb-3">
+                            <label for="inn" class="form-label">ИНН</label>
+                            <input type="text" class="form-control" id="inn" name="inn">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputEmail1" class="form-label">Email address</label>
+                            <input type="email" class="form-control" id="exampleInputEmail1" aria-describedby="emailHelp">
+                        </div>
+                        <div class="mb-3">
+                            <label for="exampleInputPassword1" class="form-label">Password</label>
+                            <input type="password" class="form-control" id="exampleInputPassword1">
+                        </div>
+                        <div class="mb-3 form-check">
+                            <input type="checkbox" class="form-check-input" id="exampleCheck1">
+                            <label class="form-check-label" for="exampleCheck1" onclick="location.href='/register.html'">Регистрация</label>
+                        </div>
+                        <button type="submit" class="button">Вход</button>
+                    </form>
                 </form>
             </div>
         </div>
