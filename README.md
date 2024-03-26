@@ -94,4 +94,71 @@ mvn javadoc:javadoc
 
 ## 2 этап: Разработка web-клинета API
 
+Проект разработан с использованием следующих технологий и библиотек:
+
+- Spring Boot 3.2.3
+- Spring Data JPA
+- Spring Web
+- Spring Cloud Config Server
+- Spring Boot Admin
+- Spring Cloud Netflix Eureka Client
+- H2 Database(на время разработки в дальнейшем подключу postgres)
+- Lombok
+- JUnit
+- Mockito
+- Prometheus 
+- Grafana
+- Docker
+- DockerCompous
+
 # [wholeSale](salesAccounting/wholeSale)
+
+Структура проекта wholeSale
+
+```shell
+wholeSale
+├── .idea
+├── .mvn
+├── src
+│   ├── main
+│   │   ├── java
+│   │   │   └── wholesale
+│   │   │       ├── config
+│   │   │       │   ├── AppConfig.java
+│   │   │       │   └── WebConfig.java
+│   │   │       ├── controller
+│   │   │       │   ├── HomeController.java
+│   │   │       │   └── ProductController.java
+│   │   │       ├── exception
+│   │   │       │   ├── GlobalExceptionHandler.java
+│   │   │       │   └── ServiceException.java
+│   │   │       ├── model
+│   │   │       │   └── Product.java
+│   │   │       ├── service
+│   │   │       │   └── ProductService.java
+│   │   │       └── WholeSaleApplication.java
+│   │   └── resources
+│   │       ├── static
+│   │       │   ├── script.js
+│   │       │   └── style.css
+│   │       └── templates
+│   │           ├── detailProduct.html
+│   │           ├── error.html
+│   │           ├── index.html
+│   │           ├── listProducts.html
+│   │           └── register.html
+│   │       └── application.properties
+│   └── test
+│       └── java
+│           └── wholesale
+│               └── service
+│                   └── WholeSaleApplicationTests.java
+├── target
+├── .gitignore
+├── HELP.md
+├── mvnw
+├── mvnw.cmd
+└── pom.xml
+
+```
+
