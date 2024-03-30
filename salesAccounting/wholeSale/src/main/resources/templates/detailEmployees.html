@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Детали Сотрудника</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/style.css">
+    <script src="/script.js"></script>
+    <link rel="stylesheet" href="/static/style.css">
+    <script src="/static/script.js"></script>
+</head>
+<body>
+<div class="form-detail-container">
+    <form th:action="@{/employee/save}" th:object="${employee}" method="post" accept-charset="UTF-8">
+        <input type="hidden" name="id" th:value="${employee.id}"/>
+
+        <label for="employeeName">Имя</label>
+        <input type="text" id="employeeName" th:field="*{name}" required>
+
+        <label for="employeePosition">Должность</label>
+        <input type="text" id="employeePosition" th:field="*{position}" required>
+
+        <label for="employeeEmail">Email</label>
+        <input type="email" id="employeeEmail" th:field="*{email}" required>
+
+        <label for="employeePassword">Пароль</label>
+        <input type="password" id="employeePassword" th:field="*{password}" required>
+
+        <div class="button-group">
+            <button type="submit" class="button form-detail-button">Сохранить</button>
+            <button type="button" class="button form-detail-button" onclick="history.back()">Отмена</button>
+        </div>
+    </form>
+</div>
+</body>
+</html>

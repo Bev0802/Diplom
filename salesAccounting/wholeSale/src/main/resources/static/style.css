@@ -15,6 +15,12 @@ h3 {
     text-align: center; /* Выравнивание текста по центру */
 }
 
+h4 {
+    font-family: 'Noto Serif', serif;
+    font-weight: 400; /* Полужирный шрифт для заголовка */
+    text-align: center; /* Выравнивание текста по центру */
+}
+
 table {
     border-collapse: collapse;
     width: 100%;
@@ -110,7 +116,7 @@ a:hover {
 }
 
 .form-container {
-    background-color: #3e7098; /* Цвет фона контейнера формы */
+    background-color: #48769b; /* Цвет фона контейнера формы */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
@@ -230,7 +236,9 @@ img {
 
 .form-detail-container input[type="text"],
 .form-detail-container textarea,
-.form-detail-container input[type="number"] {
+.form-detail-container input[type="number"],
+.form-detail-container input[type="email"],
+.form-detail-container input[type="password"] {
     width: 100%;
     padding: 8px;
     margin-bottom: 20px; /* Отступ снизу для каждого элемента формы */
@@ -245,4 +253,8 @@ img {
 
 .selected {
     background-color: #6d60c2;
+}
+
+.password, .email {
+    height: 100px;
 }

@@ -20,6 +20,7 @@ public class Counterparty {
     private String kpp;
     private String address;
     private String email;
+    private String password;
 
     @ManyToOne
     @JoinColumn(name = "organization_id")
