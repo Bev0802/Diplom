@@ -1,7 +1,8 @@
-package com.bev0802.salesaccounting.productdb.servis;
+package com.bev0802.salesaccounting.productdb.service;
 
 import com.bev0802.salesaccounting.productdb.exceptions.ProductInStockException;
 import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
+import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
 import com.bev0802.salesaccounting.productdb.repository.specification.ProductSpecifications;
@@ -13,7 +14,6 @@ import org.slf4j.LoggerFactory;
 
 
 import java.math.BigDecimal;
-import java.util.stream.Collectors;
 import java.util.List;
 /**
  * Сервис для управления продуктами в базе данных.
@@ -24,6 +24,7 @@ public class ProductService {
     @Autowired
     private ProductRepository productRepository;
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
+
     /**
      * Сохраняет продукт в базе данных.
      *

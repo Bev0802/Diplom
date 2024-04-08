@@ -1,12 +1,10 @@
-package com.bev0802.salesaccounting.productdb.servis;
+package com.bev0802.salesaccounting.productdb.service;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
-import com.bev0802.salesaccounting.productdb.repository.specification.ProductSpecifications;
-import com.bev0802.salesaccounting.productdb.servis.ProductService;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

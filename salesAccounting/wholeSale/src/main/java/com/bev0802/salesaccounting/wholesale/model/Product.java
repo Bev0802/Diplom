@@ -1,6 +1,5 @@
 package com.bev0802.salesaccounting.wholesale.model;
 
-import jdk.jfr.DataAmount;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

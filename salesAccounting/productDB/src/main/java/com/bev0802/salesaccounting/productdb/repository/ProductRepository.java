@@ -1,5 +1,6 @@
 package com.bev0802.salesaccounting.productdb.repository;
 
+import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -16,6 +17,9 @@ import java.util.Optional;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
+
+    static void deleteByOrganization(Organization organization) {
+    }
 
     /**
      * Находит продукт по его точному имени.
@@ -64,5 +68,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
      * @return Список товаров, принадлежащих организации.
      */
     List<Product> findByOrganizationId(Long organizationId);
+
+    void deleteAllByOrganization(Organization organization);
 }
 

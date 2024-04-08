@@ -1,4 +1,4 @@
-package com.bev0802.salesaccounting.productdb.servis;
+package com.bev0802.salesaccounting.productdb.service;
 
 import org.springframework.stereotype.Service;
 

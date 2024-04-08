@@ -2,7 +2,7 @@ package com.bev0802.salesaccounting.productdb.controller;
 
 import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
 import com.bev0802.salesaccounting.productdb.model.Product;
-import com.bev0802.salesaccounting.productdb.servis.ProductService;
+import com.bev0802.salesaccounting.productdb.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

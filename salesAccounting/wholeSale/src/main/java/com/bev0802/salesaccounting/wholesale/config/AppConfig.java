@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 
+import java.util.Collections;
+
 /**
  * Конфигурационный класс для настройки компонентов приложения.
  * Включает в себя настройку клиента RestTemplate с поддержкой балансировки нагрузки.
@@ -21,7 +23,14 @@ public class AppConfig {
     @LoadBalanced
     @Bean
     public RestTemplate restTemplate() {
-        return new RestTemplate();
+        RestTemplate restTemplate = new RestTemplate();
+
+    String username = "bev0802";
+    String password = "bev08021982";
+
+    restTemplate.setInterceptors(Collections.singletonList(new BasicAuthInterceptor(username, password)));
+
+        return restTemplate;
     }
 }
 
