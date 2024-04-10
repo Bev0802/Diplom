@@ -29,7 +29,7 @@
                         <h5 class="card-title" th:text="${product.name}">Наименование товара</h5>
                         <p class="card-text" th:text="${product.description}">Описание товара</p>
                         <p class="card-text"><small class="text-muted" th:text="${product.organization != null ? product.getOrganization().getName() : 'Не указана'}">Наименование организации</small></p>
-                        <p class="card-text"><b th:text="${product.quantity} + ' шт.'">Количество</b></p>
+                        <p class="card-text"><b th:text="${product.quantity} + ' шт.'">Количестов</b></p>
                         <p class="card-text"><b th:text="${product.price} + ' руб.'">Цена</b></p>
                         <a href="#" class="button">Добавить в заказ</a>
                     </div>
