@@ -2,6 +2,7 @@ package com.bev0802.salesaccounting.wholesale.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.util.Set;
@@ -17,6 +18,7 @@ import java.util.Set;
 public class Organization {
 
     private Long id;
+    @Getter
     private String name;
     private String inn;
     private String kpp;
@@ -28,4 +30,7 @@ public class Organization {
     private Set<Employee> employees;
     private Set<Counterparty> counterparties;
 
+    public String getName() {
+        return name;
+    }
 }

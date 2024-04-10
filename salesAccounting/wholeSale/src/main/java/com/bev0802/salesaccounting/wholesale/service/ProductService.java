@@ -1,12 +1,15 @@
 package com.bev0802.salesaccounting.wholesale.service;
 
 import com.bev0802.salesaccounting.wholesale.exception.ServiceException;
+import com.bev0802.salesaccounting.wholesale.model.Organization;
 import com.bev0802.salesaccounting.wholesale.model.Product;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -77,6 +80,7 @@ public class ProductService {
             throw new ServiceException("Произошла ошибка при получении товара по идентификатору. " + id);
         }
     }
+
 
     /**
      * Удаляет продукт по его идентификатору.
@@ -238,5 +242,52 @@ public class ProductService {
             restTemplate.put(productServiceUrl + "/api/products/" + product.getId(), product);
         }
     }
+
+    /**
+     * Получает список продуктов по идентификатору организации.
+     * @param organizationId
+     * @return взвращает список товаров принадлежащих организации для продажи
+     */
+    public List<Product> findProductsByOrganization(Long organizationId) {
+        String url = productServiceUrl + "/api/products/byOrganization/" + organizationId;
+        ResponseEntity<List<Product>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Product>>() {});
+        return response.getBody();
+    }
+
+    /**
+     * Получает список товаров, доступных для покупки в определенной организации.
+     * @param organizationId
+     * @return возвращает список доступных для покупки
+     */
+
+    public List<Product> findProductsNotBelongingToOrganization(Long organizationId) {
+        String url = productServiceUrl + "/api/products/availableForPurchase/" + organizationId;
+        ResponseEntity<List<Product>> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<List<Product>>() {});
+        return response.getBody();
+    }
+
+    /**
+     * Получает организацию по идентификатору товара.
+     * @param productId
+     * @return возвращает организацию
+     */
+    public Organization getOrganizationByProductId(Long productId) {
+        String url = productServiceUrl + "/api/products/" + productId + "/organization";
+        ResponseEntity<Organization> response = restTemplate.exchange(
+                url,
+                HttpMethod.GET,
+                null,
+                new ParameterizedTypeReference<Organization>() {});
+        return response.getBody();
+    }
+
 }
 

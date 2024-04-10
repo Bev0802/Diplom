@@ -2,19 +2,19 @@ package com.bev0802.salesaccounting.productdb.service;
 
 import com.bev0802.salesaccounting.productdb.exceptions.ProductInStockException;
 import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
-import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
 import com.bev0802.salesaccounting.productdb.repository.specification.ProductSpecifications;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 
 import java.math.BigDecimal;
 import java.util.List;
+import java.util.stream.Collectors;
+
 /**
  * Сервис для управления продуктами в базе данных.
  * Предоставляет методы для создания, поиска, обновления и удаления продуктов.
@@ -162,6 +162,23 @@ public class ProductService {
      */
     public List<Product> findByOrganizationId(Long organizationId) {
         return productRepository.findByOrganizationId(organizationId);
+    }
+
+    /**
+     *  Возвращает список товаров, не принадлежащих заданной организации
+     * @param organizationId ID организации, которой не принадлежат товары.
+     * @return Список товаров, не принадлежащих организации. (для возможности формирования заказа на закупку.)
+     */
+    public List<Product> findProductsNotBelongingToOrganization(Long organizationId) {
+        // Получаем список всех товаров
+        List<Product> allProducts = productRepository.findAll();
+
+        // Фильтруем товары, исключая те, что принадлежат заданной организации
+        List<Product> availableForPurchase = allProducts.stream()
+                .filter(product -> !product.getOrganization().getId().equals(organizationId))
+                .collect(Collectors.toList());
+
+        return availableForPurchase;
     }
 }
 

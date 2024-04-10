@@ -5,10 +5,9 @@
     <title>Sales Accounting: Start work</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="http://localhost:8081/style.css">
-    <script src="http://localhost:8081/script.js"></script>
-    <link rel="stylesheet" href="../static/style.css">
-    <script src="/static/script.js"></script>
+
+    <link rel="stylesheet" href="/static/style.css" th:href="@{/style.css}">
+    <script src="/static/script.js" th:src="@{/script.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -20,21 +19,23 @@
             <div class="menu-block">
                 <h5>Закупка</h5>
                 <div class="mb-3">
-                    <!-- Используйте th:href для динамических ссылок -->
-                    <a th:href="@{/product/}" class="btn" title="открыть список Закупки">Заказ поставщику</a>
+                    <!-- Используйте th:href для динамических ссылок магазин-->
+<!--                    <a th:href="@{/product/availableForPurchase/{organizationId}/{employeeId} <a th:href="@{/product/availableForPurchase/{organizationId}, employeeId=${employeeId})}" class="btn" title="открыть список Товаров контрагентов">Market</a>-->
+                    <a th:href="@{/product/availableForPurchase/{organizationId}(organizationId=${organizationId})}" class="btn" title="Торговая площадка">Market</a>
+                    <a th:href="@{/product/}" class="btn" title="открыть список Заказов">Заказ поставщику</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Платежное поручение">Платежное поручение входящее</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Поступления">Поступления товаров</a>
                 </div>
                 <h5>Продажа</h5>
                 <div class="mb-3">
-                    <a th:href="@{/product/}" class="btn" title="открыть список Закупки">Заказ клиента</a>
+                    <a th:href="@{/product/}" class="btn" title="открыть список Заказов">Заказ клиента</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Платежное поручение">Платежное поручение исходящее</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Реализаций">Реализация товаров</a>
                 </div>
                 <h5>Справочники</h5>
                 <div>
-                    <a th:href="@{/product/}" class="btn" title="открыть список Номенклатуры">Номенклатура</a>
-                    <a th:href="@{/product/}" class="btn" title="открыть список Контрагентов">Контрагенты</a>
+                    <a th:href="@{/product/byOrganization/{organizationId}(organizationId=${organizationId})}" class="btn" title="открыть список Номенклатуры">Номенклатура</a>
+                    <a th:href="@{/organization/}" class="btn" title="открыть список Контрагентов">Контрагенты</a>
                     <a th:href="@{'/organization/' + ${organizationId} + '/employee/listEmployees'}" class="btn" title="открыть список Сотрудников">Сотрудники</a>
                 </div>
                 <h5>Отчеты</h5>
@@ -50,6 +51,7 @@
                     <h4>Для начала работы выберите действие в меню.</h4>
                 </div>
                 <br>
+                <img class="img" src="/static/img/startWork.png" th:src="@{/img/startWork.png}" alt="Начало работы">
             </div>
     </div>
 </div>

@@ -1,7 +1,13 @@
 package com.bev0802.salesaccounting.wholesale.controller;
 
+import com.bev0802.salesaccounting.wholesale.model.Organization;
 import com.bev0802.salesaccounting.wholesale.model.Product;
+import com.bev0802.salesaccounting.wholesale.service.EmployeeService;
+import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
 import com.bev0802.salesaccounting.wholesale.service.ProductService;
+import jakarta.servlet.http.HttpSession;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -9,6 +15,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
 import java.util.List;
+
 /**
  * Контроллер для управления товарами в приложении.
  * Обрабатывает веб-запросы, связанные с продуктами, и взаимодействует с сервисом {@link ProductService} для выполнения бизнес-логики.
@@ -17,8 +24,13 @@ import java.util.List;
 @RequestMapping("product")
 public class ProductController {
 
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
     @Autowired
     private ProductService productService;
+    @Autowired
+    private EmployeeService employeeService;
+    @Autowired
+    private OrganizationService organizationService;
 
     /**
      * Отображает список всех продуктов.
@@ -31,6 +43,42 @@ public class ProductController {
         model.addAttribute("products", productService.getAllProducts());
         return "listProducts"; // Имя HTML шаблона для отображения списка продуктов
     }
+
+    /**
+     * Метод для получения списка товаров, принадлежащих определенной организации для покупки
+     * @param organizationId ID организации
+     * @param model модель для передачи данных в представление
+     * @return имя HTML шаблона для отображения списка товаров
+     */
+    @GetMapping("byOrganization/{organizationId}")
+        public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId, Model model) {
+            List<Product> products = productService.findProductsByOrganization(organizationId);
+            model.addAttribute("products", products);
+            model.addAttribute("organizationId", organizationId);
+            return "listProducts";
+        }
+
+    /**
+     * Получает список товаров, доступных для покупки в определенной организации.
+     * @param organizationId
+     * @return возвращает список доступных для покупки
+     */
+    @GetMapping("availableForPurchase/{organizationId}")
+    public String productsAvailableForPurchase(@PathVariable("organizationId") Long organizationId, HttpSession session, Model model) {
+        List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId);
+        Organization organization = organizationService.findById(organizationId);
+
+        logger.info("Products available for purchase: {}", products);
+        logger.info("Products available for purchase size: {}", products.size());
+        logger.info("Organization ID: {}", organizationId);
+
+        model.addAttribute("products", products);
+        model.addAttribute("organizationId", organizationId);
+
+//        model.addAttribute("organizationName", products.getOrganization().getName());
+    return "market"; // Имя шаблона для отображения списка товаров
+    }
+
     /**
      * Переход на страницу создания нового продукта.
      *
@@ -71,9 +119,12 @@ public class ProductController {
             @RequestParam(value = "available", required = false) Boolean available,
             @RequestParam(value = "startPrice", required = false) BigDecimal startPrice,
             @RequestParam(value = "endPrice", required = false) BigDecimal endPrice,
+            @RequestParam(value = "templateName", required = false, defaultValue = "listProducts") String templateName,
             Model model) {
-        model.addAttribute("products", productService.findProductsFiltered(name, available, startPrice, endPrice));
-        return "listProducts";
+        List<Product> products = productService.findProductsFiltered(name, available, startPrice, endPrice);
+        model.addAttribute("products", products);
+        // Дополнительная мета-информация может быть добавлена здесь
+        return templateName; // Использует имя шаблона, указанное в параметрах запроса или значение по умолчанию
     }
 
     /**
@@ -112,7 +163,7 @@ public class ProductController {
     @PostMapping("/save")
     public String saveProduct(@ModelAttribute("product") Product product) {
         productService.saveOrUpdateProduct(product);
-        return "redirect:/product/";
+        return "redirect:/byOrganization/" + product.getOrganization().getId();
     }
 
     /**
@@ -140,5 +191,7 @@ public class ProductController {
         productService.deleteProduct(id);
         return "redirect:/product/";
     }
+
+
 
 }

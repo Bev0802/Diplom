@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import javax.net.ssl.SSLSession;
 import java.math.BigDecimal;
 /**
  * Класс представляет собой модель продукта в системе.
@@ -34,4 +35,19 @@ public class Product {
      */
     private BigDecimal price;
 
+    /**
+     * Орагниазация, к которой принадлежит продукт.
+     */
+    private Organization organization;
+
+
+    public SSLSession getOrganization() {
+        return null;
+    }
+
+    public String getOrganizationName() {
+        return null;
+    }
 }
+
+

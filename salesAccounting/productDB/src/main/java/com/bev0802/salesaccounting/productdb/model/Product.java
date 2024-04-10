@@ -43,11 +43,20 @@ public class Product {
      * Цена товара.
      */
     private BigDecimal price;
+
+    /**
+     * Изображение товара.
+     */
+    private String imageUrl;
+
     /**
      * Организация которой принадлежит этот продукт
      */
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
+
+
+
 }
 

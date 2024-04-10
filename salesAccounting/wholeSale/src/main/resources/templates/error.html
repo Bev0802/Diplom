@@ -8,20 +8,18 @@
           integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN"
           crossorigin="anonymous">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
-    <link rel="stylesheet" href="http://localhost:8081/style.css">
-    <script src="http://localhost:8081/script.js"></script>
-    <link rel="stylesheet" href="../static/style.css">
-    <script src="../static/script.js"></script>
+
+    <link rel="stylesheet" href="/static/style.css" th:href="@{/style.css}">
+    <script src="/static/script.js" th:src="@{/script.js}"></script>
+
 </head>
     <body>
     <div class="form-container">
-        <h1>Ошибка</h1>
+        <h2>Данная функция <br> находится в разработке</h2>
         <div th:if="${errorMessage}" class="alert alert-danger">
-            <!--/*@thymesVar id="errorMessage" type="java.lang.String"*/-->
             <p th:text="${errorMessage}"></p>
         </div>
         <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
     </div>
-
     </body>
 </html>

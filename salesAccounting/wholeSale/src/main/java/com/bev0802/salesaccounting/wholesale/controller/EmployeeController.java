@@ -37,12 +37,13 @@ public class EmployeeController {
     public String showEmployeeLoginForm(@PathVariable("organizationId") Long organizationId, Model model) {
         // Подготавливаем данные для отображения страницы входа для сотрудника
         Organization organization = organizationService.findById(organizationId);
+
         model.addAttribute("organizationId", organizationId);
         model.addAttribute("organizationName", organization.getName());
         return "employeeLogin"; // Возвращаем имя файла шаблона страницы входа для сотрудника
     }
 
-    @PostMapping("/authenticate")
+    @PostMapping("/authenticate/")
     public String authenticateEmployee(@RequestParam String email, @RequestParam String password, @PathVariable("organizationId") Long organizationId, Model model, HttpSession session) {
         // Строим URL для запроса к REST API
         String url = "http://productDB/api/organizations/" + organizationId + "/employees/authenticate";

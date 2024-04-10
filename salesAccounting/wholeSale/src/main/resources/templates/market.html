@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Sales Accounting:Market</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-T3c6CoIi6uLrA9TneNEoa7RxnatzjcDSCmG1MXxSR1GAsXEV/Dwwykc2MPK8M2HN" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+    <link rel="stylesheet" href="/static/style.css" th:href="@{/style.css}">
+    <script src="/static/script.js" th:src="@{/script.js}"></script>
+</head>
+<body>
+<div class="container">
+        <h1 class="main-heading">Sales Accounting: Market <br>  <span th:text="${organizationName}"></span> </h1>
+
+    </div>
+</div>
+
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8">
+            <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
+            <a href="/product/new" class="button mt-3" title="Посмотреть Заказ">Заказ</a>
+            <div th:each="product : ${products}" class="mt-4">
+                <div class="row">
+                    <div class="col-md-4">
+                        <img class="img-fluid" src="/static/img/various.png" th:src="@{/img/various.png}" alt="Фото товара">
+                    </div>
+                    <div class="col-md-8">
+                        <h5 class="card-title" th:text="${product.name}">Наименование товара</h5>
+                        <p class="card-text" th:text="${product.description}">Описание товара</p>
+                        <p class="card-text"><small class="text-muted" th:text="${product.organization != null ? product.getOrganization().getName() : 'Не указана'}">Наименование организации</small></p>
+                        <p class="card-text"><b th:text="${product.quantity} + ' шт.'">Количестов</b></p>
+                        <p class="card-text"><b th:text="${product.price} + ' руб.'">Цена</b></p>
+                        <a href="#" class="button">Добавить в заказ</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <!-- Блок фильтра -->
+            <div class="filter-block">
+                <h3>Фильтр</h3>
+                <form th:action="@{/product/filteredSearch}" method="get" accept-charset="UTF-8">
+                    <input type="hidden" name="templateName" value="market" />
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Наименование</label>
+                        <input type="text" id="name" name="name" class="form-control" th:value="${name}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="available" class="form-label">Наличие</label>
+                        <select id="available" name="available" class="form-select">
+                            <option value="">Выберите...</option>
+                            <option value="true">В наличии</option>
+                            <option value="false">Нет в наличии</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="startPrice" class="form-label">Цена от</label>
+                        <input type="number" id="startPrice" name="startPrice" class="form-control" min="0" th:value="${startPrice}">
+                    </div>
+                    <div class="mb-3">
+                        <label for="endPrice" class="form-label">Цена до</label>
+                        <input type="number" id="endPrice" name="endPrice" class="form-control" min="0" th:value="${endPrice}">
+                    </div>
+
+                    <button type="submit" class="button">Найти</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+</body>
+</html>

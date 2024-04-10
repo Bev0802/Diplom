@@ -45,8 +45,8 @@ CREATE TABLE product (
 
 -- Вставляем демонстрационные данные в таблицу organization
 INSERT INTO organization (name, inn, kpp, address, email, password) VALUES
-                                                                        ('ООО Рога и Копыта', '123456789012', '123456789', 'ул. Пушкина, д. Колотушкина', 'info@rogakopyta.com', 'securePassword'),
-                                                                        ('ЗАО Копыта и Рога', '987654321098', '987654321', 'пр. Ленина, д. Молоток', 'sales@kopytaroga.com', 'password123');
+                                                                        ('ООО "Рога и Копыта"', '123456789012', '123456789', 'ул. Пушкина, д. Колотушкина', 'info@rogakopyta.com', 'securePassword'),
+                                                                        ('ЗАО "Копыта и Рога"', '987654321098', '987654321', 'пр. Ленина, д. Молоток', 'sales@kopytaroga.com', 'password123');
 
 -- Вставляем демонстрационные данные в таблицу employee
 INSERT INTO employee (name, position, email, password, organization_id) VALUES

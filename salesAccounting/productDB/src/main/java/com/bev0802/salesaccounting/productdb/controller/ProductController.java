@@ -1,6 +1,7 @@
 package com.bev0802.salesaccounting.productdb.controller;
 
 import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
+import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.service.ProductService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,7 +65,7 @@ public class ProductController {
      * @param organizationId ID организации, которой принадлежат товары.
      * @return Список товаров, принадлежащих организации.
      */
-    @GetMapping("/organization/{organizationId}")
+    @GetMapping("/byOrganization/{organizationId}")
     public ResponseEntity<List<Product>> getProductsByOrganization(@PathVariable Long organizationId) {
         List<Product> products = productService.findByOrganizationId(organizationId);
         if (products != null && !products.isEmpty()) {
@@ -74,6 +75,31 @@ public class ProductController {
         }
     }
 
+    /**
+     * Находит организащию, которой прнадлежит товар с заданным ID
+     * @param productId
+     * @return Организация
+     */
+    @GetMapping("/{productId}/organization")
+    public ResponseEntity<Organization> getOrganizationByProductId(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
+        if (product != null) {
+            return ResponseEntity.ok(product.getOrganization());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    /**
+     * Возвращает список товаров, доступных для покупки в определенной организации.
+     * @param organizationId ID организации, для которой нужно получить доступные для покупки
+     * @return Список доступных для покупки
+     */
+    @GetMapping("/availableForPurchase/{organizationId}")
+    public ResponseEntity<List<Product>> getProductsAvailableForPurchaseByOrganizationId(@PathVariable Long organizationId) {
+        List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId);
+        return ResponseEntity.ok(products);
+    }
 
     /**
      * Возвращает список товаров, соответствующих заданному имени.

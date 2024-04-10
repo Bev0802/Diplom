@@ -111,7 +111,7 @@ a:hover {
     padding: 30px;
     background-color: #3e7098; /* Цвет фона контейнера */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Небольшая тень для эффекта "всплывания" */
-    max-width: 1000px; /* Максимальная ширина контейнера */
+    max-width: 1200px; /* Максимальная ширина контейнера */
     border-radius: 10px;
 }
 
@@ -124,21 +124,21 @@ a:hover {
     margin: 0 auto; /* Центрирование контейнера */
 }
 
-.menu-block{
-    background-color: #3e7098; /* Цвет фона контейнера формы */
-    padding: 20px;
-    border-radius: 10px;
-    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
-    max-width: 200px; /* Максимальная ширина контейнера формы */
-    margin: auto; /* Центрирование контейнера */
-}
+/*.menu-block{*/
+/*    background-color: #3e7098; !* Цвет фона контейнера формы *!*/
+/*    padding: 20px;*/
+/*    border-radius: 10px;*/
+/*    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); !* Тень для контейнера *!*/
+/*    max-width: 300px; !* Максимальная ширина контейнера формы *!*/
+/*    margin: auto; !* Центрирование контейнера *!*/
+/*}*/
 
 .filter-block{
 background-color: #3e7098; /* Цвет фона контейнера формы */
 padding: 20px;
 border-radius: 10px;
 box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
-max-width: 400px; /* Максимальная ширина контейнера формы */
+max-width: 300px; /* Максимальная ширина контейнера формы */
 margin: auto; /* Центрирование контейнера */
 }
 
@@ -147,7 +147,7 @@ margin: auto; /* Центрирование контейнера */
     padding: 10px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
-    max-width: 250px; /* Максимальная ширина контейнера формы */
+    max-width: 310px; /* Максимальная ширина контейнера формы */
     margin: 0  0 0 0; /* Центрирование контейнера */
 }
 
@@ -257,4 +257,16 @@ img {
 
 .password, .email {
     height: 100px;
+}
+
+.product-item {
+    margin-bottom: 20px;
+}
+.product-img {
+    width: 100px; /* или другой подходящий размер */
+    height: auto;
+    margin-right: 20px;
+}
+.product-info {
+    flex: 1;
 }

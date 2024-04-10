@@ -40,6 +40,7 @@ public class LoginController {
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             Long organizationId = Long.valueOf(responseEntity.getBody().get("organizationId").toString());
             request.getSession().setAttribute("organizationId", organizationId);
+
             return "redirect:/organization/" + organizationId + "/employee/employeeLoginForm";
         } else {
             request.setAttribute("loginError", "ИНН или пароль введены неверно.");

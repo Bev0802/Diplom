@@ -37,6 +37,17 @@ public class OrganizationController {
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found"));
     }
 
+    @GetMapping("/{organizationId}/name")
+    public ResponseEntity<String> getOrganizationName(@PathVariable Long organizationId) {
+        Optional<Organization> organization = organizationRepository.findById(organizationId);
+        if (organization.isPresent()) {
+            return ResponseEntity.ok(organization.get().getName());
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+
     // Метод для поиска организаций по наименованию и/или ИНН
     @GetMapping("/search")
     public ResponseEntity<List<Organization>> searchOrganizations(
