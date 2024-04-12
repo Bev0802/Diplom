@@ -1,6 +1,9 @@
 body {
     font-family: 'Open Sans', sans-serif;
+    background-image: url('/img/startWork.png');
     background-color: #041f3a; /* Темный фон для страницы */
+    background-size: cover; /* Изображение будет покрывать всю доступную область */
+    background-position: center; /* Центрируем изображение */
 }
 
 h1 {
@@ -32,11 +35,12 @@ table {
 table, th, td {
     font-size: 15px; /* Увеличиваем размер шрифта */
     font-weight: 500;
-    border: 1px solid #0b345d;
+    border: 1px solid rgb(11, 52, 93);
     text-align: left;
     padding: 8px;
     border-top: 2px solid #0b345d;
     border-bottom: 2px solid #0b345d;
+
 }
 
 th {
@@ -109,29 +113,21 @@ a:hover {
 .container {
     margin: 50px auto;
     padding: 30px;
-    background-color: #3e7098; /* Цвет фона контейнера */
+    background-color: rgba(62, 112, 152, 0.9); /*Цвет фона контейнера */
     box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); /* Небольшая тень для эффекта "всплывания" */
     max-width: 1200px; /* Максимальная ширина контейнера */
     border-radius: 10px;
+    color: white;
 }
 
 .form-container {
-    background-color: #48769b; /* Цвет фона контейнера формы */
+    background-color: rgb(72, 118, 155); /* Цвет фона контейнера формы */
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
     max-width: 400px; /* Максимальная ширина контейнера формы */
     margin: 0 auto; /* Центрирование контейнера */
 }
-
-/*.menu-block{*/
-/*    background-color: #3e7098; !* Цвет фона контейнера формы *!*/
-/*    padding: 20px;*/
-/*    border-radius: 10px;*/
-/*    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); !* Тень для контейнера *!*/
-/*    max-width: 300px; !* Максимальная ширина контейнера формы *!*/
-/*    margin: auto; !* Центрирование контейнера *!*/
-/*}*/
 
 .filter-block{
 background-color: #3e7098; /* Цвет фона контейнера формы */
