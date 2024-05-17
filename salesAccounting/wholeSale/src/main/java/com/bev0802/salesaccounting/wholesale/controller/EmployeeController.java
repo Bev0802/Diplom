@@ -114,6 +114,14 @@ public class EmployeeController {
         return "detailEmployees"; // Имя шаблона для формы создания сотрудника
     }
 
+    @GetMapping("/{employeeId}")
+    public String getEmployeeDetails(@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId, Model model) {
+        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);
+        model.addAttribute("employee", employee);
+        model.addAttribute("organizationId", organizationId);
+        return "detailEmployees";
+    }
+
     // Метод для сохранения нового сотрудника
     @PostMapping("/save")
     public String saveEmployee(@PathVariable("organizationId") Long organizationId, @ModelAttribute Employee employee) {
