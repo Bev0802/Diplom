@@ -11,17 +11,20 @@
 </head>
 <body>
 <div class="form-detail-container">
-    <form th:action="@{/product/save}" th:object="${product}" method="post" accept-charset="UTF-8">
+    <form th:action="@{/organization/{organizationId}/employee/{employeeId}/product/save(organizationId=${organizationId}, employeeId=${employeeId}, object=${product})}" method="post" accept-charset="UTF-8">
         <input type="hidden" name="id" th:value="${product.id}"/>
 
         <label for="productName">Наименование</label>
-        <input type="text" id="productName" th:field="*{name}" required>
+        <input type="text" id="productName" th:field="*{product.name}" required>
 
         <label for="productDescription">Описание</label>
-        <textarea id="productDescription" th:field="*{description}"></textarea>
+        <textarea id="productDescription" th:field="*{product.description}"></textarea>
+
+        <label for="productQuantity">Количество</label>
+        <input type="number" id="productQuantity" th:field="*{product.quantity}" required>
 
         <label for="productPrice">Цена</label>
-        <input type="number" id="productPrice" th:field="*{price}" step="0.01" required>
+        <input type="number" id="productPrice" th:field="*{product.price}" step="0.01" required>
 
         <div class="form-group">
             <label for="productCode">Код(id):</label>

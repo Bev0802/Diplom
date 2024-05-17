@@ -21,7 +21,7 @@
                 <div class="mb-3">
                     <!-- Используйте th:href для динамических ссылок магазин-->
 <!--                    <a th:href="@{/product/availableForPurchase/{organizationId}/{employeeId} <a th:href="@{/product/availableForPurchase/{organizationId}, employeeId=${employeeId})}" class="btn" title="открыть список Товаров контрагентов">Market</a>-->
-                    <a th:href="@{/product/availableForPurchase/{organizationId}(organizationId=${organizationId})}" class="btn" title="Торговая площадка">Market</a>
+                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/availableForPurchase (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Торговая площадка">Market</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Заказов">Заказ поставщику</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Платежное поручение">Платежное поручение входящее</a>
                     <a th:href="@{/product/}" class="btn" title="открыть список Поступления">Поступления товаров</a>
@@ -34,9 +34,10 @@
                 </div>
                 <h5>Справочники</h5>
                 <div>
-                    <a th:href="@{/product/byOrganization/{organizationId}(organizationId=${organizationId})}" class="btn" title="открыть список Номенклатуры">Номенклатура</a>
-                    <a th:href="@{/organization/}" class="btn" title="открыть список Контрагентов">Контрагенты</a>
-                    <a th:href="@{'/organization/' + ${organizationId} + '/employee/listEmployees'}" class="btn" title="открыть список Сотрудников">Сотрудники</a>
+                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/byOrganization/ (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="открыть список Номенклатуры">Номенклатура</a>
+                    <a th:href="@{/organization/{organizationId}/listCounterparty (organizationId=${organizationId})}" class="btn" title="открыть список Контрагентов">Контрагенты</a>
+                    <a th:href="@{/organization/{organizationId}/employee/listEmployees (organizationId=${organizationId})}" class="btn" title="открыть список Сотрудников">Сотрудники</a>
+                    <a th:href="@{/organization/{organizationId}/detailOrganization (organizationId=${organizationId})}" class="btn" title="изменение данных Организации">Организация</a>
                 </div>
                 <h5>Отчеты</h5>
                 <div>

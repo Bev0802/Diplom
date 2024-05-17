@@ -141,7 +141,6 @@ productDB/
 │   │   │       ├── config/
 │   │   │       │   └── SecurityConfig.java
 │   │   │       ├── controller/
-│   │   │       │   ├── CounterpartyController.java
 │   │   │       │   ├── EmployeeController.java
 │   │   │       │   ├── OrderController.java
 │   │   │       │   ├── OrganizationController.java
@@ -150,14 +149,12 @@ productDB/
 │   │   │       │   ├── ProductInStockException.java
 │   │   │       │   └── ProductNotFoundException.java
 │   │   │       ├── model/
-│   │   │       │   ├── Counterparty.java
 │   │   │       │   ├── Employee.java
 │   │   │       │   ├── Order.java
 │   │   │       │   ├── OrderItem.java
 │   │   │       │   ├── Organization.java
 │   │   │       │   └── Product.java
 │   │   │       ├── repository/
-│   │   │       │   ├── CounterpartyRepository.java
 │   │   │       │   ├── EmployeeRepository.java
 │   │   │       │   ├── OrderItemRepository.java
 │   │   │       │   ├── OrderRepository.java
@@ -166,7 +163,6 @@ productDB/
 │   │   │       ├── security/
 │   │   │       │   └── SecurityConfig.java
 │   │   │       └── service/
-│   │   │           ├── CounterpartService.java
 │   │   │           ├── EmployeeService.java
 │   │   │           ├── OrderService.java
 │   │   │           ├── OrganizationService.java

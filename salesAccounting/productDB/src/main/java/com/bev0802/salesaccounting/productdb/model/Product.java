@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 /**
  * Класс Product представляет собой модель товара в системе учета товаров.
@@ -17,46 +18,50 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Product {
-    /**
-     * Уникальный идентификатор товара.
-     */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-
-    /**
-     * Имя товара.
-     */
     private String name;
-
-    /**
-     * Описание товара.
-     */
     private String description;
-
-    /**
-     * Количество товара на складе.
-     */
     private BigDecimal quantity;
-
-    /**
-     * Цена товара.
-     */
+    private BigDecimal reserved;
     private BigDecimal price;
-
-    /**
-     * Изображение товара.
-     */
     private String imageUrl;
 
-    /**
-     * Организация которой принадлежит этот продукт
-     */
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    @OneToMany(mappedBy = "product")
+    private Set<OrderItem> orderItems;
 
-
+    /**
+     * Резервирует указанное количество товара, если оно доступно на складе.
+     * Уменьшает количество доступного товара и увеличивает зарезервированное количество.
+     *
+     * @param quantityToReserve Количество товара, которое необходимо резервировать.
+     * @throws IllegalArgumentException если запрашиваемое количество превышает доступное количество товара на складе.
+     */
+    public void reserveQuantity(BigDecimal quantityToReserve) {
+        if (this.quantity.compareTo(quantityToReserve) >= 0) {
+            this.quantity = this.quantity.subtract(quantityToReserve);
+            this.reserved = this.reserved.add(quantityToReserve);
+        } else {
+            throw new IllegalArgumentException("Недостаточно товара на складе");
+        }
+    }
+    /**
+     * Возвращает ранее зарезервированное количество товара на склад.
+     * Увеличивает количество доступного товара и уменьшает зарезервированное количество.
+     *
+     * @param quantityToReturn Количество товара, которое необходимо вернуть на склад.
+     */
+    public void returnQuantity(BigDecimal quantityToReturn) {
+        this.quantity = this.quantity.add(quantityToReturn);
+        this.reserved = this.reserved.subtract(quantityToReturn);
+    }
 }
+
+
+
 

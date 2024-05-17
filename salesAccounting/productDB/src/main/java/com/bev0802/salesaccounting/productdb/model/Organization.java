@@ -7,11 +7,10 @@ import lombok.NoArgsConstructor;
 
 import java.util.Set;
 
-@Data
 @Entity
+@Data
 @AllArgsConstructor
 @NoArgsConstructor
-
 public class Organization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -29,6 +28,9 @@ public class Organization {
     @OneToMany(mappedBy = "organization")
     private Set<Employee> employees;
 
-    @OneToMany(mappedBy = "organization")
-    private Set<Counterparty> counterparties;
+    @OneToMany(mappedBy = "buyerOrganization")
+    private Set<Order> placedOrders;
+
+    @OneToMany(mappedBy = "sellerOrganization")
+    private Set<Order> receivedOrders;
 }

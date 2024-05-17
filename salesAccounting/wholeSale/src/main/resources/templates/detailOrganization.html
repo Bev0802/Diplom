@@ -30,12 +30,16 @@
     <label for="orgEmail">Email</label>
     <input type="email" id="orgEmail" th:field="*{email}" required>
 
-    <label for="orgPassword">Пароль</label>
-    <input type="password" id="orgPassword" th:field="*{password}" required>
+    <label for="orgPassword">Текущий пароль</label>
+    <input type="password" id="orgPassword" th:field="*{password}" readonly>
+
+    <label for="newOrgPassword">Новый пароль</label>
+    <input type="password" id="newOrgPassword" name="newPassword">
 
     <div class="button-group">
       <button type="submit" class="button form-detail-button">Сохранить</button>
       <button type="button" class="button form-detail-button" onclick="history.back()">Отмена</button>
+      <button type="submit" class="button form-detail-button">Сотрудники</button>
     </div>
   </form>
 </div>

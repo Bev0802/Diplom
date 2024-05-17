@@ -5,8 +5,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.*;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.client.RestTemplate;
@@ -35,7 +37,7 @@ public class LoginController {
 
         ParameterizedTypeReference<Map<String, Object>> responseType = new ParameterizedTypeReference<Map<String, Object>>() {};
 
-        ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange("http://productDB/api/organizations/authenticate", HttpMethod.POST, requestEntity, responseType);
+        ResponseEntity<Map<String, Object>> responseEntity = restTemplate.exchange("http://productDB/api/organization/authenticate", HttpMethod.POST, requestEntity, responseType);
 
         if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
             Long organizationId = Long.valueOf(responseEntity.getBody().get("organizationId").toString());
@@ -48,5 +50,10 @@ public class LoginController {
         }
     }
 
+    @GetMapping("/register")
+    public String registerForm(Model model) {
+        // Добавьте любые атрибуты модели, если это необходимо
+        return "detailOrganization"; // Имя файла вашего шаблона для регистрации организации
+    }
 
 }

@@ -8,7 +8,6 @@ import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.Optional;
 
 /**
  * Интерфейс репозитория для работы с объектами {@link Product} в базе данных.
@@ -17,9 +16,6 @@ import java.util.Optional;
  */
 @Repository
 public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpecificationExecutor<Product> {
-
-    static void deleteByOrganization(Organization organization) {
-    }
 
     /**
      * Находит продукт по его точному имени.
@@ -70,5 +66,7 @@ public interface ProductRepository extends JpaRepository<Product, Long>, JpaSpec
     List<Product> findByOrganizationId(Long organizationId);
 
     void deleteAllByOrganization(Organization organization);
+
+
 }
 

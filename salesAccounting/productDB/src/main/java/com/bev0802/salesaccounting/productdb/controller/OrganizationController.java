@@ -15,7 +15,7 @@ import java.util.Map;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("api/organizations") // Базовый URL для всех операций с организациями
+@RequestMapping("api/organization") // Базовый URL для всех операций с организациями
 public class OrganizationController {
 
     @Autowired
@@ -24,7 +24,7 @@ public class OrganizationController {
     private OrganizationRepository organizationRepository;
 
     // Метод для получения списка всех организаций
-    @GetMapping
+    @GetMapping("/")
     public ResponseEntity<List<Organization>> getAllOrganizations() {
         List<Organization> organizations = organizationService.findAll();
         return ResponseEntity.ok(organizations);
@@ -94,4 +94,5 @@ public class OrganizationController {
         organizationService.deleteOrganization(id);
         return ResponseEntity.ok().build();
     }
+
 }

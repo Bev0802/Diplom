@@ -1,9 +1,12 @@
 package com.bev0802.salesaccounting.wholesale.service;
 
 import com.bev0802.salesaccounting.wholesale.model.Employee;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.*;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
@@ -24,48 +27,23 @@ public class EmployeeService {
         this.restTemplate = restTemplate;
     }
 
-    public Employee findById(Long employeeId) {
-        String url = productDBServiceUrl + "/api/employees/" + employeeId;
-        try {
-            Employee employee = restTemplate.getForObject(url, Employee.class);
-            return employee;
-        } catch (HttpClientErrorException e) {
-            // Здесь вы можете логировать ошибку или обрабатывать исключение в зависимости от вашей логики приложения
-            throw new RuntimeException("Не удалось найти сотрудника с ID: " + employeeId, e);
-        }
-    }
+    private static final Logger logger = LoggerFactory.getLogger(EmployeeService.class);
 
-//    public Employee authenticateEmployee(String email, String password, Long organizationId) {
-//        // Строим URL запроса
-//        String url = productDBServiceUrl + "/api/organizations/" + organizationId + "/employees/authenticate";
-//
-//        // Создаём объект запроса с данными для аутентификации
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
-//        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-//        map.add("email", email);
-//        map.add("password", password);
-//        HttpEntity<MultiValueMap<String, String>> requestEntity = new HttpEntity<>(map, headers);
-//
-//        // Отправляем POST запрос на аутентификацию и ожидаем в ответе объект Employee
+//    public Employee findById(Long employeeId, Long organizationId) {
+//        String url = productDBServiceUrl + "/api/organization/"+ organizationId + "/employees/" + employeeId;
 //        try {
-//            ResponseEntity<Employee> response = restTemplate.postForEntity(url, requestEntity, Employee.class);
-//            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-//                // Возвращаем объект сотрудника, если аутентификация прошла успешно
-//                return response.getBody();
-//            } else {
-//                // Логирование ошибки или другая обработка
-//                return null; // или выбрасываем исключение
-//            }
+//            Employee employee = restTemplate.getForObject(url, Employee.class);
+//            return employee;
 //        } catch (HttpClientErrorException e) {
-//            // Логирование ошибки или другая обработка
-//            return null; // или выбрасываем исключение
+//            // Здесь вы можете логировать ошибку или обрабатывать исключение в зависимости от вашей логики приложения
+//            throw new RuntimeException("Не удалось найти сотрудника с ID: " + employeeId, e);
 //        }
 //    }
 
-    public Employee getEmployeeById(Long employeeId) {
+    public Employee getEmployeeById(Long employeeId, Long organizationId) {
         // Строим URL запроса, включая идентификатор сотрудника
-        String url = productDBServiceUrl + "/employees/" + employeeId;
+
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId;
 
         // Отправляем GET запрос к productDB для получения сотрудника
         ResponseEntity<Employee> response = restTemplate.getForEntity(url, Employee.class);
@@ -81,25 +59,52 @@ public class EmployeeService {
         }
     }
 
+    /**
+     * Получает список сотрудников по идентификатору организации.
+     *
+     * @param organizationId Идентификатор организации.
+     * @return Список сотрудников.
+     * @throws ServiceException Если возникает ошибка при получении сотрудников.
+     */
     public List<Employee> findEmployeesByOrganizationId(Long organizationId) {
-        // Строим URL запроса, включая ID организации
-        String url = productDBServiceUrl + "/api/organizations/" + organizationId + "/employees";
+        try {
+            String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/getEmployeesByOrganizationId";
+            Employee[] employees = restTemplate.getForObject(url, Employee[].class);
+            assert employees != null;
+            return Arrays.asList(employees);
+        } catch (HttpClientErrorException e) {
+            logger.error("Ошибка при получении сотрудников организации с ID {}.", organizationId, e);
+            throw new ServiceException("Не удалось получить сотрудников организации: " + e.getResponseBodyAsString());
+        } catch (Exception e) {
+            logger.error("Ошибка при получении сотрудников организации с ID {}.", organizationId, e);
+            throw new ServiceException("Произошла ошибка при получении сотрудников организации.");
+        }
+    }
 
-        // Создаем заголовки запроса
-        HttpHeaders headers = new HttpHeaders();
-        headers.setContentType(MediaType.APPLICATION_JSON);
-        HttpEntity<String> entity = new HttpEntity<>(headers);
+    // Метод для сохранения сотрудника
+    public void saveEmployee(Long organizationId, Employee employee) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/register";
+        restTemplate.postForEntity(url, employee, Employee.class);
+    }
 
-        // Отправляем GET запрос и получаем ответ
-        ResponseEntity<Employee[]> response = restTemplate.exchange(url, HttpMethod.GET, entity, Employee[].class);
+    // Метод для клонирования сотрудника
+    public void cloneEmployee(Long organizationId, Long employeeId) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/clone/" + employeeId;
+        restTemplate.postForEntity(url, null, Void.class);
+    }
 
-        // Проверяем статус ответа и возвращаем полученный список сотрудников
-        if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-            return Arrays.asList(response.getBody());
-        } else {
-            // В случае, если тело ответа null или статус ответа не OK, возвращаем пустой список
-            // Можно также добавить обработку различных HTTP статусов, если это необходимо
-            return List.of();
+    // Метод для удаления сотрудника
+    public void deleteEmployee(Long organizationId, Long employeeId) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/delete/" + employeeId;
+        restTemplate.postForEntity(url, null, Void.class);
+    }
+
+    // Дополнительные методы и классы
+    public static class ServiceException extends RuntimeException {
+        public ServiceException(String message) {
+            super(message);
         }
     }
 }
+
+

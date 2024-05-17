@@ -1,7 +1,6 @@
 package com.bev0802.salesaccounting.productdb.service;
 
 import com.bev0802.salesaccounting.productdb.model.Organization;
-import com.bev0802.salesaccounting.productdb.repository.CounterpartyRepository;
 import com.bev0802.salesaccounting.productdb.repository.EmployeeRepository;
 import com.bev0802.salesaccounting.productdb.repository.OrganizationRepository;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
@@ -27,8 +26,6 @@ public class OrganizationService {
     private ProductRepository productRepository;
     @Autowired
     private EmployeeRepository employeeRepository;
-    @Autowired
-    private CounterpartyRepository counterpartyRepository;
 
     @Transactional
     public void deleteOrganization(Long id) {
@@ -37,7 +34,6 @@ public class OrganizationService {
         // Delete all associated entities
         productRepository.deleteAllByOrganization(organization);
         employeeRepository.deleteAllByOrganization(organization);
-        counterpartyRepository.deleteAllByOrganization(organization);
         // Finally, delete the organization
         organizationRepository.delete(organization);
     }

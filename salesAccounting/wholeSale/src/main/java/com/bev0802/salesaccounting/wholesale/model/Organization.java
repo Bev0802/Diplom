@@ -28,7 +28,6 @@ public class Organization {
 
     private Set<Product> products;
     private Set<Employee> employees;
-    private Set<Counterparty> counterparties;
 
     public String getName() {
         return name;

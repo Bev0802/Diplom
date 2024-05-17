@@ -18,7 +18,7 @@ import java.util.List;
  */
 
 @RestController
-@RequestMapping("/api/products")
+@RequestMapping("/api/organization/{organizationId}/employee/{employeeId}/product")
 public class ProductController {
 
     @Autowired
@@ -28,11 +28,13 @@ public class ProductController {
      * Создает новый товар в базе данных.
      *
      * @param product Объект товара для создания.
+     * @param organizationId ID организации, к которой будет привязан товар.
      * @return Созданный товар.
      */
-    @PostMapping
-    public Product createProduct(@RequestBody Product product) {
-        return productService.saveProduct(product);
+    @PostMapping("/create")
+    public ResponseEntity<Product> createProduct(@RequestBody Product product, @PathVariable Long organizationId) {
+        Product createdProduct = productService.saveProduct(product, organizationId);
+        return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
 
     /**
@@ -40,7 +42,7 @@ public class ProductController {
      *
      * @return Список товаров.
      */
-    @GetMapping
+    @GetMapping("/")
     public List<Product> getAllProducts() {
         return productService.getAllProducts();
     }
@@ -48,12 +50,12 @@ public class ProductController {
     /**
      * Возвращает товар по его ID.
      *
-     * @param id ID товара, который нужно получить.
+     * @param productId ID товара, который нужно получить.
      * @return ResponseEntity с товаром, если он найден, или с кодом 404, если не найден.
      */
-    @GetMapping("/{id}")
-    public ResponseEntity<Product> getProductById(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
+    @GetMapping("/{productId}")
+    public ResponseEntity<Product> getProductById(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
         if (product != null) {
             return ResponseEntity.ok(product);
         } else {
@@ -65,7 +67,7 @@ public class ProductController {
      * @param organizationId ID организации, которой принадлежат товары.
      * @return Список товаров, принадлежащих организации.
      */
-    @GetMapping("/byOrganization/{organizationId}")
+    @GetMapping("/listByOrganization/")
     public ResponseEntity<List<Product>> getProductsByOrganization(@PathVariable Long organizationId) {
         List<Product> products = productService.findByOrganizationId(organizationId);
         if (products != null && !products.isEmpty()) {
@@ -80,7 +82,7 @@ public class ProductController {
      * @param productId
      * @return Организация
      */
-    @GetMapping("/{productId}/organization")
+    @GetMapping("/getOrganizationByProductId/{productId}")
     public ResponseEntity<Organization> getOrganizationByProductId(@PathVariable Long productId) {
         Product product = productService.getProductById(productId);
         if (product != null) {
@@ -95,7 +97,7 @@ public class ProductController {
      * @param organizationId ID организации, для которой нужно получить доступные для покупки
      * @return Список доступных для покупки
      */
-    @GetMapping("/availableForPurchase/{organizationId}")
+    @GetMapping("/availableForPurchase")
     public ResponseEntity<List<Product>> getProductsAvailableForPurchaseByOrganizationId(@PathVariable Long organizationId) {
         List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId);
         return ResponseEntity.ok(products);
@@ -127,13 +129,13 @@ public class ProductController {
      * Обновляет информацию о существующем товаре в базе данных.
      * Если товар с указанным ID не найден, возвращает статус 404 Not Found.
      *
-     * @param id ID товара для обновления.
+     * @param productId ID товара для обновления.
      * @param productDetails Детали товара для обновления.
      * @return Обновленный товар, или статус 404, если товар не найден.
      */
-    @PutMapping("/{id}")
-    public ResponseEntity<Product> updateProduct(@PathVariable Long id, @RequestBody Product productDetails) {
-        Product product = productService.getProductById(id);
+    @PutMapping("/{productId}")
+    public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody Product productDetails) {
+        Product product = productService.getProductById(productId);
         if (product == null) {
             return ResponseEntity.notFound().build();
         }
@@ -141,8 +143,9 @@ public class ProductController {
         product.setName(productDetails.getName());
         product.setDescription(productDetails.getDescription());
         product.setPrice(productDetails.getPrice());
+        product.setQuantity(productDetails.getQuantity());
 
-        Product updatedProduct = productService.saveProduct(product);
+        Product updatedProduct = productService.saveProduct(product, product.getOrganization().getId());
         return ResponseEntity.ok(updatedProduct);
     }
 
@@ -176,16 +179,16 @@ public class ProductController {
         return productService.findProducts(name, available, startPrice, endPrice);}
 
     /**
-     * Удаляет товар из базы данных по его ID.
+     * Удаляет товар из базы данных по его ID, если его количество больше 0.
      *
-     * @param id ID товара для удаления.
+     * @param productId ID товара для удаления.
      * @return ResponseEntity без тела, с кодом 200, если товар удален, или с кодом 404, если не найден.
      */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteProduct(@PathVariable Long id) {
-        Product product = productService.getProductById(id);
+    @DeleteMapping("/{productId}")
+    public ResponseEntity<Void> deleteProduct(@PathVariable Long productId) {
+        Product product = productService.getProductById(productId);
         if (product != null) {
-            productService.deleteProduct(id);
+            productService.deleteProduct(productId);
             return ResponseEntity.ok().build();
         } else {
             return ResponseEntity.notFound().build();

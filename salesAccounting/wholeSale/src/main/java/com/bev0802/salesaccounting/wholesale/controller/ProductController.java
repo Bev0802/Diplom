@@ -1,5 +1,6 @@
 package com.bev0802.salesaccounting.wholesale.controller;
 
+import com.bev0802.salesaccounting.wholesale.model.Employee;
 import com.bev0802.salesaccounting.wholesale.model.Organization;
 import com.bev0802.salesaccounting.wholesale.model.Product;
 import com.bev0802.salesaccounting.wholesale.service.EmployeeService;
@@ -21,7 +22,7 @@ import java.util.List;
  * Обрабатывает веб-запросы, связанные с продуктами, и взаимодействует с сервисом {@link ProductService} для выполнения бизнес-логики.
  */
 @Controller
-@RequestMapping("product")
+@RequestMapping("/organization/{organizationId}/employee/{employeeId}/product")
 public class ProductController {
 
     private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);
@@ -45,14 +46,14 @@ public class ProductController {
     }
 
     /**
-     * Метод для получения списка товаров, принадлежащих определенной организации для покупки
+     * Метод для получения списка товаров, принадлежащих определенной организации.
      * @param organizationId ID организации
      * @param model модель для передачи данных в представление
      * @return имя HTML шаблона для отображения списка товаров
      */
-    @GetMapping("byOrganization/{organizationId}")
-        public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId, Model model) {
-            List<Product> products = productService.findProductsByOrganization(organizationId);
+    @GetMapping("byOrganization/")
+        public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId, Model model) {
+            List<Product> products = productService.findProductsByOrganization(organizationId, employeeId);
             model.addAttribute("products", products);
             model.addAttribute("organizationId", organizationId);
             return "listProducts";
@@ -60,35 +61,47 @@ public class ProductController {
 
     /**
      * Получает список товаров, доступных для покупки в определенной организации.
-     * @param organizationId
+     * @param organizationId идентификатор организации
+     * @param employeeId идентификатор сотрудника
      * @return возвращает список доступных для покупки
      */
-    @GetMapping("availableForPurchase/{organizationId}")
-    public String productsAvailableForPurchase(@PathVariable("organizationId") Long organizationId, HttpSession session, Model model) {
+    @GetMapping("/availableForPurchase")
+    public String productsAvailableForPurchase(@PathVariable("organizationId") Long organizationId,
+                                               @PathVariable("employeeId") Long employeeId,
+                                               HttpSession session,
+                                               Model model) {
         List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId);
         Organization organization = organizationService.findById(organizationId);
+        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);
 
         logger.info("Products available for purchase: {}", products);
         logger.info("Products available for purchase size: {}", products.size());
         logger.info("Organization ID: {}", organizationId);
+        logger.info("Organization Name: {}", organization.getName());
 
         model.addAttribute("products", products);
         model.addAttribute("organizationId", organizationId);
+        model.addAttribute("employeeId", employeeId);
 
 //        model.addAttribute("organizationName", products.getOrganization().getName());
     return "market"; // Имя шаблона для отображения списка товаров
     }
 
     /**
-     * Переход на страницу создания нового продукта.
-     *
-     * @param model модель для передачи данных в представление.
-     * @return имя HTML шаблона для создания нового продукта.
+     * Отображает страницу для создания нового продукта.
+     * @param organizationId Идентификатор организации, к которой принадлежит продукт.
+     * @param employeeId Идентификатор сотрудника, создающего продукт.
+     * @param model Модель Spring MVC для передачи данных в представление.
+     * @return Название HTML-шаблона для отображения формы деталей продукта.
      */
     @GetMapping("/new")
-    public String newProduct(Model model) {
+    public String newProduct(@PathVariable Long organizationId,
+                             @PathVariable Long employeeId,
+                             Model model) {
         model.addAttribute("product", new Product());
-        return "detailProduct"; // Переход на страницу создания нового продукта
+        model.addAttribute("organizationId", organizationId);
+        model.addAttribute("employeeId", employeeId);
+        return "detailProduct";
     }
     /**
      * Поиск продуктов по наименованию.
@@ -130,26 +143,28 @@ public class ProductController {
     /**
      * Отображает страницу с деталями продукта, позволяя просмотреть и редактировать его информацию.
      *
-     * @param id Идентификатор продукта.
+     * @param productId Идентификатор продукта.
      * @param model Модель для передачи данных в представление.
      * @return Имя шаблона страницы деталей продукта.
      */
-    @GetMapping("/{id}")
-    public String detailProduct(@PathVariable Long id, Model model) {
-        model.addAttribute("product", productService.getProductById(id));
+    @GetMapping("/{productId}")
+    public String detailProduct(@PathVariable Long productId, @PathVariable Long organizationId, @PathVariable Long employeeId,Model model) {
+        model.addAttribute("product", productService.getProductById(productId, organizationId, employeeId));
         return "detailProduct";
     }
 
     /**
      * Отображает страницу для создания нового продукта или редактирования существующего.
      *
-     * @param id Идентификатор продукта для редактирования; null для создания нового.
+     * @param productId Идентификатор продукта для редактирования; null для создания нового.
      * @param model Модель для передачи данных в представление.
      * @return Имя шаблона страницы редактирования продукта.
      */
-    @GetMapping("/edit/{id}")
-    public String editProduct(@PathVariable Long id, Model model) {
-        Product product = id != null ? productService.getProductById(id) : new Product();
+    @GetMapping("/edit/{productId}")
+    public String editProduct(@PathVariable Long productId,
+                              @PathVariable Long organizationId,
+                              @PathVariable Long employeeId, Model model) {
+        Product product = productId != null ? productService.getProductById(productId, organizationId, employeeId) : new Product();
         model.addAttribute("product", product);
         return "detailProduct";
     }
@@ -161,37 +176,45 @@ public class ProductController {
      * @return Перенаправление на список продуктов.
      */
     @PostMapping("/save")
-    public String saveProduct(@ModelAttribute("product") Product product) {
-        productService.saveOrUpdateProduct(product);
-        return "redirect:/byOrganization/" + product.getOrganization().getId();
+    public String saveProduct(@ModelAttribute("product") Product product,
+                              @PathVariable Long organizationId,
+                              @PathVariable Long employeeId) {
+        productService.saveOrUpdateProduct(product, organizationId, employeeId);
+        return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/byOrganization/";
     }
+
 
     /**
      * Создаёт копию существующего продукта по его идентификатору.
      *
-     * @param id Идентификатор продукта для копирования.
+     * @param productId Идентификатор продукта для копирования.
      * @param model Модель для передачи данных в представление.
      * @return Имя шаблона страницы деталей продукта для новой копии.
      */
-    @GetMapping("/clone/{id}")
-    public String cloneProduct(@PathVariable Long id, Model model) {
-        Product clonedProduct = productService.cloneProduct(id);
+    @PostMapping ("/clone/{productId}")
+    public String cloneProduct(@PathVariable Long productId,
+                               @PathVariable Long organizationId,
+                               @PathVariable Long employeeId,
+                               Model model) {
+        Product clonedProduct = productService.cloneProduct(productId, organizationId, employeeId);
         model.addAttribute("product", clonedProduct);
-        return "detailProduct";
+        return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/byOrganization/";
+        //return "detailProduct";
     }
 
     /**
-     * Удаляет продукт по его идентификатору.
+     * Удаляет продукт по его идентификатору и перенаправляет на список продуктов.
      *
-     * @param id Идентификатор продукта для удаления.
+     * @param organizationId Идентификатор организации.
+     * @param employeeId Идентификатор сотрудника.
+     * @param productId Идентификатор продукта для удаления.
      * @return Перенаправление на список продуктов.
      */
-    @PostMapping("/delete/{id}")
-    public String deleteProduct(@PathVariable Long id) {
-        productService.deleteProduct(id);
-        return "redirect:/product/";
+    @PostMapping("/delete/{productId}")
+    public String deleteProduct(@PathVariable Long productId,
+                                @PathVariable Long organizationId,
+                                @PathVariable Long employeeId) {
+        productService.deleteProduct(productId, organizationId, employeeId);
+        return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/byOrganization/";
     }
-
-
-
 }

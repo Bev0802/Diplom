@@ -46,7 +46,7 @@ public class EmployeeController {
     @PostMapping("/authenticate/")
     public String authenticateEmployee(@RequestParam String email, @RequestParam String password, @PathVariable("organizationId") Long organizationId, Model model, HttpSession session) {
         // Строим URL для запроса к REST API
-        String url = "http://productDB/api/organizations/" + organizationId + "/employees/authenticate";
+        String url = "http://productDB/api/organization/" + organizationId + "/employee/authenticate";
 
         // Подготавливаем данные для запроса
         HttpHeaders headers = new HttpHeaders();
@@ -60,6 +60,10 @@ public class EmployeeController {
         try {
             // Отправляем запрос
             ResponseEntity<Map> responseEntity = restTemplate.postForEntity(url, requestEntity, Map.class);
+            // Логирование ответа
+            System.out.println("Response Status: " + responseEntity.getStatusCode());
+            System.out.println("Response Body: " + responseEntity.getBody());
+
             if (responseEntity.getStatusCode() == HttpStatus.OK && responseEntity.getBody() != null) {
                 Map<String, Object> responseBody = responseEntity.getBody();
 
@@ -84,7 +88,7 @@ public class EmployeeController {
         // Подготавливаем данные для отображения страницы приветствия сотрудника
         //Employee employee = (Employee) session.getAttribute("employee"); // Получаем сотрудника из сессии
         //Long employeeId = (Long) session.getAttribute("employeeId"); // Получаем ID сотрудника из сессии
-        Employee employee = employeeService.findById(employeeId);
+        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);
         model.addAttribute("employeeId", employeeId);
         model.addAttribute("EmployeeName", employee.getName());
         model.addAttribute("organizationName", employee.getOrganization().getName());
@@ -97,8 +101,37 @@ public class EmployeeController {
 
     @GetMapping("/listEmployees")
     public String listEmployees(@PathVariable("organizationId") Long organizationId, Model model) {
-        List<Employee> employees = employeeService.findEmployeesByOrganizationId(organizationId); // Получаем список сотрудников по ID организации();
+        List<Employee> employees = employeeService.findEmployeesByOrganizationId(organizationId);
         model.addAttribute("employees", employees);
-        return "listEmployees"; // имя шаблона страницы со списком сотрудников
+        return "listEmployees";
+    }
+
+    // Метод для отображения формы создания нового сотрудника
+    @GetMapping("/new")
+    public String showCreateEmployeeForm(@PathVariable("organizationId") Long organizationId, Model model) {
+        model.addAttribute("employee", new Employee());
+        model.addAttribute("organizationId", organizationId);
+        return "detailEmployees"; // Имя шаблона для формы создания сотрудника
+    }
+
+    // Метод для сохранения нового сотрудника
+    @PostMapping("/save")
+    public String saveEmployee(@PathVariable("organizationId") Long organizationId, @ModelAttribute Employee employee) {
+        employeeService.saveEmployee(organizationId, employee);
+        return "redirect:/organization/" + organizationId + "/employee/listEmployees";
+    }
+
+    // Метод для клонирования сотрудника
+    @GetMapping("/clone/{employeeId}")
+    public String cloneEmployee(@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId) {
+        employeeService.cloneEmployee(organizationId, employeeId);
+        return "redirect:/organization/" + organizationId + "/employee/listEmployees";
+    }
+
+    // Метод для удаления сотрудника
+    @PostMapping("/delete/{employeeId}")
+    public String deleteEmployee(@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId) {
+        employeeService.deleteEmployee(organizationId, employeeId);
+        return "redirect:/organization/" + organizationId + "/employee/listEmployees";
     }
 }

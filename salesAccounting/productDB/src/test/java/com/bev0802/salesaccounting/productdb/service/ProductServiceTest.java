@@ -1,11 +1,7 @@
 package com.bev0802.salesaccounting.productdb.service;
 
-import static org.mockito.Mockito.*;
-import static org.junit.jupiter.api.Assertions.*;
-
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -18,6 +14,9 @@ import java.math.BigDecimal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
 @ExtendWith(MockitoExtension.class)
@@ -52,7 +51,7 @@ class ProductServiceTest {
         product.setName("New Product");
         when(productRepository.save(any(Product.class))).thenReturn(product);
 
-        Product savedProduct = productService.saveProduct(product);
+        Product savedProduct = productService.saveProduct(product, null);
 
         assertNotNull(savedProduct);
         assertEquals("New Product", savedProduct.getName());

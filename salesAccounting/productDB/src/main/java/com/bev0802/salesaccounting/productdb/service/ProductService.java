@@ -2,7 +2,9 @@ package com.bev0802.salesaccounting.productdb.service;
 
 import com.bev0802.salesaccounting.productdb.exceptions.ProductInStockException;
 import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
+import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
+import com.bev0802.salesaccounting.productdb.repository.OrganizationRepository;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
 import com.bev0802.salesaccounting.productdb.repository.specification.ProductSpecifications;
 import org.slf4j.Logger;
@@ -12,8 +14,8 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * Сервис для управления продуктами в базе данных.
@@ -23,15 +25,21 @@ import java.util.stream.Collectors;
 public class ProductService {
     @Autowired
     private ProductRepository productRepository;
+    @Autowired
+    private OrganizationRepository organizationRepository;
     private final Logger log = LoggerFactory.getLogger(ProductService.class);
 
     /**
-     * Сохраняет продукт в базе данных.
+     * Сохраняет продукт в базе данных, привязывая его к организации.
      *
      * @param product Продукт для сохранения.
+     * @param organizationId ID организации, к которой будет привязан продукт.
      * @return Сохраненный продукт.
      */
-    public Product saveProduct(Product product) {
+    public Product saveProduct(Product product, Long organizationId) {
+        Organization organization = organizationRepository.findById(organizationId)
+                .orElseThrow(() -> new RuntimeException("Organization not found with ID: " + organizationId));
+        product.setOrganization(organization); // Установка организации для продукта
         return productRepository.save(product);
     }
     /**
@@ -45,11 +53,12 @@ public class ProductService {
     /**
      * Находит продукт по его идентификатору.
      *
-     * @param id Идентификатор продукта.
+     * @param productId Идентификатор продукта.
      * @return Найденный продукт или null, если продукт не найден.
      */
-    public Product getProductById(Long id) {
-        return productRepository.findById(id).orElse(null);
+    public Product getProductById(Long productId) {
+        return productRepository.findById(productId)
+                .orElseThrow(()-> new ProductNotFoundException("Product with id " + productId + " not found"));
     }
     /**
      * Возвращает список продуктов, содержащих заданное имя, не учитывая регистр.
@@ -127,11 +136,11 @@ public class ProductService {
         Product product = productRepository.findById(id)
                 .orElseThrow(() -> new ProductNotFoundException("Product with id " + id + " not found"));
         if (product.getQuantity() != null && product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
+            throw new ProductInStockException("Товар с идентификатором " + id + " есть на складе и не может быть удален");
+        }
+        if (product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
             throw new ProductInStockException("Product with id " + id + " is in stock and cannot be deleted");
         }
-//        if (product.getQuantity().compareTo(BigDecimal.ZERO) > 0) {
-//            throw new ProductInStockException("Product with id " + id + " is in stock and cannot be deleted");
-//        }
         log.info("Deleting product: {}", product);
         productRepository.delete(product);
     }
@@ -174,11 +183,22 @@ public class ProductService {
         List<Product> allProducts = productRepository.findAll();
 
         // Фильтруем товары, исключая те, что принадлежат заданной организации
-        List<Product> availableForPurchase = allProducts.stream()
-                .filter(product -> !product.getOrganization().getId().equals(organizationId))
-                .collect(Collectors.toList());
+        List<Product> availableForPurchase = new ArrayList<>();
+        for (Product product : allProducts) {
+            if (!product.getOrganization().getId().equals(organizationId)) {
+                availableForPurchase.add(product);
+            }
+        }
 
         return availableForPurchase;
+    }
+
+    //TODO: доделать метод
+    public void reserveProduct(Long id, int quantity) {
+            
+    }
+    //TODO: доделать метод
+    public void returnProduct(Long id, int quantity) {
     }
 }
 

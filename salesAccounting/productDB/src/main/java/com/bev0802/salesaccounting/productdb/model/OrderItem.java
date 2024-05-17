@@ -11,13 +11,42 @@ public class OrderItem {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    /**
+     * Ссылка на заказ
+     * */
     @ManyToOne
+    @JoinColumn(name = "order_id")
     private Order order;
 
+    /**
+     * Ссылка на товар
+     */
     @ManyToOne
+    @JoinColumn(name = "product_id")
     private Product product;
 
-    private int quantity;
+    /**
+     * Количество товара
+     */
+    private BigDecimal quantity;
+
+    /**
+     * Цена товара
+     */
     private BigDecimal price;
+
+    /**
+     * Метод для получения идентификатора продукта
+     */
+    public Long getProductId() {
+        return product != null ? product.getId() : null;
+    }
+
+//    /**
+//     * Метод для расчета общей суммы строки заказа
+//     */
+//    public BigDecimal calculateLineTotal() {
+//        return price.multiply(quantity);
+//    }
 }
 

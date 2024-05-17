@@ -21,7 +21,6 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long>, JpaSp
     Optional<Employee> findByEmailAndPasswordAndOrganizationId
                         (String email, String password, Long organizationId);
 
-
     List<Employee> findAllByOrganization(Organization organization);
     void deleteAllByOrganization(Organization organization);
 

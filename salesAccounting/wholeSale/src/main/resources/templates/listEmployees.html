@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
     <link rel="stylesheet" href="/static/style.css" th:href="@{/style.css}">
     <script src="/static/script.js" th:src="@{/script.js}"></script>
-
 </head>
 <body>
 <div class="container">
     <h1 class="main-heading">Список Сотрудников</h1>
     <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
-    <a href="/employee/new" class="button mt-3" title="Добавить нового сотрудника">Создать</a>
+    <a th:href="@{/organization/{organizationId}/employee/new (organizationId=${organizationId})}" class="button mt-3" title="Добавить нового сотрудника">Создать</a>
     <div class="row">
         <div class="col-md-8">
             <div class="employees-list">
@@ -34,13 +33,12 @@
                         <td th:text="${employee.position}">Должность</td>
                         <td th:text="${employee.email}">Email</td>
                         <td>
-                            <a th:href="@{/employee/{id}(id=${employee.id})}" class="btn" title="Подробнее"><i class="fas fa-info-circle"></i></a>
-                            <a th:href="@{/employee/clone/{id}(id=${employee.id})}" class="btn" title="Копировать"><i class="fas fa-copy"></i></a>
-                            <form th:action="@{/employee/delete/{id}(id=${employee.id})}" method="post" class="d-inline">
+                            <a th:href="@{/organization/{organizationId}/employee/{employeeId} (employeeId=${employee.id}, organizationId=${organizationId})}" class="btn" title="Подробнее"><i class="fas fa-info-circle"></i></a>
+                            <form th:action="@{/organization/{organizationId}/employee/delete/{employeeId} (employeeId=${employee.id}, organizationId=${organizationId})}" method="post" class="d-inline">
                                 <button class="btn" title="Удалить"><i class="fas fa-trash-alt"></i></button>
                             </form>
                         </td>
-
+                    </tr>
                     </tbody>
                 </table>
             </div>
@@ -49,7 +47,7 @@
             <!-- Блок фильтра -->
             <div class="filter-block">
                 <h3>Фильтр</h3>
-                <form action="/employee/search" method="get">
+                <form th:action="@{/organization/{organizationId}/employee/search (organizationId=${organizationId})}" method="get">
                     <div class="mb-3">
                         <label for="idFilter" class="form-label">Код (ID)</label>
                         <input type="text" class="form-control" id="idFilter" name="id">

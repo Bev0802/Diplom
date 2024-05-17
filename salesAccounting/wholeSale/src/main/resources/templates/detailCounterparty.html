@@ -11,7 +11,7 @@
 </head>
 <body>
 <div class="form-detail-container">
-    <form th:action="@{/counterparty/save}" th:object="${counterparty}" method="post" accept-charset="UTF-8">
+    <form th:action="@{/organization/save}" th:object="${counterparty}" method="post" accept-charset="UTF-8">
         <input type="hidden" name="id" th:value="${counterparty.id}"/>
 
         <label for="cpName">Наименование</label>
@@ -30,7 +30,6 @@
         <input type="email" id="cpEmail" th:field="*{email}" required>
 
         <div class="button-group">
-            <button type="submit" class="button form-detail-button">Сохранить</button>
             <button type="button" class="button form-detail-button" onclick="history.back()">Отмена</button>
         </div>
     </form>

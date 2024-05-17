@@ -50,8 +50,40 @@ public class EmployeeService {
         employee.setOrganization(organization);
         return employeeRepository.save(employee);
     }
-
+    /*
+    * Получение сотрудника по ID
+    */
     public Optional<Employee> findById(Long employeeId) {
         return employeeRepository.findById(employeeId);
     }
+
+    /*
+    * Клонирование сотрудника
+     */
+    @Transactional
+    public Employee cloneEmployee(Long employeeId, Long organizationId) {
+        Optional<Employee> employeeOpt = employeeRepository.findById(employeeId);
+        if (employeeOpt.isPresent()) {
+            Employee originalEmployee = employeeOpt.get();
+            Employee clonedEmployee = new Employee();
+            clonedEmployee.setName(originalEmployee.getName());
+            clonedEmployee.setPosition(originalEmployee.getPosition());
+            clonedEmployee.setEmail(originalEmployee.getEmail());
+            clonedEmployee.setPassword(originalEmployee.getPassword());
+            Organization organization = new Organization();
+            organization.setId(organizationId);
+            clonedEmployee.setOrganization(organization);
+            return employeeRepository.save(clonedEmployee);
+        } else {
+            throw new IllegalArgumentException("Сотрудник с ID " + employeeId + " не найден.");
+        }
+    }
+
+    // Удаление сотрудника
+    @Transactional
+    public void deleteEmployee(Long employeeId) {
+        employeeRepository.deleteById(employeeId);
+    }
+
 }
+
