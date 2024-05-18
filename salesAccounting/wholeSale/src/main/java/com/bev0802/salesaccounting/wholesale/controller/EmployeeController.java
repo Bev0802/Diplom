@@ -124,14 +124,16 @@ public class EmployeeController {
 
     // Метод для сохранения нового сотрудника
     @PostMapping("/save")
-    public String saveEmployee(@PathVariable("organizationId") Long organizationId, @ModelAttribute Employee employee) {
+    public String saveEmployee(@PathVariable("organizationId") Long organizationId,
+                               @ModelAttribute Employee employee) {
         employeeService.saveEmployee(organizationId, employee);
         return "redirect:/organization/" + organizationId + "/employee/listEmployees";
     }
 
     // Метод для клонирования сотрудника
     @GetMapping("/clone/{employeeId}")
-    public String cloneEmployee(@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId) {
+    public String cloneEmployee(@PathVariable("organizationId") Long organizationId,
+                                @PathVariable("employeeId") Long employeeId) {
         employeeService.cloneEmployee(organizationId, employeeId);
         return "redirect:/organization/" + organizationId + "/employee/listEmployees";
     }
@@ -143,3 +145,32 @@ public class EmployeeController {
         return "redirect:/organization/" + organizationId + "/employee/listEmployees";
     }
 }
+
+//todo: Добавить логику редактирования сотрудника.  @PostMapping("/save")
+//    public String saveEmployee(@ModelAttribute Employee employee, @PathVariable("organizationId") Long organizationId, Model model) {
+//        try {
+//            if (employee.getId() != null) {
+//                // Обновление существующего сотрудника
+//                employeeService.updateEmployee(employee, organizationId);
+//            } else {
+//                // Создание нового сотрудника
+//                employeeService.createEmployee(employee, organizationId);
+//            }
+//            return "redirect:/organization/" + organizationId + "/employee/listEmployees";
+//        } catch (Exception e) {
+//            model.addAttribute("error", "Ошибка при сохранении сотрудника: " + e.getMessage());
+//            model.addAttribute("employee", employee);
+//            model.addAttribute("organizationId", organizationId);
+//            return "detailEmployees";
+//        }
+//        public void updateEmployee(Employee employee, Long organizationId) {
+//    // Логика обновления сотрудника
+//    employeeRepository.save(employee);}
+//
+//public void createEmployee(Employee employee, Long organizationId) {
+//    // Логика создания нового сотрудника
+//    employee.setOrganization(organizationService.findById(organizationId));
+//    employeeRepository.save(employee);
+//}
+
+

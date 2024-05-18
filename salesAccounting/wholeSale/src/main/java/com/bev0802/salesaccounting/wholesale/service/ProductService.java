@@ -205,76 +205,7 @@ public class ProductService {
         }
     }
 
-    /**
-     * Создает копию существующего продукта по его ID. Новая копия будет сохранена как новый продукт с уникальным ID.
-     *
-     * @param productId Идентификатор продукта для копирования.
-     * @return Копия продукта, сохраненная как новый продукт.
-     * @throws ServiceException если продукт для копирования не найден или запрос на создание копии не удался.
-     */
-    public Product cloneProduct(Long productId, Long organizationId, Long employeeId) {
-        Product existingProduct = getProductById(productId, organizationId, employeeId);
-        if (existingProduct == null) {
-            throw new ServiceException("Продукт для клонирования не найден");
-        }
-        Product newProduct = new Product();
 
-        // Копируем все поля, кроме ID и количества
-        newProduct.setName(existingProduct.getName());
-        newProduct.setPrice(existingProduct.getPrice());
-
-        // Обнуляем количество товара для нового продукта
-        newProduct.setQuantity(BigDecimal.ZERO); // или другое значение по умолчанию, если нужно
-        //newProduct.setQuantity(existingProduct.getQuantity());
-
-        return createProduct(newProduct, organizationId, employeeId);
-    }
-    /**
-     * Создает новый товар.
-     * @param product Продукт для создания.
-     * @param organizationId Идентификатор организации, к которой принадлежит продукт.
-     * @param employeeId Идентификатор сотрудника, создающего продукт.
-     * @return Созданный продукт.
-     */
-    public Product createProduct(Product product, Long organizationId, Long employeeId) {
-        try {
-            // Формирование URL с подстановкой идентификаторов организации и сотрудника
-            String url = UriComponentsBuilder.fromUriString(productServiceUrl + "/create")
-                    .queryParam("organizationId", organizationId)
-                    .queryParam("employeeId", employeeId)
-                    .toUriString();
-
-            // Создание заголовков для запроса
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_JSON);
-
-            // Создание тела запроса, включая продукт
-            HttpEntity<Product> request = new HttpEntity<>(product, headers);
-
-            // Отправка POST запроса с продуктом и получение результата
-            ResponseEntity<Product> response = restTemplate.postForEntity(url, request, Product.class);
-
-            // Проверка статуса ответа и возврат созданного продукта
-            if (response.getStatusCode() == HttpStatus.CREATED) {
-                return response.getBody();
-            } else {
-                throw new ServiceException("Не удалось создать продукт: " + response.getStatusCode());
-            }
-        } catch (HttpClientErrorException e) {
-            logger.error("Ошибка создания продукта: {}", e.getResponseBodyAsString());
-            throw new ServiceException("Ошибка создания продукта: " + e.getResponseBodyAsString(), e);
-        } catch (Exception e) {
-            logger.error("Ошибка при создании продукта", e);
-            throw new ServiceException("Произошла ошибка при создании продукта.", e);
-        }
-    }
-    /**
-     * Обновляет товар.
-     * @param product Товар для сохранения.
-     */
-    private void updateProduct(Product product) {
-        restTemplate.put(productServiceUrl + product.getId(), product);
-    }
     /**
      * Создает новый продукт или обновляет существующий в зависимости от наличия идентификатора.
      *
@@ -346,6 +277,5 @@ public class ProductService {
                 new ParameterizedTypeReference<Organization>() {});
         return response.getBody();
     }
-
 }
 

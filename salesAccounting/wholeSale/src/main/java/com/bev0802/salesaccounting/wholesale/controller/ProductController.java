@@ -51,7 +51,7 @@ public class ProductController {
      * @param model модель для передачи данных в представление
      * @return имя HTML шаблона для отображения списка товаров
      */
-    @GetMapping("byOrganization/")
+    @GetMapping("/byOrganization/")
         public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId, Model model) {
             List<Product> products = productService.findProductsByOrganization(organizationId, employeeId);
             model.addAttribute("products", products);
@@ -148,7 +148,9 @@ public class ProductController {
      * @return Имя шаблона страницы деталей продукта.
      */
     @GetMapping("/{productId}")
-    public String detailProduct(@PathVariable Long productId, @PathVariable Long organizationId, @PathVariable Long employeeId,Model model) {
+    public String detailProduct(@PathVariable Long productId,
+                                @PathVariable Long organizationId,
+                                @PathVariable Long employeeId,Model model) {
         model.addAttribute("product", productService.getProductById(productId, organizationId, employeeId));
         return "detailProduct";
     }
@@ -176,30 +178,46 @@ public class ProductController {
      * @return Перенаправление на список продуктов.
      */
     @PostMapping("/save")
-    public String saveProduct(@ModelAttribute("product") Product product,
-                              @PathVariable Long organizationId,
-                              @PathVariable Long employeeId) {
+    public String saveProduct(@ModelAttribute Product product,
+                              @RequestParam Long organizationId,
+                              @RequestParam Long employeeId) {
+        logger.info("Saving product: {}", product);
         productService.saveOrUpdateProduct(product, organizationId, employeeId);
         return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/byOrganization/";
     }
-
 
     /**
      * Создаёт копию существующего продукта по его идентификатору.
      *
      * @param productId Идентификатор продукта для копирования.
+     * @param organizationId Идентификатор организации.
+     * @param employeeId Идентификатор сотрудника.
      * @param model Модель для передачи данных в представление.
      * @return Имя шаблона страницы деталей продукта для новой копии.
      */
-    @PostMapping ("/clone/{productId}")
+    @GetMapping("/details/{productId}")
+    public String viewProductDetails(@PathVariable Long productId,
+                                     @PathVariable Long organizationId,
+                                     @PathVariable Long employeeId,
+                                     Model model) {
+        Product product = productService.getProductById(productId, organizationId, employeeId);
+
+        model.addAttribute("product", product);
+        model.addAttribute("organizationId", organizationId);
+        model.addAttribute("employeeId", employeeId);
+        logger.info("Инфо product: {}", product);
+        return "detailProduct";  // Assuming you have a Thymeleaf template named detailProduct.html
+    }
+
+    @PostMapping("/clone/{productId}")
     public String cloneProduct(@PathVariable Long productId,
                                @PathVariable Long organizationId,
                                @PathVariable Long employeeId,
                                Model model) {
-        Product clonedProduct = productService.cloneProduct(productId, organizationId, employeeId);
+        Product clonedProduct = productService.getProductById(productId, organizationId, employeeId);
+        clonedProduct.setId(null);  // Ensure the cloned product has a null ID to be saved as a new product
         model.addAttribute("product", clonedProduct);
-        return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/byOrganization/";
-        //return "detailProduct";
+        return "detailProduct";
     }
 
     /**

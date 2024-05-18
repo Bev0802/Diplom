@@ -4,6 +4,10 @@ import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException
 import com.bev0802.salesaccounting.productdb.model.Organization;
 import com.bev0802.salesaccounting.productdb.model.Product;
 import com.bev0802.salesaccounting.productdb.service.ProductService;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -20,7 +24,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/organization/{organizationId}/employee/{employeeId}/product")
 public class ProductController {
-
+    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);
     @Autowired
     private ProductService productService;
 
@@ -135,6 +139,8 @@ public class ProductController {
      */
     @PutMapping("/{productId}")
     public ResponseEntity<Product> updateProduct(@PathVariable Long productId, @RequestBody Product productDetails) {
+        logger.info("Received productId: {}", productId);
+        logger.info("Received productDetails: {}", productDetails);
         Product product = productService.getProductById(productId);
         if (product == null) {
             return ResponseEntity.notFound().build();

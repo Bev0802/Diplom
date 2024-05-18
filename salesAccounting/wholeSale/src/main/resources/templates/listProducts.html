@@ -38,13 +38,12 @@
                         <td th:text="${product.quantity}">Количество</td>
                         <td th:text="${product.price}">Цена</td>
                         <td>
-                            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/{productId}(productId=${product.id}, organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Подробнее"><i class="fas fa-info-circle"></i></a>
+                            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/details/{productId}(productId=${product.id}, organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Подробнее"><i class="fas fa-info-circle"></i></a>
 
                             <form th:action="@{/organization/{organizationId}/employee/{employeeId}/product/clone/{productId}(productId=${product.id}, organizationId=${organizationId}, employeeId=${employeeId})}" method="post" class="d-inline">
-                                <button type="btn" class="btn" title="Копировать"><i class="fas fa-copy"></i></button>
+                                <button type="submit" class="btn" title="Копировать"><i class="fas fa-copy"></i></button>
                             </form>
 
-<!--                            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/clone/{productId}(productId=${product.id}, organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Копировать"><i class="fas fa-copy"></i></a>-->
                             <form th:action="@{/organization/{organizationId}/employee/{employeeId}/product/delete/{productId}(productId=${product.id}, organizationId=${organizationId}, employeeId=${employeeId})}" method="post" class="d-inline">
                                 <button class="btn" title="Удалить"><i class="fas fa-trash-alt"></i></button>
                             </form>
