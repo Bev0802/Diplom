@@ -37,6 +37,16 @@ public class OrganizationService {
         this.restTemplate = restTemplate;
     }
 
+    public String getOrganizationName(Long organizationId) {
+        try {
+            Organization organization = restTemplate.getForObject(productDBServiceUrl + organizationId, Organization.class);
+            return organization != null ? organization.getName() : "Неизвестная организация";
+        } catch (HttpClientErrorException e) {
+            logger.error("Ошибка при получении имени организации.", e);
+            throw new ServiceException("Не удалось получить имя организации: " + e.getResponseBodyAsString());
+        }
+    }
+
     /**
      * Получает список всех организаций.
      *

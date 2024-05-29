@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.HashSet;
 import java.util.Set;
 
 @Entity
@@ -48,8 +49,8 @@ public class Order {
     /**
      * Набор товарных позиций, включенных в заказ.
      */
-    @OneToMany(mappedBy = "order")
-    private Set<OrderItem> items;
+    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Set<OrderItem> items = new HashSet<>();
 
     /**
      * Статус заказа, определенный перечислением {@link OrderStatus}.
@@ -88,18 +89,18 @@ public class Order {
     @Column
     private String comments;
 
-    /**
-     * Вычисляет и устанавливает общую сумму заказа на основе суммы всех товарных позиций перед сохранением или обновлением заказа.
-     */
-    @PrePersist
-    @PreUpdate
-    private void calculateTotalAmount() {
-        if (items != null) {
-            totalAmount = items.stream()
-                    .map(item -> item.getPrice().multiply(item.getQuantity()))
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-        } else {
-            totalAmount = BigDecimal.ZERO;
-        }
-    }
+//    /**
+//     * Вычисляет и устанавливает общую сумму заказа на основе суммы всех товарных позиций перед сохранением или обновлением заказа.
+//     */
+//    @PrePersist
+//    @PreUpdate
+//    public void calculateTotalAmount() {
+//        if (items != null && !items.isEmpty()) {
+//            totalAmount = items.stream()
+//                    .map(OrderItem::getAmount)
+//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
+//        } else {
+//            totalAmount = BigDecimal.ZERO;
+//        }
+//    }
 }

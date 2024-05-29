@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -15,6 +16,7 @@ import java.util.Set;
 @Data // Lombok аннотация для генерации геттеров, сеттеров, toString, equals и hashCode методов.
 @NoArgsConstructor // Lombok аннотация для генерации конструктора без аргументов.
 @AllArgsConstructor // Lombok аннотация для генерации конструктора со всеми аргументами.
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class Organization {
 
     private Long id;
@@ -28,6 +30,11 @@ public class Organization {
 
     private Set<Product> products;
     private Set<Employee> employees;
+
+//    @JsonIgnore
+    private List<Order> placedOrders;
+    private List<Order> receivedOrders;
+
 
     public String getName() {
         return name;

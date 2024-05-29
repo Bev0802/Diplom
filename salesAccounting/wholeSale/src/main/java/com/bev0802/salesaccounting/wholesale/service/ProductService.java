@@ -253,8 +253,11 @@ public class ProductService {
      * @return возвращает список доступных для покупки
      */
 
-    public List<Product> findProductsNotBelongingToOrganization(Long organizationId) {
-        String url = productServiceUrl + "/availableForPurchase/";
+    public List<Product> findProductsNotBelongingToOrganization(Long organizationId, Long employeeId) {
+        String url = UriComponentsBuilder.fromUriString(productServiceUrl + "/availableForPurchase")
+                .buildAndExpand(Map.of("organizationId", organizationId, "employeeId", employeeId))
+                .toUriString();
+
         ResponseEntity<List<Product>> response = restTemplate.exchange(
                 url,
                 HttpMethod.GET,

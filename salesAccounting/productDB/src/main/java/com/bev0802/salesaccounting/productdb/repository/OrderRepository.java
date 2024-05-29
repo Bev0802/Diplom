@@ -10,9 +10,11 @@ import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecificationExecutor<Order> {
+
     @Query("SELECT MAX(o.orderNumber) FROM Order o WHERE o.orderNumber LIKE :prefix%")
     String findLastOrderNumberByPrefix(@Param("prefix") String prefix);
 
@@ -31,11 +33,14 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     // Метод для поиска всех заказов, созданных конкретным сотрудником
     List<Order> findByEmployeeId(Long employeeId);
 
-    List<Order> findBySellerOrganizationIdAndStatusNot(Long sellerId, OrderStatus orderStatus);
+    List<Order> findBySellerOrganizationIdAndStatusNot(Long seller_organization_id, OrderStatus orderStatus);
 
     @Query("SELECT o.items FROM Order o WHERE o.id = :orderId")
     List<OrderItem> findItemsByOrderId(@Param("orderId") Long orderId);
 
+
+    // Метод для поиска активных заказов по статусу
+    List<Order> findByStatus(OrderStatus status);
     // Метод для поиска активных заказов по статусу и ID организации
     List<Order> findByStatusAndBuyerOrganizationId(OrderStatus status, Long organizationId);
 
@@ -43,6 +48,15 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     List<Order> findByStatusAndSellerOrganizationId(OrderStatus status, Long organizationId);
 
     // Если необходимо искать по обоим полям одновременно
-    List<Order> findByStatusAndBuyerOrganizationIdOrSellerOrganizationId(OrderStatus status, Long buyerOrgId, Long sellerOrgId);
+    List<Order> findByStatusAndBuyerOrganizationIdOrSellerOrganizationId
+    (OrderStatus status, Long buyerOrgId, Long sellerOrgId);
+
+
+    @Query("SELECT o FROM Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.product WHERE o.id = :orderId AND o.sellerOrganization.id = :organizationId AND o.employee.id = :employeeId")
+    Optional<Order> findByIdAndOrganizationIdAndEmployeeId(@Param("orderId") Long orderId, @Param("organizationId") Long organizationId, @Param("employeeId") Long employeeId);
+
 }
+
+
+
 

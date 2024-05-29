@@ -55,6 +55,7 @@ CREATE TABLE order_item (
                             product_id BIGINT,
                             quantity DECIMAL(10, 2),
                             price DECIMAL(10, 2),
+                            amount DECIMAL(10, 2),
                             FOREIGN KEY (order_id) REFERENCES orders(id),
                             FOREIGN KEY (product_id) REFERENCES product(id)
 );
@@ -62,8 +63,8 @@ CREATE TABLE order_item (
 
 -- Вставляем демонстрационные данные в таблицу organization
 INSERT INTO organization (name, inn, kpp, address, email, password) VALUES
-                            ('ООО "Рога и Копыта"', '123456789012', '12301001', 'ул. Пушкина, д. Колотушкина', 'info@rogakopyta.com', 'securePassword'),
-                            ('ЗАО "Копыта и Рога"', '987654321098', '987654321', 'пр. Ленина, д. Молоток', 'sales@kopytaroga.com', 'password123'),
+                            ('ООО "Металл-Инструмент"', '123456789012', '12301001', 'ул. Пушкина, д. Колотушкина', 'info@rogakopyta.com', 'securePassword'),
+                            ('ЗАО "Сладкий рай"', '987654321098', '987654321', 'пр. Ленина, д. Молоток', 'sales@kopytaroga.com', 'password123'),
                             ('ООО "Теремок"', '183217245685', '183201001', 'г.Ижевск,ул. Пушкинская, д. 125 ', 'sales@teremok.com', 'password456'),
                             ('ООО "Мир Инструмента"', '121098765432', '12101001', 'г.Сарапул, ул. Советская, д.15', 'info@mirinstrumenta.com', 'password789');
 
@@ -116,16 +117,21 @@ INSERT INTO product (name, description, quantity, price, organization_id) VALUES
                               ('лопата металлическая', 'лопата металлическая', 50.00, 300.00, 4),
                               ('молоток', 'боек 400гр.', 20.00, 500.00, 4);
 
+
 -- Вставляем демонстрационные данные в таблицу orders
 INSERT INTO orders (buyer_organization_id, seller_organization_id, employee_id, order_number, status, total_amount, comments) VALUES
-                              (1, 2, 1, 'ORD_1_2_1/1', 'CONFIRMED', 950.00, 'No comments provided'),
-                              (2, 1, 4, 'ORD_2_1_4/1', 'SHIPPED', 450.00, 'No comments provided'),
-                              (3, 4, 15, 'ORD_3_4_15/1', 'NEW', 1500.00, 'No comments provided'),
-                              (4, 1, 13, 'ORD_4_1_3/1', 'CONFIRMED', 950.00, 'No comments provided');
+                              (1, 2, 1, 'ORD_1_2_1/1', 'CONFIRMED', 3000.00, 'No comments provided'), -- 1
+                              (2, 1, 5, 'ORD_2_1_4/1', 'CONFIRMED', 2750.00, 'No comments provided'), -- 2
+                              (4, 1, 13, 'ORD_3_4_13/1','CONFIRMED', 135.00, 'No comments provided'), -- 3
+                              (1, 4, 3, 'ORD_4_1_3/1', 'NEW', 2800.00, 'No comments provided'); -- 4
+
+
 -- Вставляем демонстрационные данные в таблицу order_item
-INSERT INTO order_item (order_id, product_id, quantity, price) VALUES
-                               (1, 1, 1, 500.00),  -- Добавляем товар "Плашка" в заказ "ORD_1_2_1/1"
-                               (1, 3, 2, 60.00),   -- Добавляем товар "Метчик" в заказ "ORD_1_2_1/1"
-                               (2, 4, 1, 400.00),  -- Добавляем товар "Метчик М27" в заказ "ORD_2_1_4/1"
-                               (3, 8, 3, 45.00),   -- Добавляем товар "Фреза" в заказ "ORD_3_4_15/1"
-                               (4, 6, 1, 450.00);  -- Добавляем товар "Резец проходной" в заказ "ORD_4_1_3/1"
+INSERT INTO order_item (order_id, product_id, quantity, price, amount) VALUES
+                               (1, 9, 5, 500.00, 2500.00),  -- Добавляем товар "Плашка" в заказ "ORD_1_2_1/1"
+                               (1, 11, 10, 50.00, 500.00),   -- Добавляем товар "Метчик" в заказ "ORD_1_2_1/1"
+                               (2, 1, 5, 500.00, 2500.00), -- Добавляем товар "Плашка" в заказ "ORD_2_1_4/1"
+                               (2, 1, 5, 50.00, 250.00),  -- Добавляем товар "Плашка М5" в заказ "ORD_2_1_4/1"
+                               (3, 8, 3, 45.00, 135.00),   -- Добавляем товар "Фреза" в заказ "ORD_3_4_12/1"
+                               (4, 19, 10, 250.00, 2500.00), -- Добавляем товар "Резец проходной" в заказ "ORD_4_1_15/1"
+                               (4, 18, 1, 300.00, 300.00); -- Добавляем товар "Фреза" в заказ "ORD_4_1_15/1"

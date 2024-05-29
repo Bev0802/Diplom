@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.Map;
 
 @RestController
-@RequestMapping("/api/organization/{organization_id}/employee/{employee_id}/orders")
+@RequestMapping("/api/organization/{organizationId}/employee/{employeeId}/orders")
 public class OrderController {
 
     @Autowired
@@ -37,35 +37,38 @@ public class OrderController {
 
     /**
      * Получение списка заказов(покупок) по ID органиазции которая вошла.
-     * @param buyer_id ID покупателя.
+     * @param buyerOrganizationId покупателя.
      * @return Список заказов покупателя.
      */
     @GetMapping("/buyerList")
-    public ResponseEntity<List<Order>> getOrdersByBuyer(@PathVariable("organization_id") Long buyer_id) {
-        List<Order> orders = orderService.findOrdersByBuyerId(buyer_id);
+    public ResponseEntity<List<Order>> getOrdersByBuyer(@PathVariable("organizationId") Long buyerOrganizationId,
+                                                        @PathVariable("employeeId") Long employeeId) {
+        List<Order> orders = orderService.findOrdersByBuyerId(buyerOrganizationId);
         return ResponseEntity.ok(orders);
     }
 
     /**
      * Получение списка заказов по ID продавца, исключая новые.
-     * @param seller_id ID продавца.
+     * @param sellerOrganizationId ID продавца.
      * @return Список заказов.
      * */
     @GetMapping("/sellerList")
-    public ResponseEntity<List<Order>> getOrdersBySeller(@PathVariable("organization_id") Long seller_id) {
-        List<Order> orders = orderService.findOrdersBySellerIdExcludingNew(seller_id);
+    public ResponseEntity<List<Order>> getOrdersBySeller(@PathVariable("organizationId") Long sellerOrganizationId,
+                                                         @PathVariable("employeeId") Long employeeId) {
+        List<Order> orders = orderService.findOrdersBySellerIdExcludingNew(sellerOrganizationId);
         return ResponseEntity.ok(orders);
     }
 
     /**
      * Получение заказа по идентификатору
+     *
      * @param order_id
      * @return Заказ
      */
 
     @GetMapping("/{order_id}")
-    public ResponseEntity<Order> getOrderById(@PathVariable("order_id") Long order_id) {
-        return ResponseEntity.ok(orderService.findById(order_id));
+    public Order getOrderById(@PathVariable("order_id") Long order_id) {
+        return ResponseEntity.ok(orderService.findById(order_id)).getBody();
     }
 
     /**
@@ -77,8 +80,8 @@ public class OrderController {
      */
     @PostMapping("/newOrder")
     public ResponseEntity<Order> createOrder(@RequestBody Order order,
-                                             @PathVariable("organization_id") Long buyer_id,
-                                             @PathVariable("employee_id") Long employee_id) {
+                                             @PathVariable("organizationId") Long buyer_id,
+                                             @PathVariable("employeeId") Long employee_id) {
         return ResponseEntity.ok(orderService.createOrder(order, buyer_id, employee_id));
     }
 
@@ -90,7 +93,7 @@ public class OrderController {
      * @return Список подтвержденных заказов.
      */
     @GetMapping("/seller/confirmed")
-    public ResponseEntity<List<Order>> getConfirmedOrdersBySeller(@PathVariable("organization_id") Long seller_id) {
+    public ResponseEntity<List<Order>> getConfirmedOrdersBySeller(@PathVariable("organizationId") Long seller_id) {
         List<Order> orders = orderService.findConfirmedOrdersBySellerId(seller_id);
         return ResponseEntity.ok(orders);
     }
@@ -108,8 +111,8 @@ public class OrderController {
      */
     @PostMapping("/addProduct/{order_id}")
     public ResponseEntity<?> addProductToOrder(
-            @PathVariable("organization_id") Long organizationId,
-            @PathVariable("employee_id") Long employeeId,
+            @PathVariable("organizationId") Long organizationId,
+            @PathVariable("employeeId") Long employeeId,
             @PathVariable("order_id") Long orderId,
             @RequestParam Long productId,
             @RequestParam BigDecimal quantity) {
@@ -134,7 +137,7 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    //#region Изменение статусов заказов
     /**
      * Подтверждение заказа по его ID. Меняет статус NEW на CONFIRMED. И резервирует товар.
      * @param orderId ID заказа.
@@ -174,7 +177,7 @@ public class OrderController {
     public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
-
+//#endregion
     //todo: в фильтре работает только отбр по sellerId, все остальное не работает.
     /**
      * Получение списка заказов по фильтрам.
@@ -198,12 +201,12 @@ public class OrderController {
     /**
      * Получает список всех заказов, созданных конкретным сотрудником.
      * Этот метод позволяет клиентам API получать данные о всех заказах, созданных сотрудником.
-     * @param organization_id ID организации, к которой принадлежит сотрудник.
+     * @param organizationId ID организации, к которой принадлежит сотрудник.
      * @param employee_id Идентификатор сотрудника, создавшего заказы.
      * @return ResponseEntity, содержащий список заказов или ошибку, если таковая произойдет.
      */
     @GetMapping("/employeeOrders")
-    public ResponseEntity<List<Order>> getOrdersByEmployee(@PathVariable Long organization_id, @PathVariable Long employee_id) {
+    public ResponseEntity<List<Order>> getOrdersByEmployee(@PathVariable Long organizationId, @PathVariable Long employee_id) {
         try {
             List<Order> orders = orderService.findOrdersByEmployeeId(employee_id);
             return ResponseEntity.ok(orders);
@@ -213,6 +216,12 @@ public class OrderController {
         }
     }
 
+    /**
+     * Удаление товара из заказа
+     * @param orderId
+     * @param orderItemId
+     * @return
+     */
     @PostMapping("/removeProduct/{orderId}/{orderItemId}")
     public ResponseEntity<?> removeProductFromOrder(
             @PathVariable("orderId") Long orderId,
@@ -224,6 +233,14 @@ public class OrderController {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
+
+    /**
+     * Изменение количества продукта в заказе
+     * @param orderId
+     * @param orderItemId
+     * @param quantity
+     * @return
+     */
 
     @PostMapping("/updateQuantity/{orderId}/{orderItemId}")
     public ResponseEntity<?> updateProductQuantityInOrder(

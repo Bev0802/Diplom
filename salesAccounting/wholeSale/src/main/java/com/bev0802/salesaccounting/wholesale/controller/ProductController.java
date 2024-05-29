@@ -52,7 +52,9 @@ public class ProductController {
      * @return имя HTML шаблона для отображения списка товаров
      */
     @GetMapping("/byOrganization/")
-        public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId, Model model) {
+        public String getProductsByOrganization (@PathVariable("organizationId") Long organizationId,
+                                                 @PathVariable("employeeId") Long employeeId,
+                                                 Model model) {
             List<Product> products = productService.findProductsByOrganization(organizationId, employeeId);
             model.addAttribute("products", products);
             model.addAttribute("organizationId", organizationId);
@@ -70,7 +72,7 @@ public class ProductController {
                                                @PathVariable("employeeId") Long employeeId,
                                                HttpSession session,
                                                Model model) {
-        List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId);
+        List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId, employeeId);
         Organization organization = organizationService.findById(organizationId);
         Employee employee = employeeService.getEmployeeById(employeeId, organizationId);
 
@@ -82,8 +84,7 @@ public class ProductController {
         model.addAttribute("products", products);
         model.addAttribute("organizationId", organizationId);
         model.addAttribute("employeeId", employeeId);
-
-//        model.addAttribute("organizationName", products.getOrganization().getName());
+        model.addAttribute("organizationName", organization.getName());
     return "market"; // Имя шаблона для отображения списка товаров
     }
 

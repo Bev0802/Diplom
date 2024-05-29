@@ -35,18 +35,26 @@ public class OrderItem {
      */
     private BigDecimal price;
 
+
+    /**
+    * Сумма товара вычиляемая из количества и цены
+    */
+    private BigDecimal amount;
+
+    @PrePersist
+    @PreUpdate
+    public void calculateAmount() {
+        if (price != null && quantity != null) {
+            this.amount = price.multiply(quantity);
+        } else {
+            this.amount = BigDecimal.ZERO;
+        }
+    }
+
     /**
      * Метод для получения идентификатора продукта
      */
     public Long getProductId() {
         return product != null ? product.getId() : null;
     }
-
-//    /**
-//     * Метод для расчета общей суммы строки заказа
-//     */
-//    public BigDecimal calculateLineTotal() {
-//        return price.multiply(quantity);
-//    }
 }
-

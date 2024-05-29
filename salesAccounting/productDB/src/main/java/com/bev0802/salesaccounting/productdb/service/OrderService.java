@@ -1,5 +1,6 @@
 package com.bev0802.salesaccounting.productdb.service;
 
+import com.bev0802.salesaccounting.exception.OrderNotFoundException;
 import com.bev0802.salesaccounting.productdb.model.*;
 import com.bev0802.salesaccounting.productdb.model.enumerator.OrderStatus;
 import com.bev0802.salesaccounting.productdb.repository.OrderItemRepository;
@@ -16,6 +17,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+
 /**
  * Сервис для управления заказами в системе учета товаров.
  * Предоставляет функционал для создания, подтверждения и отмены заказов,
@@ -36,6 +38,7 @@ public class OrderService {
     private OrganizationService organizationService;
     @Autowired
     private EmployeeService employeeService;
+
 
     /**
      * Создает новый заказ в системе.
@@ -107,6 +110,12 @@ public class OrderService {
     public Order findById(Long id) {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
     }
+
+    public Order findOrderById(Long orderId, Long organizationId, Long employeeId) {
+        // Логика для поиска заказа по идентификатору
+        return orderRepository.findByIdAndOrganizationIdAndEmployeeId(orderId, organizationId, employeeId)
+                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
+    }
     /**
      * Возвращает список всех заказов в системе.
      *
@@ -119,21 +128,21 @@ public class OrderService {
     /**
      * Возвращает список заказов, размещенных организацией-покупателем.
      *
-     * @param buyerId Идентификатор организации-покупателя.
+     * @param buyer_organization_id Идентификатор организации-покупателя.
      * @return Список заказов, размещенных организацией.
      */
-    public List<Order> findOrdersByBuyerId(Long buyerId) {
-        return orderRepository.findByBuyerOrganizationId(buyerId);
+    public List<Order> findOrdersByBuyerId(Long buyer_organization_id) {
+        return orderRepository.findByBuyerOrganizationId(buyer_organization_id);
     }
 
     /**
      * Возвращает список всех заказов, полученных организацией-продавцом, исключая заказы со статусом NEW.
      *
-     * @param sellerId Идентификатор организации-продавца.
+     * @param seller_organization_id Идентификатор организации-продавца.
      * @return Список заказов, полученных организацией, за исключением тех, что имеют статус NEW.
      */
-    public List<Order> findOrdersBySellerIdExcludingNew(Long sellerId) {
-        return orderRepository.findBySellerOrganizationIdAndStatusNot(sellerId, OrderStatus.NEW);
+    public List<Order> findOrdersBySellerIdExcludingNew(Long seller_organization_id) {
+        return orderRepository.findBySellerOrganizationIdAndStatusNot(seller_organization_id, OrderStatus.NEW);
     }
 
     //todo: разместить на форме как всплывающее уведомление о вновь поступившем заказе,
@@ -159,6 +168,7 @@ public class OrderService {
         return orderRepository.findByEmployeeId(employeeId);
     }
 
+    //#region Изменение статусов заказов
     /**
      * Подтверждает заказ по его идентификатору.
      * Переводит статус заказа в "CONFIRMED" и резервирует товары.
@@ -196,10 +206,9 @@ public class OrderService {
 
         if (order.getStatus() != OrderStatus.PAID) {
             order.setStatus(OrderStatus.PAID);
-            return orderRepository.save(order);
-        } else {
-            throw new IllegalStateException("Order is already paid");
+            order.setStatusChangeDate(LocalDateTime.now());
         }
+        return orderRepository.save(order);
     }
 
     /**
@@ -213,12 +222,12 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
-        if (order.getStatus() != OrderStatus.PAID) {
+        if (order.getStatus() == OrderStatus.PAID) {
+            order.setStatus(OrderStatus.SHIPPED);
+            order.setStatusChangeDate(LocalDateTime.now());
+        }else {
             throw new IllegalStateException("Order must be PAID before it can be SHIPPED");
         }
-
-        order.setStatus(OrderStatus.SHIPPED);
-        order.setStatusChangeDate(LocalDateTime.now());
         return orderRepository.save(order);
     }
 
@@ -235,16 +244,20 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found"));
 
-        if (order.getStatus() == OrderStatus.CONFIRMED) {
+        if (order.getStatus() != OrderStatus.SHIPPED) {
             order.setStatus(OrderStatus.CANCELLED);
             order.setStatusChangeDate(LocalDateTime.now()); // Обновление времени изменения статуса
             order.getItems().forEach(item -> {
                 int quantity = item.getQuantity().intValueExact(); // Безопасное преобразование
                 productService.returnProduct(item.getProduct().getId(), quantity);
             });
+        }else{
+            throw new RuntimeException("Order must be SHIPPED before it can be CANCELLED");
         }
         return orderRepository.save(order);
     }
+    //#endregion
+
     /**
      * Добавляет продукт в заказ.
      *
@@ -389,10 +402,19 @@ public class OrderService {
         orderItemRepository.save(item); // Сохраняем измененное количество
     }
 
-
     public List<OrderItem> findOrderItemsByOrderId(Long orderId) {
         // Пример вызова метода репозитория, который нужно реализовать
         return orderRepository.findItemsByOrderId(orderId);
+    }
+
+    public Order saveOrder(Order order) {
+        // Принудительная загрузка связанных элементов перед сохранением
+        order.getItems().forEach(orderItem -> {
+            System.out.println(orderItem);
+            orderItem.calculateAmount(); // Убедитесь, что сумма элемента заказа правильно рассчитана
+        });
+        //order.calculateTotalAmount(); // Пересчет суммы заказа перед сохранением
+        return orderRepository.save(order);
     }
 }
 

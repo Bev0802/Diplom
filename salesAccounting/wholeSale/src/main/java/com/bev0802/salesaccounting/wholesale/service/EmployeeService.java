@@ -42,7 +42,6 @@ public class EmployeeService {
 
     public Employee getEmployeeById(Long employeeId, Long organizationId) {
         // Строим URL запроса, включая идентификатор сотрудника
-
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId;
 
         // Отправляем GET запрос к productDB для получения сотрудника
