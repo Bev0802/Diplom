@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  eurekaserver:
+    build: ./eurika-server
+    container_name: eurekaserver
+    ports:
+      - "8761:8761"
+    networks:
+      - mynetwork
+
+  productdb:
+    build: ./productDB
+    container_name: productdb
+    depends_on:
+      - postgresdb
+      - eurekaserver
+    ports:
+      - "8080:8080"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgresdb:5432/productsdb
+      - SPRING_DATASOURCE_USERNAME=root
+      - SPRING_DATASOURCE_PASSWORD=root
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eurekaserver:8761/eureka/
+    networks:
+      - mynetwork
+
+  postgresdb:
+    image: postgres:latest
+    container_name: postgresdb
+    environment:
+      - POSTGRES_DB=productsdb
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
+  wholesale:
+    build: ./wholeSale
+    container_name: wholesale
+    depends_on:
+      - productdb
+      - eurekaserver
+    ports:
+      - "8081:8081"
+    environment:
+      - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eurekaserver:8761/eureka/
+      - PRODUCTDB_SERVICE_URL=http://productdb:8080
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+
+volumes:
+  postgres_data:
