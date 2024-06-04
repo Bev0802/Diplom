@@ -84,7 +84,9 @@ public class EmployeeController {
     }
 
     @GetMapping("{employeeId}/startWork")
-    public String startWork(@PathVariable("organizationId") Long organizationId, @PathVariable("employeeId") Long employeeId, HttpSession session, Model model) {
+    public String startWork(@PathVariable("organizationId") Long organizationId,
+                            @PathVariable("employeeId") Long employeeId,
+                            HttpSession session, Model model) {
         // Подготавливаем данные для отображения страницы приветствия сотрудника
         //Employee employee = (Employee) session.getAttribute("employee"); // Получаем сотрудника из сессии
         //Long employeeId = (Long) session.getAttribute("employeeId"); // Получаем ID сотрудника из сессии

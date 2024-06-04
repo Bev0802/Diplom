@@ -17,8 +17,9 @@
     <div class="row">
         <div class="col-md-8">
             <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
-            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/new (organizationId=${organizationId}, employeeId=${employeeId})}" class="button mt-3" title="Посмотреть Заказ">Заказ</a>
-            <div th:each="product : ${products}" class="mt-4">
+            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/startWork(organizationId=${organizationId}, employeeId=${employeeId})}" class="button form-detail-button" >Главная страница</a>
+            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/orders/newList (organizationId=${organizationId}, employeeId=${employeeId})}" class="button mt-3" title="Посмотреть Заказы, которые еще не подтвердили">Корзина</a>
+            <div th:each="product : ${products}" class="product-item">
                 <div class="row">
                     <div class="col-md-4">
                         <img class="img-fluid" src="/static/img/various.png" th:src="@{/img/various.png}" alt="Фото товара">
@@ -26,10 +27,16 @@
                     <div class="col-md-8">
                         <h5 class="card-title" th:text="${product.name}">Наименование товара</h5>
                         <p class="card-text" th:text="${product.description}">Описание товара</p>
-                        <p class="card-text"><small class="text-muted" th:text="${product.organization != null ? product.organization.name : 'Не указана'}">Наименование организации</small></p>
+                        <p class="card-text"th:text="${product.getOrganizationName()}">Наименование продавца</p>
                         <p class="card-text"><b th:text="${product.quantity} + ' шт.'">Количество</b></p>
                         <p class="card-text"><b th:text="${product.price} + ' руб.'">Цена</b></p>
-                        <a href="#" class="button">Добавить в заказ</a>
+                        <form th:action="@{/organization/{organizationId}/employee/{employeeId}/orders/addProductToOrder (organizationId=${organizationId}, employeeId=${employeeId})}" method="post">
+                            <input type="hidden" name="productId" th:value="${product.id}">
+                            <div class="input-group mb-3">
+                                <input type="number" name="quantity" class="form-control" placeholder="Количество" min="1" max="${product.quantity}" required>
+                                <button type="submit" class="button">Добавить в заказ</button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             </div>

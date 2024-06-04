@@ -28,18 +28,25 @@
                         <form th:action="@{/login}" method="post">
                             <div class="mb-3">
                                 <label for="inn" class="form-label">ИНН</label>
-                                <input type="text" class="form-control" id="inn" name="inn" value=123456789012 required>
-                            </div>
-                            <div class="mb-3">
-                                <label for="password" class="form-label">Пароль</label>
-                                <input type="password" class="form-control" id="password" name="password" value="securePassword" required>
-                            </div>
-                            <button type="submit" class="button">Вход</button>
-                            <a class="button" th:href="@{/register}">Регистрация</a>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </body>
+<!--                                <input type="text" class="form-control" id="inn" name="inn" value=123456789012 required>-->
+                                <!--На период разработки необходимо удалить создан выпадющий список с одинаковым паролем -->
+                               <select name="inn" id="inn" class="form-control">
+                                   <option value="123456789012">ООО "Металл-Инструмент"</option>
+                                   <option value="987654321098">ЗАО "Сладкий рай"</option>
+                                   <option value="183217245685">ООО "Теремок"</option>
+                                   <option value="121098765432">ООО "Мир Инструмента"</option>
+                                   <option value="custom" type="text" class="form-control">Другой (введите свой ИНН)</option>
+                               </select><br>
+                           </div>
+                           <div class="mb-3">
+                               <label for="password" class="form-label">Пароль</label>
+                               <input type="password" class="form-control" id="password" name="password" value="securePassword" required>                            </div>
+                           <button type="submit" class="button">Вход</button>
+                           <a class="button" th:href="@{/register}">Регистрация</a>
+                       </form>
+                   </div>
+               </div>
+           </div>
+       </div>
+   </body>
 </html>

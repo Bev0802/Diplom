@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Arrays;
 import java.util.List;
@@ -56,8 +57,8 @@ public class OrderService {
      * @param employeeId     идентификатор сотрудника
      * @return созданный заказ
      */
-    public Order createOrder(Order order, Long organizationId, Long employeeId) {
-        String url = productDBServiceUrl + organizationId + "/employee/" + employeeId + "/orders/newOrder";
+    public Order createOrder(Order order, Long organizationId, Long employeeId, Long productId, BigDecimal quantity) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/addProductToOrder/" + productId + "/" + quantity;
         logger.info("URL: " + url);
         return restTemplate.postForObject(url, order, Order.class);
     }
@@ -67,17 +68,14 @@ public class OrderService {
      *
      * @param organizationId идентификатор организации
      * @param employeeId     идентификатор сотрудника
-     * @param orderId        идентификатор заказа
      * @param productId      идентификатор продукта
      * @param quantity       количество
      */
-    public void addProductToOrder(Long organizationId, Long employeeId, Long orderId, Long productId, int quantity) {
-        String url = productDBServiceUrl + organizationId + "/employee/" + employeeId + "/orders/addProduct/" + orderId;
+    public void addProductToOrder(Long organizationId, Long employeeId, Long productId, BigDecimal quantity) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/addProductToOrder/" + productId + "/" + quantity;
         logger.info("URL: " + url);
-        restTemplate.postForObject(url, null, Void.class, productId, quantity);
+        restTemplate.postForObject(url, null, Void.class);
     }
-
-
 
     /**
      * Перевод статусов в строковые значения
@@ -133,7 +131,7 @@ public class OrderService {
      * @return заказ c измененным статусом на pay
      */
 
-    public void payOrder(Long organizationId, Long orderId, Long employeeId) {
+    public void payOrder(Long orderId, Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/pay/" + orderId;
         logger.info("URL: " + url);
         restTemplate.postForObject(url, null, Order.class);
@@ -147,7 +145,7 @@ public class OrderService {
      * @return заказ c измененным статусом на shipped
      */
     public void shipOrder(Long orderId, Long organizationId, Long employeeId) {
-        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/ships/" + orderId;
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/ship/" + orderId;
         logger.info("URL: " + url);
         restTemplate.postForObject(url, null, Order.class);
     }
@@ -220,6 +218,21 @@ public class OrderService {
             Order[] orders = restTemplate.getForObject(url, Order[].class);
             return Arrays.asList(orders);
         } catch (RestClientException e) {
+            logger.error("Ошибка при извлечении ответа из службы ProductDB.", e);
+            throw e;
+        } catch (Exception e) {
+            logger.error("Ошибка при анализе ответа JSON от службы ProductDB.", e);
+            throw new RuntimeException("Ошибка при анализе ответа JSON", e);
+        }
+    }
+    public List<Order> findOrdersByBuyerIdExcludingNew(Long organizationId, Long employeeId) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/buyerList";
+        logger.info("URL: {}", url);
+
+        try {
+            Order[] orders = restTemplate.getForObject(url, Order[].class);
+            return Arrays.asList(orders);
+        } catch (RestClientException e) {
             logger.error("Error while extracting response from productDB service", e);
             throw e;
         } catch (Exception e) {
@@ -227,8 +240,15 @@ public class OrderService {
             throw new RuntimeException("Error while parsing JSON response", e);
         }
     }
-    public List<Order> findOrdersByBuyerIdExcludingNew(Long organizationId, Long employeeId) {
-        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/buyerList";
+
+    /**
+     * Получение списка новых заказов по ID покупателя
+     * @param organizationId
+     * @param employeeId
+     * @return
+     */
+    public List<Order> findNewOrdersByBuyerId(Long organizationId, Long employeeId) {
+        String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/newList";
         logger.info("URL: {}", url);
 
         try {
@@ -281,6 +301,10 @@ public class OrderService {
             assert orders != null;
             return List.of(orders);
    }
+
+
+
+
 //#endregion
 
 }

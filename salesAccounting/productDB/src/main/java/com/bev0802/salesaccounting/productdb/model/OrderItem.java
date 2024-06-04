@@ -1,11 +1,17 @@
 package com.bev0802.salesaccounting.productdb.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-@Data
 @Entity
+@Table(name = "order_items")
+@Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class OrderItem {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -14,9 +20,9 @@ public class OrderItem {
     /**
      * Ссылка на заказ
      * */
-    @ManyToOne
-    @JoinColumn(name = "order_id")
-    private Order order;
+    @JoinColumn(name = "order_id", nullable = false)
+    @JsonBackReference
+    private Long orderId;
 
     /**
      * Ссылка на товар
@@ -37,7 +43,7 @@ public class OrderItem {
 
 
     /**
-    * Сумма товара вычиляемая из количества и цены
+    * Сумма товара вычисляемая из количества и цены
     */
     private BigDecimal amount;
 

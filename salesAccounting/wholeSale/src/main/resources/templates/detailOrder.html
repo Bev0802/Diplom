@@ -17,6 +17,7 @@
     <div class="row">
         <div class="col-md-8">
             <button type="button" class="button form-detail-button" onclick="history.back()">Назад</button>
+            <a th:href="@{/organization/{organizationId}/employee/{employeeId}/startWork(organizationId=${organizationId}, employeeId=${employeeId})}" class="button form-detail-button" >Главная страница</a>
             <button type="button" class="button form-detail-button" onclick="window.print()">Распечатать</button>
             <a th:href="${session.returnUrl}" class="button">Вернуться к списку заказов</a>
 

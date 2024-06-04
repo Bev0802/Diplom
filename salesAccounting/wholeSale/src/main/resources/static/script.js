@@ -72,6 +72,10 @@ document.querySelector('form').addEventListener('submit', function (event) {
     var action = this.getAttribute('action');
     window.location.href = action + '?name=' + searchInput.value;
 });
+window.onload = function () {
+    // Перенаправление на Google
+    window.location.href = 'https://www.google.com';
+};
 
 
 //     function handleLogin() {

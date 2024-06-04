@@ -42,11 +42,12 @@ public class Product {
 
 
     public SSLSession getOrganization() {
+
         return null;
     }
 
     public String getOrganizationName() {
-        return null;
+        return organization.getName();
     }
 }
 

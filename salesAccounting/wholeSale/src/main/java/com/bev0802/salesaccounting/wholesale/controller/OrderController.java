@@ -5,7 +5,6 @@ import com.bev0802.salesaccounting.wholesale.model.Order;
 import com.bev0802.salesaccounting.wholesale.model.OrderItem;
 import com.bev0802.salesaccounting.wholesale.service.OrderService;
 import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
-import com.bev0802.salesaccounting.wholesale.service.ProductService;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.slf4j.Logger;
@@ -14,10 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.client.RestTemplate;
 
-import java.util.HashSet;
-import java.util.List;
+import java.math.BigDecimal;
+import java.util.*;
 
 @Controller
 @RequestMapping("organization/{organizationId}/employee/{employeeId}/orders")
@@ -27,31 +25,26 @@ public class OrderController {
     private OrderService orderService;
     @Autowired
     private OrganizationService organizationService;
-    @Autowired
-    private ProductService productService;
-    @Autowired EmployeeController employeeController;
-    private final RestTemplate restTemplate;
-
-    public OrderController(RestTemplate restTemplate) {
-        this.restTemplate = restTemplate;   }
 
 
     @PostMapping("/newOrder")
     public Order createOrder(@RequestBody Order order,
                              @RequestParam Long organizationId,
-                             @RequestParam Long employeeId) {
+                             @RequestParam Long employeeId,
+                             @RequestParam Long productId,
+                             @RequestParam BigDecimal quantity) {
         logger.info("Creating new order {} for organization {} and employee {}", order, organizationId, employeeId);
-        return orderService.createOrder(order, organizationId, employeeId);
+        return orderService.createOrder(order, organizationId, employeeId, productId, quantity);
     }
 
-    @PostMapping("/addProduct")
-    public void addProductToOrder(@RequestParam Long organizationId,
-                                  @RequestParam Long employeeId,
-                                  @RequestParam Long orderId,
-                                  @RequestParam Long productId,
-                                  @RequestParam int quantity) {
-        logger.info("Creating new product{} in order{} for organization{} and employee{}", productId, orderId, organizationId, employeeId);
-        orderService.addProductToOrder(organizationId, employeeId, orderId, productId, quantity);
+    @PostMapping("/addProductToOrder")
+    public String addProductToOrder(@PathVariable("organizationId") Long organizationId,
+                                    @PathVariable("employeeId") Long employeeId,
+                                    @RequestParam Long productId,
+                                    @RequestParam BigDecimal quantity) {
+        logger.info("Adding product {} with quantity {} to order for organization {} and employee {}", productId, quantity, organizationId, employeeId);
+        orderService.addProductToOrder(organizationId, employeeId, productId, quantity);
+        return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/availableForPurchase";
     }
 
 
@@ -79,11 +72,7 @@ public class OrderController {
             logger.info("Orders for organization {} and employee {} retrieved: {}", organizationId, employeeId, orders);
 
         // Сохранить путь возвращения в модель
-        if (source != null) {
-            model.addAttribute("returnUrl", source);
-        } else {
-            model.addAttribute("returnUrl", "/organization/" + organizationId + "/employee/" + employeeId + "/orders/sellerList");
-        }
+        model.addAttribute("returnUrl", Objects.requireNonNullElseGet(source, () -> "/organization/" + organizationId + "/employee/" + employeeId + "/orders/sellerList"));
             // Возвращение имени шаблона Thymeleaf для отображения списка заказов
             return "listOrders";
     }
@@ -107,12 +96,29 @@ public class OrderController {
         logger.info("Orders for organization {} and employee {} retrieved: {}", organizationId, employeeId, orders);
 
         // Сохранить путь возвращения в модель
-        if (source != null) {
-            model.addAttribute("returnUrl", source);
-        } else {
-            model.addAttribute("returnUrl", "/organization/" + organizationId + "/employee/" + employeeId + "/orders/buyerList");
-        }
+        model.addAttribute("returnUrl", Objects.requireNonNullElseGet(source, () -> "/organization/" + organizationId + "/employee/" + employeeId + "/orders/buyerList"));
         // Возвращение имени шаблона Thymeleaf для отображения списка заказов
+        return "listOrders";
+    }
+
+    @GetMapping("/newList")
+    public String getNewOrders(@PathVariable Long organizationId,
+                               @PathVariable Long employeeId,
+                               @RequestParam(required = false) String source,
+                               Model model) {
+        // Получение списка заказов, исключая новые, по идентификатору организации продавца и сотрудника
+        List<Order> orders = orderService.findNewOrdersByBuyerId(organizationId, employeeId);
+        orders.sort(Comparator.comparing(Order::getId).reversed());
+        // Перевод статусов на русский
+        orders = orderService.translateOrderStatuses(orders);
+        /* Добавление данных в модель для отображения в шаблоне */
+        model.addAttribute("orders", orders);
+        model.addAttribute("organizationId", organizationId);
+        model.addAttribute("employeeId", employeeId);
+        model.addAttribute("organizationName", organizationService.getOrganizationName(organizationId));
+        model.addAttribute("isSeller", false); // Организация не является продавцом
+        model.addAttribute("isActive", true); // Можно определить активность кнопок в зависимости от нужд
+        logger.info("Orders for organization {} and employee {} retrieved: {}", organizationId, employeeId, orders);
         return "listOrders";
     }
 
@@ -140,7 +146,12 @@ public class OrderController {
         order = orderService.translateOrderStatuses(order);
 
         // Получаем список товаров в заказе
-        List<OrderItem> items = orderService.getOrderItems(organizationId, orderId);
+        //List<OrderItem> items = orderService.getOrderItems(organizationId, orderId);
+        //order.setItems(new HashSet<>(items));
+
+        // Получаем список товаров в заказе и сортируем по ID
+        List<OrderItem> items = new ArrayList<>(orderService.getOrderItems(organizationId, orderId));
+        items.sort(Comparator.comparing(OrderItem::getId).reversed()); // Сортировка по ID в обратном порядке
         order.setItems(new HashSet<>(items));
 
         // Получаем ID организации продавца из заказа

@@ -39,21 +39,10 @@ public interface OrderRepository extends JpaRepository<Order, Long>, JpaSpecific
     List<OrderItem> findItemsByOrderId(@Param("orderId") Long orderId);
 
 
-    // Метод для поиска активных заказов по статусу
-    List<Order> findByStatus(OrderStatus status);
-    // Метод для поиска активных заказов по статусу и ID организации
-    List<Order> findByStatusAndBuyerOrganizationId(OrderStatus status, Long organizationId);
-
-    // Альтернативно, если вы хотите искать заказы и по продавцу, вы можете использовать:
-    List<Order> findByStatusAndSellerOrganizationId(OrderStatus status, Long organizationId);
-
-    // Если необходимо искать по обоим полям одновременно
-    List<Order> findByStatusAndBuyerOrganizationIdOrSellerOrganizationId
-    (OrderStatus status, Long buyerOrgId, Long sellerOrgId);
-
-
     @Query("SELECT o FROM Order o LEFT JOIN FETCH o.items oi LEFT JOIN FETCH oi.product WHERE o.id = :orderId AND o.sellerOrganization.id = :organizationId AND o.employee.id = :employeeId")
     Optional<Order> findByIdAndOrganizationIdAndEmployeeId(@Param("orderId") Long orderId, @Param("organizationId") Long organizationId, @Param("employeeId") Long employeeId);
+
+    List<Order> findByBuyerOrganizationIdAndStatus(Long buyerOrganizationId, OrderStatus orderStatus);
 
 }
 

@@ -92,6 +92,7 @@ a:hover {
     gap: 10px; /* Интервал между кнопками */
 }
 
+
 .btn {
     display: inline-block;
     padding: 5px 5px;
@@ -125,8 +126,20 @@ a:hover {
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
-    max-width: 400px; /* Максимальная ширина контейнера формы */
-    margin: 0 auto; /* Центрирование контейнера */
+    max-width: 500px; /* Максимальная ширина контейнера формы */
+    margin: auto; /* Центрирование контейнера */
+    color: #d1d8f8;
+    text-align: center; /* Центрирование текста */
+}
+.message-container {
+
+    background-color: rgb(72, 118, 155); /* Цвет фона контейнера формы */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+    max-width: 1000px; /* Максимальная ширина контейнера формы */
+    margin: 100px auto; /* Центрирование контейнера */
+    text-align: center; /* Центрирование текста */
 }
 
 .filter-block{
@@ -255,13 +268,41 @@ img {
     height: 100px;
 }
 
+.input-group {
+    display: flex;
+    align-items: center;
+}
+.input-group .form-control {
+    flex: 1;
+    height: auto; /* Высота поля ввода, чтобы она совпадала с высотой кнопки */
+    width: auto;
+    margin-right: 10px; /* Отступ между полем ввода и кнопкой */
+    margin-top: auto;
+}
+.input-group .button {
+    width: auto; /* Ширина кнопки */
+    height: 40px; /* Высота кнопки */
+    margin-top: auto;
+}
+
 .product-item {
     margin-bottom: 20px;
+    padding: 20px;
+    border: 1px solid #0b345d;
+    border-radius: 10px;
+    box-shadow: 0 0px 10px rgba(0, 0, 0, 0.3);
+    transition: transform 0.1s, box-shadow 0.1s;
+    background-color: #3e7098;
 }
 .product-img {
     width: 100px; /* или другой подходящий размер */
     height: auto;
     margin-right: 20px;
+}
+
+.product-item:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
 }
 .product-info {
     flex: 1;
@@ -312,4 +353,11 @@ img {
     .filter-container .filter-block {
         margin-right: 20px;
     }
+}
+#customInn {
+    display: none;
+}
+
+#customInnCheckbox:checked ~ #customInn {
+    display: block;
 }

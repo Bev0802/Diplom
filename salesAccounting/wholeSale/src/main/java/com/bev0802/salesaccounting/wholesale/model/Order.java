@@ -8,10 +8,10 @@ import lombok.NoArgsConstructor;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.Set;
+@Data // Lombok аннотация для генерации геттеров, сеттеров, toString, equals и hashCode методов.
+@NoArgsConstructor // Lombok аннотация для генерации конструктора без аргументов.
+@AllArgsConstructor // Lo
 
-@Data
-@AllArgsConstructor
-@NoArgsConstructor
 public class Order {
 
     private Long id;

@@ -1,12 +1,13 @@
 package com.bev0802.salesaccounting.productdb.service;
 
-import com.bev0802.salesaccounting.exception.OrderNotFoundException;
 import com.bev0802.salesaccounting.productdb.model.*;
 import com.bev0802.salesaccounting.productdb.model.enumerator.OrderStatus;
 import com.bev0802.salesaccounting.productdb.repository.OrderItemRepository;
 import com.bev0802.salesaccounting.productdb.repository.OrderRepository;
 import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
 import com.bev0802.salesaccounting.productdb.repository.specification.OrderSpecification;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.domain.Specification;
@@ -17,6 +18,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Сервис для управления заказами в системе учета товаров.
@@ -25,6 +27,8 @@ import java.util.List;
  */
 @Service
 public class OrderService {
+
+    private static final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     @Autowired
     private OrderRepository orderRepository;
@@ -40,66 +44,134 @@ public class OrderService {
     private EmployeeService employeeService;
 
 
+
     /**
      * Создает новый заказ в системе.
      * Генерирует уникальный номер заказа на основе идентификаторов организаций и сотрудника.
      *
-     * @param order Объект заказа для сохранения.
-     * @param organizationId Идентификатор организации покупателя.
-     * @param employeeId Идентификатор сотрудника.
+     * @param productId      Идентификатор продукта.
+     * @param buyerOrganizationId Идентификатор организации покупателя.
+     * @param employeeId     Идентификатор сотрудника.
+     * @param quantity       Количество единиц продукта.
+     * @param sellerOrganization Объект продавец
+     *
      * @return Сохраненный заказ с присвоенным уникальным номером.
      */
+
     @Transactional
-    public Order createOrder(Order order, Long organizationId, Long employeeId) {
+    public Order createOrder(Long buyerOrganizationId, Long employeeId, Long productId, BigDecimal quantity, Organization sellerOrganization) {
+        Order order = new Order();
+
         // Получаем организацию и сотрудника по их ID, выбрасываем исключение, если не найдены
-        Organization buyerOrganization = organizationService.findById(organizationId)
-                .orElseThrow(() -> new RuntimeException("Organization not found with ID: " + organizationId));
+        Organization buyerOrganization = organizationService.findById(buyerOrganizationId)
+                .orElseThrow(() -> new RuntimeException("Organization not found with ID: " + buyerOrganizationId));
         Employee employee = employeeService.findById(employeeId)
                 .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
 
         // Устанавливаем покупателя и сотрудника, создавшего заказ
         order.setBuyerOrganization(buyerOrganization);
+        order.setSellerOrganization(sellerOrganization);
         order.setEmployee(employee);
         order.setStatus(OrderStatus.NEW);  // Установка статуса нового заказа
         order.setOrderDate(LocalDateTime.now()); // Установка текущей даты
+        order.setStatusChangeDate(LocalDateTime.now());
 
         // Генерация уникального номера заказа
-        String orderNumber = generateOrderNumber(order);
+        String orderNumber = generateOrderNumber(buyerOrganizationId, sellerOrganization.getId());
         order.setOrderNumber(orderNumber);
 
-        // Расчет и установка общей стоимости заказа
-        BigDecimal totalAmount = BigDecimal.ZERO;
-        for (OrderItem item : order.getItems()) {
-            Product product = productService.getProductById(item.getProductId());
-            if (product == null) {
-                throw new RuntimeException("Product not found with ID: " + item.getProductId());
-            }
-            item.setPrice(product.getPrice());  // Установка цены из продукта
-            BigDecimal itemTotal = item.getPrice().multiply(item.getQuantity());
-            totalAmount = totalAmount.add(itemTotal);
-        }
+        // Сохранение заказа в базе данных для получения ID
+        order = orderRepository.save(order);
+
+        // Создание нового элемента заказа
+        OrderItem orderItem = new OrderItem();
+        Product product = productService.getProductById(productId);
+        orderItem.setProduct(product);
+        orderItem.setQuantity(quantity);
+        orderItem.setPrice(product.getPrice());
+        BigDecimal itemTotal = product.getPrice().multiply(quantity);
+        orderItem.setAmount(itemTotal);
+
+        // Устанавливаем заказ для OrderItem
+        long orderId = order.getId();
+        orderItem.setOrderId(orderId);
+
+        // Добавление нового элемента в заказ
+        Set<OrderItem> items = new HashSet<>();
+        items.add(orderItem);
+        order.setItems(items);
+
+        // Расчет общей стоимости заказа
+        BigDecimal totalAmount = items.stream()
+                .map(OrderItem::getAmount)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
         order.setTotalAmount(totalAmount);
 
-        // Сохранение заказа в базе данных
-        return orderRepository.save(order);
+        // Обновление заказа с элементами
+        order = orderRepository.save(order);
+
+        logger.info("ЗАКАЗ после СОХРАНЕНИЯ: {}", order);
+        logger.info("ТОВАР после СОХРАНЕНИЯ: {}", order.getItems());
+        for (OrderItem item : order.getItems()) {
+            logger.info("Товар: {}, Количество: {}, Цена: {}, Сумма: {}",
+                    item.getProduct().getName(),
+                    item.getQuantity(),
+                    item.getPrice(),
+                    item.getAmount());
+        }
+        return order;
     }
 
     /**
      * Генерирует уникальный номер заказа.
-     * Формат номера: "ORD_{buyerId}_{sellerId}_{employeeId}/{sequenceNumber}".
+     * Формат номера: "s{buyerId}_b{sellerId}/{sequenceNumber}".
      *
-     * @param order Объект заказа, для которого необходимо сгенерировать номер.
      * @return Строка, представляющая уникальный номер заказа.
      */
-    private String generateOrderNumber(Order order) {
-        String prefix = "ORD_" + order.getBuyerOrganization().getId() + "_"
-                + order.getSellerOrganization().getId() + "_"
-                + order.getEmployee().getId();
-
+    private String generateOrderNumber(Long buyerOrganizationId, Long sellerOrganizationId) {
+        String prefix = "b" +  buyerOrganizationId + "_s" + sellerOrganizationId;
         int nextNumber = orderRepository.findNextNumberForPrefix(prefix);
-
         return prefix + "/" + nextNumber;
     }
+
+    /**
+     * Добавляет продукт в существующий заказ.
+     * @param order
+     * @param product
+     * @param quantity
+     * @return
+     */
+    @Transactional
+    public Order addItemToOrder(Order order, Product product, BigDecimal quantity) {
+        // Получаем список элементов заказа
+        Set<OrderItem> items = order.getItems();
+        // Сохраняем текущую общую сумму заказа
+        BigDecimal previousTotalAmount = order.getTotalAmount();
+
+        // Создание нового элемента заказа
+        OrderItem orderItem = new OrderItem();
+        orderItem.setProduct(product);
+        orderItem.setQuantity(quantity);
+        orderItem.setPrice(product.getPrice());
+        BigDecimal itemTotal = product.getPrice().multiply(quantity);
+        orderItem.setAmount(itemTotal);
+        // Привязываем элемент заказа к заказу
+        orderItem.setOrderId(order.getId()); // Установка orderId
+
+        // Добавляем элемент в заказ и пересчитываем общую стоимость
+        items.add(orderItem);
+
+        // Пересчитываем общую стоимость заказа, добавляя к предыдущей сумме новую сумму товара
+        BigDecimal totalAmount = previousTotalAmount.add(itemTotal);
+        order.setTotalAmount(totalAmount);
+
+        // Сохранение заказа в базе данных
+        orderRepository.save(order);
+
+        return order;
+    }
+
+
     /**
      * Находит заказ по его идентификатору.
      *
@@ -111,11 +183,6 @@ public class OrderService {
         return orderRepository.findById(id).orElseThrow(() -> new RuntimeException("Order not found"));
     }
 
-    public Order findOrderById(Long orderId, Long organizationId, Long employeeId) {
-        // Логика для поиска заказа по идентификатору
-        return orderRepository.findByIdAndOrganizationIdAndEmployeeId(orderId, organizationId, employeeId)
-                .orElseThrow(() -> new OrderNotFoundException("Order not found"));
-    }
     /**
      * Возвращает список всех заказов в системе.
      *
@@ -185,10 +252,11 @@ public class OrderService {
         if (order.getStatus() == OrderStatus.NEW) {
             order.setStatus(OrderStatus.CONFIRMED);
             order.setStatusChangeDate(LocalDateTime.now()); // Обновление времени изменения статуса
-
+            //todo: реализовать резервирование товара
             order.getItems().forEach(item -> {
                 int quantity = item.getQuantity().intValueExact(); // Безопасное преобразование, бросает ArithmeticException, если есть дробная часть.
                 productService.reserveProduct(item.getProduct().getId(), quantity);
+                logger.info("Product: " + item.getProduct());
             });
         }
         return orderRepository.save(order);
@@ -204,10 +272,15 @@ public class OrderService {
         Order order = orderRepository.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found with ID: " + orderId));
 
-        if (order.getStatus() != OrderStatus.PAID) {
+        if (order.getStatus() == OrderStatus.CONFIRMED || order.getStatus() == OrderStatus.NEW) {
             order.setStatus(OrderStatus.PAID);
             order.setStatusChangeDate(LocalDateTime.now());
+        } else {
+            throw new IllegalStateException("Заказ должен быть заказ уже оплачен");
         }
+        //todo: реализовать оплату
+        //todo: реализовать создание документа оплаты
+        //todo: реализовать резервирование товара
         return orderRepository.save(order);
     }
 
@@ -226,7 +299,7 @@ public class OrderService {
             order.setStatus(OrderStatus.SHIPPED);
             order.setStatusChangeDate(LocalDateTime.now());
         }else {
-            throw new IllegalStateException("Order must be PAID before it can be SHIPPED");
+            throw new IllegalStateException("Заказ должен быть ОПЛАТЕН, прежде чем его можно будет ОТПРАВИТЬ");
         }
         return orderRepository.save(order);
     }
@@ -258,80 +331,6 @@ public class OrderService {
     }
     //#endregion
 
-    /**
-     * Добавляет продукт в заказ.
-     *
-     * @param productId Идентификатор продукта, который нужно добавить.
-     * @param id
-     * @param quantity  Количество продукта, которое нужно добавить.
-     * @return Обновленный заказ.
-     */
-    @Transactional
-    public Order addProductToOrder(Long productId, Long id, BigDecimal quantity, Long organizationId, Long employeeId) {
-        Product product = productService.getProductById(productId);
-
-        // Проверяем, есть ли активный заказ для организации покупателя с продавцом, являющимся организацией продукта
-        List<Order> activeOrders = orderRepository.findByStatusAndBuyerOrganizationIdOrSellerOrganizationId(
-                OrderStatus.NEW, organizationId, product.getOrganization().getId());
-
-        // Фильтруем заказы, где продавец совпадает с организацией продукта
-        Order activeOrder = activeOrders.stream()
-                .filter(order -> order.getSellerOrganization().getId().equals(product.getOrganization().getId()))
-                .findFirst()
-                .orElse(null);
-
-        if (activeOrder != null) {
-            // Если существует активный заказ с продавцом, равным организации продукта
-            return addItemToExistingOrder(activeOrder, product, quantity);
-        } else {
-            // Создаём новый заказ, если активный заказ отсутствует или продавцы не совпадают
-            return createNewOrderWithProduct(product, quantity, organizationId, employeeId);
-        }
-    }
-
-    private Order addItemToExistingOrder(Order order, Product product, BigDecimal quantity) {
-        OrderItem orderItem = new OrderItem();
-        orderItem.setOrder(order);
-        orderItem.setProduct(product);
-        orderItem.setQuantity(quantity);
-        orderItem.setPrice(product.getPrice()); // Установите цену на момент покупки
-
-        // Добавляем товарную позицию в заказ
-        order.getItems().add(orderItem);
-
-        // Сохраняем изменения в заказе
-        return orderRepository.save(order);
-    }
-
-    private Order createNewOrderWithProduct(Product product, BigDecimal quantity, Long organizationId, Long employeeId) {
-        Order order = new Order();
-
-        // Используйте orElseThrow для получения объекта Organization и Employee из Optional
-        Organization buyerOrganization = organizationService.findById(organizationId)
-                .orElseThrow(() -> new RuntimeException("Organization not found with ID: " + organizationId));
-        Employee employee = employeeService.findById(employeeId)
-                .orElseThrow(() -> new RuntimeException("Employee not found with ID: " + employeeId));
-
-        order.setBuyerOrganization(buyerOrganization);
-        order.setSellerOrganization(product.getOrganization());
-        order.setEmployee(employee);
-        order.setStatus(OrderStatus.NEW);
-        order.setOrderDate(LocalDateTime.now());
-
-        OrderItem orderItem = new OrderItem();
-        orderItem.setProduct(product);
-        orderItem.setQuantity(quantity);
-        orderItem.setPrice(product.getPrice());
-
-        // Создание и добавление OrderItem в заказ
-        if (order.getItems() == null) {
-            order.setItems(new HashSet<>());
-        }
-        order.getItems().add(orderItem);
-
-        // Сохраняем новый заказ
-        return orderRepository.save(order);
-    }
 
 
     /**
@@ -358,7 +357,10 @@ public class OrderService {
      * @param endDate Конечная дата периода.
      * @return Список отфильтрованных заказов.
      */
-    public List<Order> getFilteredOrders(Long sellerId, Long buyerOrganizationId, OrderStatus status, LocalDateTime startDate, LocalDateTime endDate) {
+    public List<Order> getFilteredOrders(Long sellerId,
+                                         Long buyerOrganizationId,
+                                         OrderStatus status, LocalDateTime startDate,
+                                         LocalDateTime endDate) {
         Specification<Order> spec = OrderSpecification.filterByCriteria(sellerId, buyerOrganizationId, status, startDate, endDate);
         return orderRepository.findAll(spec, Sort.by("orderDate").descending());
     }
@@ -403,18 +405,14 @@ public class OrderService {
     }
 
     public List<OrderItem> findOrderItemsByOrderId(Long orderId) {
-        // Пример вызова метода репозитория, который нужно реализовать
-        return orderRepository.findItemsByOrderId(orderId);
+        List<OrderItem> items = orderRepository.findItemsByOrderId(orderId);
+        logger.info("OrderItems for Order ID {}: {}", orderId, items);
+        return items;
     }
 
-    public Order saveOrder(Order order) {
-        // Принудительная загрузка связанных элементов перед сохранением
-        order.getItems().forEach(orderItem -> {
-            System.out.println(orderItem);
-            orderItem.calculateAmount(); // Убедитесь, что сумма элемента заказа правильно рассчитана
-        });
-        //order.calculateTotalAmount(); // Пересчет суммы заказа перед сохранением
-        return orderRepository.save(order);
+    public List<Order> findNewOrdersByBuyerId(Long buyerOrganizationId) {
+        return orderRepository.findByBuyerOrganizationIdAndStatus(buyerOrganizationId, OrderStatus.NEW);
+
     }
 }
 

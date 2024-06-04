@@ -3,6 +3,7 @@ package com.bev0802.salesaccounting.productdb.model;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
@@ -28,6 +29,13 @@ public class Product {
     private BigDecimal price;
     private String imageUrl;
 
+    /**
+     * -- GETTER --
+     *  Возвращает Организацию, к которой принадлежит данный продукт.
+     *
+     * @return Организация, к которой принадлежит данный продукт.
+     */
+    @Getter
     @ManyToOne
     @JoinColumn(name = "organization_id")
     private Organization organization;

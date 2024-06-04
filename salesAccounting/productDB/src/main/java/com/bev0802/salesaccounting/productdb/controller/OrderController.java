@@ -1,12 +1,14 @@
 package com.bev0802.salesaccounting.productdb.controller;
 
 
-import com.bev0802.salesaccounting.productdb.model.Document;
-import com.bev0802.salesaccounting.productdb.model.Order;
-import com.bev0802.salesaccounting.productdb.model.OrderItem;
+import com.bev0802.salesaccounting.productdb.model.*;
 import com.bev0802.salesaccounting.productdb.model.enumerator.OrderStatus;
 import com.bev0802.salesaccounting.productdb.service.DocumentService;
 import com.bev0802.salesaccounting.productdb.service.OrderService;
+import com.bev0802.salesaccounting.productdb.service.OrganizationService;
+import com.bev0802.salesaccounting.productdb.service.ProductService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,11 +22,90 @@ import java.util.Map;
 @RequestMapping("/api/organization/{organizationId}/employee/{employeeId}/orders")
 public class OrderController {
 
+    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);
+
     @Autowired
     private OrderService orderService;
     @Autowired
     private DocumentService documentService;
+    @Autowired ProductService productService;
+    @Autowired
+    private OrganizationService organizationService;
 
+
+    /**
+     * Создает новый заказ для организации и для сотрудника которой авторизивался.
+     * @param order Данные заказ(покупку)
+     * @param buyerOrganizationId ID организации
+     * @param employeeId ID сотрудника
+     * @return Созданный заказ.
+     */
+    @PostMapping("/newOrder/{productId}/{quantity}")
+    public ResponseEntity<Order> createOrder(@RequestBody Order order,
+                                             @PathVariable("organizationId") Long buyerOrganizationId,
+                                             @PathVariable("employeeId") Long employeeId,
+                                             @PathVariable("productId") Long productId,
+                                             @PathVariable("quantity") BigDecimal quantity) {
+        // Получение продукта и организации продавца
+        Product product = productService.getProductById(productId);
+        Organization sellerOrganization = product.getOrganization();
+
+        return ResponseEntity.ok(orderService.createOrder(buyerOrganizationId, employeeId, productId, quantity, sellerOrganization));
+    }
+    /**
+     * Добавляет продукт в заказ, если заказа нет создает новый и добавляет туда товар,
+     * а если заказ уже есть добавляет в существующий при этом отбирает заказ по продавцу и владельцу товара.
+     *
+     * @param buyerOrganizationId Идентификатор организации.
+     * @param employeeId Идентификатор сотрудника.
+     * @param productId Идентификатор продукта для добавления.
+     * @param quantity Количество добавляемого продукта.
+     * @return ResponseEntity с обновленным заказом или ошибкой.
+     */
+
+    @PostMapping("/addProductToOrder/{productId}/{quantity}")
+    public ResponseEntity<?> addProductToOrder(
+            @PathVariable("organizationId") Long buyerOrganizationId,
+            @PathVariable("employeeId") Long employeeId,
+            @PathVariable Long productId,
+            @PathVariable BigDecimal quantity) {
+        try {
+            // Логирование полученных данных
+            logger.info("Получен запрос на добавление товара в заказ. Идентификатор организации покупателя: {}, " +
+                            "Идентификатор сотрудника: {}, Идентификатор продукта: {}, Количество: {}",
+                    buyerOrganizationId, employeeId, productId, quantity);
+
+            // Получение продукта и организации продавца
+            Product product = productService.getProductById(productId);
+            Organization sellerOrganization = product.getOrganization();
+
+            // Поиск существующих заказов
+            List<Order> orders = orderService.findNewOrdersByBuyerId(buyerOrganizationId);
+            Order order = orders.stream()
+                    .filter(o -> o.getSellerOrganization().getId().equals(sellerOrganization.getId()))
+                    .findFirst()
+                    .orElseGet(() -> {
+                        logger.info("Существующих заказов от того же продавца не найдено. Создание нового заказа.");
+                        return orderService.createOrder(buyerOrganizationId, employeeId, productId, quantity, sellerOrganization);
+                    });
+
+            if (!orders.contains(order)) {
+                // Новый заказ был создан, товар уже добавлен в него в createOrder методе
+                logger.info("Товар уже добавлен в новый заказ.");
+            } else {
+                // Добавляем товар в существующий заказ
+                logger.info("Добавление товара в существующий заказ.");
+                orderService.addItemToOrder(order, product, quantity);
+            }
+
+            return ResponseEntity.ok(order);
+        } catch (RuntimeException ex) {
+            // Логирование исключения
+            logger.error("Произошла ошибка при обработке запроса: {}", ex.getMessage(), ex);
+            return ResponseEntity.badRequest().body(ex.getMessage());
+        }
+    }
+    //#region получение списков
     /**
      * Получение списка всех заказов системы.
      * @return Список всех заказов.
@@ -35,6 +116,7 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
+    //#region Получение заказов и данных их них
     /**
      * Получение списка заказов(покупок) по ID органиазции которая вошла.
      * @param buyerOrganizationId покупателя.
@@ -58,6 +140,20 @@ public class OrderController {
         List<Order> orders = orderService.findOrdersBySellerIdExcludingNew(sellerOrganizationId);
         return ResponseEntity.ok(orders);
     }
+    /**
+     * Получение списка новых заказов по ID покупателя.
+     * @param buyerOrganizationId ID покупателя.
+     * @return Список новых заказов.
+     */
+
+    @GetMapping("/newList")
+    public ResponseEntity<List<Order>> getNewOrdersByBuyer(@PathVariable("organizationId") Long buyerOrganizationId,
+                                                           @PathVariable("employeeId") Long employeeId) {
+        List<Order> orders = orderService.findNewOrdersByBuyerId(buyerOrganizationId);
+        return ResponseEntity.ok(orders);
+    }
+
+  //#endregion
 
     /**
      * Получение заказа по идентификатору
@@ -69,20 +165,6 @@ public class OrderController {
     @GetMapping("/{order_id}")
     public Order getOrderById(@PathVariable("order_id") Long order_id) {
         return ResponseEntity.ok(orderService.findById(order_id)).getBody();
-    }
-
-    /**
-     * Создает новый заказ для организации и для сотрудника которой авторизивался.
-     * @param order Данные заказ(покупку)
-     * @param buyer_id ID организации
-     * @param employee_id ID сотрудника
-     * @return Созданный заказ.
-     */
-    @PostMapping("/newOrder")
-    public ResponseEntity<Order> createOrder(@RequestBody Order order,
-                                             @PathVariable("organizationId") Long buyer_id,
-                                             @PathVariable("employeeId") Long employee_id) {
-        return ResponseEntity.ok(orderService.createOrder(order, buyer_id, employee_id));
     }
 
 
@@ -97,32 +179,8 @@ public class OrderController {
         List<Order> orders = orderService.findConfirmedOrdersBySellerId(seller_id);
         return ResponseEntity.ok(orders);
     }
+    //#endregion
 
-
-    /**
-     * Добавляет продукт в существующий заказ.
-     *
-     * @param organizationId Идентификатор организации.
-     * @param employeeId Идентификатор сотрудника.
-     * @param orderId Идентификатор заказа, в который добавляется продукт.
-     * @param productId Идентификатор продукта для добавления.
-     * @param quantity Количество добавляемого продукта.
-     * @return ResponseEntity с обновленным заказом или ошибкой.
-     */
-    @PostMapping("/addProduct/{order_id}")
-    public ResponseEntity<?> addProductToOrder(
-            @PathVariable("organizationId") Long organizationId,
-            @PathVariable("employeeId") Long employeeId,
-            @PathVariable("order_id") Long orderId,
-            @RequestParam Long productId,
-            @RequestParam BigDecimal quantity) {
-        try {
-            orderService.addProductToOrder(orderId, productId, quantity, organizationId, employeeId);
-            return ResponseEntity.ok().build();
-        } catch (RuntimeException ex) {
-            return ResponseEntity.badRequest().body(ex.getMessage());
-        }
-    }
     /**
      * Получение списка товарных позиций по идентификатору заказа.
      * @param orderId ID заказа.

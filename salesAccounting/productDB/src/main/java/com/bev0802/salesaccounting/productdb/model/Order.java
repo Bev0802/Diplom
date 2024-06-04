@@ -2,6 +2,7 @@ package com.bev0802.salesaccounting.productdb.model;
 
 import com.bev0802.salesaccounting.productdb.model.enumerator.OrderStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,7 +10,8 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashSet;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Set;
 
 @Entity
@@ -49,8 +51,10 @@ public class Order {
     /**
      * Набор товарных позиций, включенных в заказ.
      */
-    @OneToMany(mappedBy = "order", fetch = FetchType.LAZY, cascade = CascadeType.ALL)
-    private Set<OrderItem> items = new HashSet<>();
+    @OneToMany(mappedBy = "orderId", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
+    private Set<OrderItem> items;
+
 
     /**
      * Статус заказа, определенный перечислением {@link OrderStatus}.
@@ -89,18 +93,9 @@ public class Order {
     @Column
     private String comments;
 
-//    /**
-//     * Вычисляет и устанавливает общую сумму заказа на основе суммы всех товарных позиций перед сохранением или обновлением заказа.
-//     */
-//    @PrePersist
-//    @PreUpdate
-//    public void calculateTotalAmount() {
-//        if (items != null && !items.isEmpty()) {
-//            totalAmount = items.stream()
-//                    .map(OrderItem::getAmount)
-//                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-//        } else {
-//            totalAmount = BigDecimal.ZERO;
-//        }
-//    }
+    @JoinColumn(name = "document_id")
+    private Long document;
+
+    @ElementCollection
+    private Map<Long, BigDecimal> reservedProducts = new HashMap<>();
 }

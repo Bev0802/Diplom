@@ -73,6 +73,7 @@ public class ProductController {
                                                HttpSession session,
                                                Model model) {
         List<Product> products = productService.findProductsNotBelongingToOrganization(organizationId, employeeId);
+
         Organization organization = organizationService.findById(organizationId);
         Employee employee = employeeService.getEmployeeById(employeeId, organizationId);
 
@@ -85,8 +86,10 @@ public class ProductController {
         model.addAttribute("organizationId", organizationId);
         model.addAttribute("employeeId", employeeId);
         model.addAttribute("organizationName", organization.getName());
-    return "market"; // Имя шаблона для отображения списка товаров
+
+        return "market"; // Имя шаблона для отображения списка товаров
     }
+
 
     /**
      * Отображает страницу для создания нового продукта.

@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -193,12 +194,42 @@ public class ProductService {
         return availableForPurchase;
     }
 
+    /**
+     * Резервирование указанного количества товара по его идентификатору.
+     * @param ProductId Идентификатор товара.
+     * @param quantity Количество товара для резервирования.
+     */
     //TODO: доделать метод
-    public void reserveProduct(Long id, int quantity) {
-            
+    @Transactional
+    public void reserveProduct(Long ProductId, int quantity) {
+        Product product = productRepository.findById(ProductId)
+                .orElseThrow(() -> new RuntimeException("Товар не найден по идентификатору: " + ProductId));
+
+        // Проверка, достаточно ли товара на складе для резервирования
+        if (product.getQuantity().compareTo(BigDecimal.valueOf(quantity)) < 0) {
+            throw new RuntimeException("Недостаточное количество товара для резервирования");
+        }
+
+        // Уменьшение количества товара на складе
+        product.setQuantity(product.getQuantity().subtract(BigDecimal.valueOf(quantity)));
+        log.info("Product: " + product);
+        productRepository.save(product);
     }
+
+    /**
+     * Возврат указанного количества ранее зарезервированного товара по его идентификатору.
+     * @param ProductId Идентификатор товара.
+     * @param quantity Количество товара для возврата.
+     */
     //TODO: доделать метод
-    public void returnProduct(Long id, int quantity) {
+    @Transactional
+    public void returnProduct(Long ProductId, int quantity) {
+        Product product = productRepository.findById(ProductId)
+                .orElseThrow(() -> new RuntimeException("Product not found with ID: " + ProductId));
+
+        // Увеличение количества товара на складе при возврате
+        product.setQuantity(product.getQuantity().add(BigDecimal.valueOf(quantity)));
+        productRepository.save(product);
     }
 }
 

@@ -8,6 +8,7 @@
 
     <link rel="stylesheet" href="/static/style.css" th:href="@{/style.css}">
     <script src="/static/script.js" th:src="@{/script.js}"></script>
+    <script src="/static/script.js" th:src="@{/static/script.js}"></script>
 </head>
 <body>
 <div class="container">
@@ -24,13 +25,13 @@
                     <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/availableForPurchase(organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Торговая площадка">Market</a>
                     <a th:href="@{/organization/{organizationId}/employee/{employeeId}/orders/buyerList (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Исходящие Заказы">Заказ поставщику</a>
                     <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/}" class="btn" title="открыть список Платежное поручение">Платежное поручение исходящее</a>
-                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/}" class="btn" title="открыть список Поступления">Поступления товаров</a>
+                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/documents/buyerList (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="открыть список Поступления">Поступления товаров</a>
                 </div>
                 <h5>Продажа</h5>
                 <div class="mb-3">
                     <a th:href="@{/organization/{organizationId}/employee/{employeeId}/orders/sellerList (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="Входящие Заказы">Заказы клиентов</a>
                     <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/}" class="btn" title="открыть список Платежное поручение">Платежное поручение входящее</a>
-                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/product/}" class="btn" title="открыть список Реализаций">Реализация товаров</a>
+                    <a th:href="@{/organization/{organizationId}/employee/{employeeId}/documents/sellerList (organizationId=${organizationId}, employeeId=${employeeId})}" class="btn" title="открыть список Реализаций">Реализация товаров</a>
                 </div>
                 <h5>Справочники</h5>
                 <div>
@@ -44,13 +45,18 @@
                     <a th:href="@{/product/}" class="btn" title="сформировать Отчеты о продажах">Отчет о продажах</a>
                     <a th:href="@{/product/}" class="btn" title="сформировать Отчеты о покупках">Отчет о покупках</a>
                 </div>
+                <dev>
+                <button type="button" class="bottom btn" onclick="window.location.href='/logout/exit'" title="выход из сеанса в форму входа">Выход</button>
+                <button type="button" class="bottom btn" onclick="window.location.href='/logout/close'" title="закрытие приложения">Закрыть</button>
+                </dev>
             </div>
         </div>
             <div class="col-md-8">
                 <div class="form-container">
                     <h3>Добро пожаловать,<br> <span th:text="${EmployeeName}">!</span></h3>
-                    <h4>Для начала работы выберите действие в меню.</h4>
+                    <h4>Для начала работы выберите пункт в меню слева</h4>
                 </div>
+
                 <br>
 
             </div>
