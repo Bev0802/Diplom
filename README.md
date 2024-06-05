@@ -1,24 +1,8 @@
-# <h1>**Дипломная (итоговая) работа**
-
-## по специализации: Разработчик — Веб-разработка на Java
-
-<h1>Теоритическая чать</h1>
-
-[Тема: Разработка микросервисной платформы для управления цепочками поставок 
-на базе Spring Boot и Cloud с интеграцией блокчейн технологий](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
-
-Работа размещена на docs.google.com.
-
-<h1>Практическая часть</h1>
-
-Для демонстрации своих практических навыков полученных в результае обучения мной разработано микропоцессоное веб-приложение [salesAccounting](https://github.com/Bev0802/Diplom/tree/master/salesAccounting):
-
-- на языке программирования: _Java_
-- с ипользованием фраимворка: _Spring Boot_
-
-## Описание проекта
+# SalesAccounting
 
 SalesAccounting - это система для автоматизации процессов купли-продажи, предназначенная для управления продуктами, заказами и организациями. Проект состоит из двух основных частей: серверной части (productDB) и клиентской части (wholeSale).
+
+
 
 ## Структура проекта
 
@@ -171,4 +155,13 @@ docker-compose up --build
 
 - **GlobalExceptionHandler:** Глобальный обработчик исключений.
 - **ServiceException:** Кастомное исключение для сервисного слоя.
+
+## Иллюстрации проекта
+![main.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2Fmain.JPG)
+![Market.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FMarket.JPG)
+![ListOrder.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FListOrder.JPG)
+![DetalOrder.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalOrder.JPG)
+![ListDocs.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FListDocs.JPG)
+![DetalDoc.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalDoc.JPG)
+
 
