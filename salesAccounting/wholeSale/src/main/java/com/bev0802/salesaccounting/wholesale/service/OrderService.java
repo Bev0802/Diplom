@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
@@ -144,11 +145,19 @@ public class OrderService {
      * @param orderId        идентификатор заказа
      * @return заказ c измененным статусом на shipped
      */
-    public void shipOrder(Long orderId, Long organizationId, Long employeeId) {
+    public String shipOrder(Long orderId, Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/ship/" + orderId;
         logger.info("URL: " + url);
-        restTemplate.postForObject(url, null, Order.class);
+        try {
+            restTemplate.postForObject(url, null, Order.class);
+            return null;  // Возвращаем null, если все прошло успешно
+        } catch (HttpClientErrorException e) {
+            return "Заказ должен быть ОПЛАТЕН, прежде чем его можно будет ОТПРАВИТЬ";
+        } catch (Exception e) {
+            return "Произошла ошибка при отправке заказа";
+        }
     }
+
     public void cancelOrder(Long orderId, Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/cancel/" + orderId;
         logger.info("URL: " + url);

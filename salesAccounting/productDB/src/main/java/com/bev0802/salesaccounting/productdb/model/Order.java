@@ -94,7 +94,7 @@ public class Order {
     private String comments;
 
     @JoinColumn(name = "document_id")
-    private Long document;
+    private Long documentId;
 
     @ElementCollection
     private Map<Long, BigDecimal> reservedProducts = new HashMap<>();

@@ -142,7 +142,7 @@ INSERT INTO product (name, description, quantity, price, organization_id) VALUES
                                                                               ('молоток', 'боек 400гр.', 20.00, 500.00, 4);
 
 -- Вставляем демонстрационные данные в таблицу orders
-INSERT INTO orders (buyer_organization_id, seller_organization_id, employee_id, order_number, order_date, status, status_change_date, total_amount, document, comments) VALUES
+INSERT INTO orders (buyer_organization_id, seller_organization_id, employee_id, order_number, order_date, status, status_change_date, total_amount, document_id, comments) VALUES
                                                       (1, 2, 1, 'ORD_1_2_1/1', CURRENT_TIMESTAMP, 'CONFIRMED', CURRENT_TIMESTAMP, 3000.00, null, 'No comments provided'), -- 1
                                                       (2, 1, 5, 'ORD_2_1_4/1', CURRENT_TIMESTAMP, 'CONFIRMED', CURRENT_TIMESTAMP, 2750.00, null, 'No comments provided'), -- 2
                                                       (4, 1, 13, 'ORD_3_4_13/1',  CURRENT_TIMESTAMP, 'CONFIRMED', CURRENT_TIMESTAMP, 135.00, null, 'No comments provided'), -- 3

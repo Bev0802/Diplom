@@ -9,6 +9,20 @@ services:
     networks:
       - mynetwork
 
+  postgresdb:
+    image: postgres:latest
+    container_name: postgresdb
+    environment:
+      - POSTGRES_DB=productsdb
+      - POSTGRES_USER=root
+      - POSTGRES_PASSWORD=root
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - mynetwork
+
   productdb:
     build: ./productDB
     container_name: productdb
@@ -22,20 +36,6 @@ services:
       - SPRING_DATASOURCE_USERNAME=root
       - SPRING_DATASOURCE_PASSWORD=root
       - EUREKA_CLIENT_SERVICE_URL_DEFAULTZONE=http://eurekaserver:8761/eureka/
-    networks:
-      - mynetwork
-
-  postgresdb:
-    image: postgres:latest
-    container_name: postgresdb
-    environment:
-      - POSTGRES_DB=productsdb
-      - POSTGRES_USER=root
-      - POSTGRES_PASSWORD=root
-    ports:
-      - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
     networks:
       - mynetwork
 
