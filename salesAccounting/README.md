@@ -158,4 +158,4 @@ docker-compose up --build
 
 ## Иллюстрации проекта 
 
-![image.png](image.png)
+![main.JPG](https://github.com/Bev0802/Diplom/blob/master/salesAccounting/wholeSale/src/main/resources/static/img/main.JPG)
