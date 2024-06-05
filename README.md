@@ -1,8 +1,24 @@
-# SalesAccounting
+# <h1>**Дипломная (итоговая) работа**
+
+## по специализации: Разработчик — Веб-разработка на Java
+
+<h1>Теоритическая чать</h1>
+
+[Тема: Разработка микросервисной платформы для управления цепочками поставок
+на базе Spring Boot и Cloud с интеграцией блокчейн технологий](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
+
+Работа размещена на docs.google.com.
+
+<h1>Практическая часть</h1>
+
+Для демонстрации своих практических навыков полученных в результате обучения мной разработано микропоцессоное веб-приложение [salesAccounting](https://github.com/Bev0802/Diplom/tree/master/salesAccounting):
+
+- на языке программирования: _Java_
+- с использованием фреймворка: _Spring Boot_
+
+## Описание проекта
 
 SalesAccounting - это система для автоматизации процессов купли-продажи, предназначенная для управления продуктами, заказами и организациями. Проект состоит из двух основных частей: серверной части (productDB) и клиентской части (wholeSale).
-
-
 
 ## Структура проекта
 
@@ -46,6 +62,7 @@ productDB
 │   └── test
 └── pom.xml
 ```
+
 ## 2. wholeSale
 
 Клиентская часть предоставляет веб-интерфейс для взаимодействия с системой.
@@ -86,6 +103,7 @@ wholeSale
 │   └── test
 └── pom.xml
 ```
+
 # Запуск проекта
 
 ### Для запуска проекта в Docker Compose выполните следующие шаги:
@@ -111,6 +129,7 @@ docker-compose up --build
 ## Структура проекта
 
 ### Конфигурация (config)
+
 Файлы конфигурации содержат настройки для работы приложения:
 
 - **AppConfig:** Основная конфигурация приложения.
@@ -118,6 +137,7 @@ docker-compose up --build
 - **BasicAuthInterceptor:** Перехватчик для добавления базовой аутентификации в запросы.
 
 ### Контроллеры (controller)
+
 Контроллеры обрабатывают входящие HTTP-запросы и взаимодействуют с сервисами для выполнения бизнес-логики:
 
 - **DocumentController:** Управление документами.
@@ -131,6 +151,7 @@ docker-compose up --build
 - **ProductController:** Управление продуктами.
 
 ### Модели (model)
+
 Модели представляют сущности приложения и содержат бизнес-логику:
 
 - **Document:** Документ, связанный с заказом.
@@ -142,6 +163,7 @@ docker-compose up --build
 - **Product:** Продукт.
 
 ### Сервисы (service)
+
 Сервисы выполняют бизнес-логику и взаимодействуют с репозиториями для доступа к данным:
 
 - **DocumentService:** Управление документами.
@@ -151,17 +173,17 @@ docker-compose up --build
 - **ProductService:** Управление продуктами.
 
 ### Исключения (exception)
+
 Обработка исключений и ошибок в приложении:
 
 - **GlobalExceptionHandler:** Глобальный обработчик исключений.
 - **ServiceException:** Кастомное исключение для сервисного слоя.
 
 ## Иллюстрации проекта
-![main.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2Fmain.JPG)
-![Market.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FMarket.JPG)
-![ListOrder.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FListOrder.JPG)
-![DetalOrder.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalOrder.JPG)
-![ListDocs.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FListDocs.JPG)
-![DetalDoc.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalDoc.JPG)
 
-
+![main.JPG](salesAccounting/wholeSale/src/main/resources/static/img/main.JPG)
+![Market.JPG](salesAccounting/wholeSale/src/main/resources/static/img/Market.JPG)
+![ListOrder.JPG](salesAccounting/wholeSale/src/main/resources/static/img/ListDocs.JPG)
+![DetalOrder.JPG](salesAccounting/wholeSale/src/main/resources/static/img/DetalOrder.JPG)
+![ListDocs.JPG](salesAccounting/wholeSale/src/main/resources/static/img/ListDocs.JPG)
+![DetalDoc.JPG](salesAccounting/wholeSale/src/main/resources/static/img/DetalDoc.JPG)
