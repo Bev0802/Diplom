@@ -141,6 +141,22 @@ a:hover {
     margin: 100px auto; /* Центрирование контейнера */
     text-align: center; /* Центрирование текста */
 }
+.instruction-container {
+    background-color: rgb(72, 118, 155); /* Цвет фона контейнера формы */
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 0 15px rgba(0, 0, 0, 0.5); /* Тень для контейнера */
+    max-width: 800px; /* Максимальная ширина контейнера формы */
+    margin: auto; /* Центрирование контейнера */
+    color: #faf7f7;
+    margin-top: 20px;
+    text-align: left;
+    text-indent: 20px;
+    height: 530px; /* Ограничивает высоту блока инструкции */
+    overflow-y: auto; /* Добавляет вертикальную прокрутку */
+    padding: 10px; /* Внутренний отступ для улучшения читабельности */
+    border: 1px solid #0a3046; /* Добавляет рамку для визуального выделения */
+}
 
 .filter-block{
 background-color: #3e7098; /* Цвет фона контейнера формы */
