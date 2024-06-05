@@ -2,7 +2,7 @@
 
 ## по специализации: Разработчик — Веб-разработка на Java
 
-<h1>Теоритическая чать</h1>
+<h1>Теоретическая часть</h1>
 
 [Тема: Разработка микросервисной платформы для управления цепочками поставок
 на базе Spring Boot и Cloud с интеграцией блокчейн технологий](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
