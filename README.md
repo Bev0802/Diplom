@@ -9,7 +9,8 @@
 
 Изменена на:
 
-[Разработка микросервисной платформы для торговой площадки организаций на базе Spring Boot и Cloud с использованием блокчейн технологий](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
+[Разработка микросервисной платформы
+для торговой площадки организаций на базе Spring Boot и Cloud](https://docs.google.com/document/d/1FHRa-3CLlUm6XhEfwhpFOczjTOqyjOdp/edit?usp=sharing&ouid=101680787802208176601&rtpof=true&sd=true)
 
 Работа размещена на docs.google.com.
 
