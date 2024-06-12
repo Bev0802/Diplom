@@ -1,0 +1,116 @@
+@startuml
+
+class Organization {
+    Long id
+    String name
+    String inn
+    String kpp
+    String address
+    String email
+    String password
+    Set<Product> products
+    Set<Employee> employees
+    Set<Order> placedOrders
+    Set<Order> receivedOrders
+}
+
+class Employee {
+    Long id
+    String name
+    String position
+    String email
+    String password
+    Organization organization
+    Set<Order> orders
+}
+
+class Product {
+    Long id
+    String name
+    String description
+    BigDecimal quantity
+    BigDecimal reserved
+    BigDecimal price
+    String imageUrl
+    Organization organization
+    Set<OrderItem> orderItems
+    +reserveQuantity(BigDecimal quantityToReserve)
+    +returnQuantity(BigDecimal quantityToReturn)
+}
+
+class Order {
+    Long id
+    Organization buyerOrganization
+    Organization sellerOrganization
+    Employee employee
+    Set<OrderItem> items
+    OrderStatus status
+    LocalDateTime orderDate
+    String orderNumber
+    LocalDateTime statusChangeDate
+    BigDecimal totalAmount
+    String comments
+    Long documentId
+    Map<Long, BigDecimal> reservedProducts
+}
+
+class OrderItem {
+    Long id
+    Long orderId
+    Product product
+    BigDecimal quantity
+    BigDecimal price
+    BigDecimal amount
+    +calculateAmount()
+    +getProductId(): Long
+}
+
+class Document {
+    Long id
+    String documentNumber
+    LocalDateTime documentDate
+    Organization sellerOrganization
+    Organization buyerOrganization
+    Employee responsibleEmployeeBuyer
+    List<DocumentItem> items
+    BigDecimal totalAmount
+    Long orderId
+}
+
+class DocumentItem {
+    Long id
+    Long documentId
+    Product product
+    BigDecimal quantity
+    BigDecimal price
+    BigDecimal amount
+}
+
+enum OrderStatus {
+    NEW
+    CONFIRMED
+    PAID
+    CANCELLED
+    SHIPPED
+}
+
+Organization "1" -- "*" Employee
+Organization "1" -- "*" Product
+Organization "1" -- "*" Order : placedOrders
+Organization "1" -- "*" Order : receivedOrders
+Employee "1" -- "*" Order
+Product "1" -- "*" OrderItem
+Order "1" -- "*" OrderItem
+OrderItem "*" -- "1" Order
+OrderItem "*" -- "1" Product
+Document "1" -- "*" DocumentItem
+DocumentItem "*" -- "1" Document
+DocumentItem "*" -- "1" Product
+Order --> OrderStatus : status
+Order "1" -- "1" Document : documentId
+Document --> Order : orderId
+Document "*" -- "1" Organization : buyerOrganization
+Document "*" -- "1" Organization : sellerOrganization
+Document "*" -- "1" Employee : responsibleEmployeeBuyer
+
+@enduml
