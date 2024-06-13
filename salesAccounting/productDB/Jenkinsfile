@@ -1,0 +1,41 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Build') {
+            steps {
+                script {
+                    // Clean workspace
+                    cleanWs()
+                    // Check out the code
+                    checkout scm
+                }
+                // Compile and build
+                sh 'mvn clean install'
+            }
+        }
+        stage('Test') {
+            steps {
+                // Run tests
+                sh 'mvn test'
+            }
+        }
+        stage('Deploy') {
+            steps {
+                script {
+                    // Run docker-compose to start services
+                    sh 'docker-compose -f ./docker-compose.yml up -d'
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            script {
+                // Clean up docker containers after pipeline completion
+                sh 'docker-compose -f ./docker-compose.yml down'
+            }
+        }
+    }
+}

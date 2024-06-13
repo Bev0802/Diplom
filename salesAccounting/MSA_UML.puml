@@ -1,0 +1,29 @@
+@startuml
+
+node "Docker Host" {
+    [PostgreSQL] as postgres
+
+    frame "Eureka Server" {
+        [Eureka Server] as eureka
+    }
+
+    frame "productDB Microservice" {
+        [Product API]
+        [Product Service] --> eureka : Register
+        [Product Service] --> postgres : Use
+    }
+
+    frame "wholeSale Microservice" {
+        [wholeSale API]
+        [wholeSale Service] --> eureka : Register
+        [wholeSale Service] --> [Product API] : REST Call
+        [wholeSale Service] --> postgres : Use
+    }
+}
+
+cloud "Clients" {
+    [Client]
+    [Client] --> [wholeSale API] : HTTP Request
+}
+
+@enduml
