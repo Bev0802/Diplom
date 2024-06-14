@@ -1,0 +1,19 @@
+language: java
+jdk:
+  - openjdk17
+
+services:
+  - docker
+
+before_install:
+  - chmod +x mvnw
+
+script:
+  - ./mvnw clean install
+  - ./mvnw test
+
+after_success:
+  - docker-compose -f docker-compose.yml up -d
+
+after_script:
+  - docker-compose -f docker-compose.yml down
