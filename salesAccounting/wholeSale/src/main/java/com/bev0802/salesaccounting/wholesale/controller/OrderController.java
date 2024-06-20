@@ -27,7 +27,18 @@ public class OrderController {
     @Autowired
     private OrganizationService organizationService;
 
+    //#region Создание и добавление товаров в заказ
 
+    /**
+     * Создает новый заказ.
+     *
+     * @param order Заказ, который нужно создать.
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param productId ID товара.
+     * @param quantity Количество товара.
+     * @return Созданный заказ.
+     */
     @PostMapping("/newOrder")
     public Order createOrder(@RequestBody Order order,
                              @RequestParam Long organizationId,
@@ -37,7 +48,15 @@ public class OrderController {
         logger.info("Creating new order {} for organization {} and employee {}", order, organizationId, employeeId);
         return orderService.createOrder(order, organizationId, employeeId, productId, quantity);
     }
-
+    /**
+     * Добавляет продукт в заказ.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param productId ID товара.
+     * @param quantity Количество товара.
+     * @return Редирект на страницу доступных для покупки товаров.
+     */
     @PostMapping("/addProductToOrder")
     public String addProductToOrder(@PathVariable("organizationId") Long organizationId,
                                     @PathVariable("employeeId") Long employeeId,
@@ -47,14 +66,19 @@ public class OrderController {
         orderService.addProductToOrder(organizationId, employeeId, productId, quantity);
         return "redirect:/organization/" + organizationId + "/employee/" + employeeId + "/product/availableForPurchase";
     }
+//#endregion
 
+    //#region Получение заказов
 
 //#region getMapping
     /**
      * Получение списка заказов по ID продавца, исключая новые.
+     *
      * @param organizationId ID продавца.
      * @param employeeId ID сотрудника.
-     * @return Список заказов.
+     * @param source Источник запроса (опционально).
+     * @param model Модель для передачи данных в представление.
+     * @return Имя шаблона Thymeleaf для отображения списка заказов.
      */
     @GetMapping("/sellerList")
     public String getOrdersBySeller(@PathVariable Long organizationId,
@@ -77,7 +101,15 @@ public class OrderController {
             // Возвращение имени шаблона Thymeleaf для отображения списка заказов
             return "listOrders";
     }
-
+    /**
+     * Получение списка заказов по ID покупателя, исключая новые.
+     *
+     * @param organizationId ID покупателя.
+     * @param employeeId ID сотрудника.
+     * @param source Источник запроса (опционально).
+     * @param model Модель для передачи данных в представление.
+     * @return Имя шаблона Thymeleaf для отображения списка заказов.
+     */
     @GetMapping("/buyerList")
     public String getOrdersByBuyer(@PathVariable Long organizationId,
                                    @PathVariable Long employeeId,
@@ -101,7 +133,15 @@ public class OrderController {
         // Возвращение имени шаблона Thymeleaf для отображения списка заказов
         return "listOrders";
     }
-
+    /**
+     * Получение списка новых заказов.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param source Источник запроса (опционально).
+     * @param model Модель для передачи данных в представление.
+     * @return Имя шаблона Thymeleaf для отображения списка заказов.
+     */
     @GetMapping("/newList")
     public String getNewOrders(@PathVariable Long organizationId,
                                @PathVariable Long employeeId,
@@ -124,12 +164,16 @@ public class OrderController {
     }
 
     /**
-     * Форма заказа с деталями
-     * @param organizationId ID организации
-     * @param employeeId ID сотрудника
-     * @param orderId ID заказа
-     * @param model объект модели
-     * @return имя шаблона Thymeleaf
+     * Получение деталей заказа.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param orderId ID заказа.
+     * @param model Модель для передачи данных в представление.
+     * @param request HTTP запрос.
+     * @param returnUrl URL для возврата.
+     * @param session HTTP сессия.
+     * @return Имя шаблона Thymeleaf для отображения деталей заказа.
      */
     @GetMapping("/{orderId}")
     public String getOrderDetails(@PathVariable Long organizationId,
@@ -185,7 +229,13 @@ public class OrderController {
         return "detailOrder"; // Возвращаем имя шаблона Thymeleaf для отображения страницы
 
     }
-
+    /**
+     * Получение списка заказов для сотрудника.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @return Список заказов.
+     */
     @GetMapping("/employeeOrders")
     public List<Order> getOrdersByEmployee(@RequestParam Long organizationId,
                                            @RequestParam Long employeeId) {
@@ -195,6 +245,15 @@ public class OrderController {
     //#endregion
 
 //#region изменение статусов
+    /**
+     * Отмена заказа.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param orderId ID заказа.
+     * @param request HTTP запрос.
+     * @return Редирект на предыдущую страницу.
+     */
     @PostMapping("/cancel/{orderId}")
     public String cancelOrder(@PathVariable("organizationId") Long organizationId,
                               @PathVariable("employeeId") Long employeeId,
@@ -205,7 +264,15 @@ public class OrderController {
         return "redirect:" + referer;
     }
 
-
+    /**
+     * Подтверждение заказа.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param orderId ID заказа.
+     * @param request HTTP запрос.
+     * @return Редирект на предыдущую страницу.
+     */
     @PostMapping("/confirm/{orderId}")
     public String confirmOrder(@PathVariable("organizationId") Long organizationId,
                               @PathVariable("employeeId") Long employeeId,
@@ -216,7 +283,15 @@ public class OrderController {
         String referer = request.getHeader("Referer");
         return "redirect:" + referer;
     }
-
+    /**
+     * Оплата заказа.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param orderId ID заказа.
+     * @param request HTTP запрос.
+     * @return Редирект на предыдущую страницу.
+     */
     @PostMapping("/pay/{orderId}")
     public String payOrder(@PathVariable("organizationId") Long organizationId,
                           @PathVariable("employeeId") Long employeeId,
@@ -227,7 +302,16 @@ public class OrderController {
         String referer = request.getHeader("Referer");
         return "redirect:" + referer;
     }
-
+    /**
+     * Отгрузка заказа.
+     *
+     * @param organizationId ID организации.
+     * @param employeeId ID сотрудника.
+     * @param orderId ID заказа.
+     * @param request HTTP запрос.
+     * @param redirectAttributes Атрибуты для редиректа.
+     * @return Редирект на предыдущую страницу или на страницу ошибки в случае ошибки.
+     */
     @PostMapping("/ship/{orderId}")
     public String shipOrder(@PathVariable("organizationId") Long organizationId,
                             @PathVariable("employeeId") Long employeeId,
@@ -247,5 +331,4 @@ public class OrderController {
     }
 
     //#endregion
-
 }

@@ -1,0 +1,168 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrganizationController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: OrganizationController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrganizationController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;/organization/{organizationId}&quot;)
+<b class="nc">&nbsp;public class OrganizationController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    OrganizationService organizationService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Метод выводит список контрагентов (организаций), кроме той, которая вошла в систему.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param model          Модель для передачи данных в представление.
+&nbsp;     * @return Имя файла шаблона для отображения списка контрагентов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/listCounterparty&quot;)
+&nbsp;    public String listCounterparty(@PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+<b class="nc">&nbsp;        List&lt;Organization&gt; organizations = organizationService.listCounterparty(organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizations&quot;, organizations);</b>
+&nbsp;
+<b class="nc">&nbsp;        return &quot;listCounterparty&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Выводит детали контрагента (организации), кроме пароля. Данные нельзя редактировать.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param model          Модель для передачи данных в представление.
+&nbsp;     * @return Имя файла шаблона для отображения деталей контрагента.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/detailCounterparty/{counterpartId}&quot;)
+&nbsp;    public String detailCounterparty(@PathVariable(&quot;counterpartId&quot;) Long organizationId, Model model) {
+&nbsp;        // Получение данных контрагента (например, по ID) и добавление их в модель
+<b class="nc">&nbsp;        Organization counterparty = organizationService.detailCounterparty(organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;counterparty&quot;, counterparty);</b>
+<b class="nc">&nbsp;        return &quot;detailCounterparty&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Метод выводит детали организации, которая вошла в систему, и данные можно редактировать.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя файла шаблона для отображения деталей организации.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/detailOrganization&quot;)
+&nbsp;    public String detailOrganization(@PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+<b class="nc">&nbsp;        Organization organization = organizationService.findById(organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organization&quot;, organization);</b>
+<b class="nc">&nbsp;        return &quot;detailOrganization&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

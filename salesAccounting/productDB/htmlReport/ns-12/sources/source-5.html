@@ -1,0 +1,452 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ProductService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductService (com.bev0802.salesaccounting.wholesale.service)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/96)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">ProductService$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProductService$2</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+  <tr>
+    <td class="name">ProductService$3</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/99)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.service;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.exception.ServiceException;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Product;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.core.ParameterizedTypeReference;
+&nbsp;import org.springframework.http.*;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.HttpClientErrorException;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;import org.springframework.web.util.UriComponentsBuilder;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.net.URI;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.Collections;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;/**
+&nbsp; * Сервис для управления продуктами через взаимодействие с REST API сервера productDB.
+&nbsp; * Предоставляет функциональность для выполнения CRUD операций над продуктами,
+&nbsp; * а также для поиска продуктов по различным критериям.
+&nbsp; */
+<b class="nc">&nbsp;@Service</b>
+&nbsp;public class ProductService {
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);</b>
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;
+&nbsp;    @Value(&quot;${productDB.service.url}/api/organization/{organizationId}/employee/{employeeId}/product&quot;)
+&nbsp;    private String productServiceUrl;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Конструктор для внедрения зависимости RestTemplate.
+&nbsp;     *
+&nbsp;     * @param restTemplate Клиент для выполнения HTTP запросов.
+&nbsp;     */
+&nbsp;    @Autowired
+<b class="nc">&nbsp;    public ProductService(RestTemplate restTemplate) {</b>
+<b class="nc">&nbsp;        this.restTemplate = restTemplate;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получает список всех доступных продуктов с внешнего сервиса.
+&nbsp;     *
+&nbsp;     * @return Список продуктов.
+&nbsp;     * @throws ServiceException в случае ошибки во время выполнения запроса.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; getAllProducts() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Product[] products = restTemplate.getForObject(productServiceUrl, Product[].class);</b>
+<b class="nc">&nbsp;            assert products != null;</b>
+<b class="nc">&nbsp;            return Arrays.asList(products);</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении всех товаров.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить товары: &quot; + e.getResponseBodyAsString());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении всех товаров.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Произошла ошибка при получении товаров..&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает продукт по его уникальному идентификатору.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта.
+&nbsp;     * @return Продукт, если он найден.
+&nbsp;     * @throws ServiceException если продукт не найден или запрос не удался.
+&nbsp;     */
+&nbsp;    public Product getProductById(Long productId, Long organizationId, Long employeeId) {
+&nbsp;        try {
+&nbsp;            // Формируем URL, используя UriComponentsBuilder для добавления пути и переменных
+<b class="nc">&nbsp;            String url = UriComponentsBuilder</b>
+<b class="nc">&nbsp;                    .fromUriString(productServiceUrl)  // Здесь должен быть базовый URL до endpoint</b>
+<b class="nc">&nbsp;                    .path(&quot;/{productId}&quot;)  // Добавляем к URL путь к конкретному продукту</b>
+<b class="nc">&nbsp;                    .buildAndExpand(Map.of(&quot;productId&quot;, productId, &quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                    .toUriString();</b>
+&nbsp;
+&nbsp;            // Отправляем запрос и получаем продукт
+<b class="nc">&nbsp;            return restTemplate.getForObject(url, Product.class);</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+&nbsp;            // Логирование ошибки и выброс исключения ServiceException с сообщением и причиной
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении товара по идентификатору: {}&quot;, productId, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить товар по идентификатору &quot; + productId + &quot;: &quot; + e.getResponseBodyAsString(), e);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаляет продукт по его идентификатору.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта для удаления.
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @throws ServiceException если продукт не может быть удален.
+&nbsp;     */
+&nbsp;    public void deleteProduct(Long productId, Long organizationId, Long employeeId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            String url = UriComponentsBuilder</b>
+<b class="nc">&nbsp;                    .fromUriString(productServiceUrl)  // Здесь должен быть базовый URL до endpoint</b>
+<b class="nc">&nbsp;                    .path(&quot;/{productId}&quot;)  // Добавляем к URL путь к конкретному продукту</b>
+<b class="nc">&nbsp;                    .buildAndExpand(Map.of(&quot;productId&quot;, productId, &quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                    .toUriString();</b>
+&nbsp;
+<b class="nc">&nbsp;            restTemplate.delete(url);</b>
+&nbsp;
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при удалении продукта с ID: {}, Организация ID: {}, Сотрудник ID: {}&quot;, productId, organizationId, employeeId, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Ошибка доступа. Недостаточно прав для выполнения операции.&quot;);</b>
+<b class="nc">&nbsp;        }</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Поиск продуктов по совпадению слова в названии.
+&nbsp;     *
+&nbsp;     * @param name Имя или его часть для поиска продуктов.
+&nbsp;     * @return Список продуктов, соответствующих критерию поиска.
+&nbsp;     * @throws ServiceException если запрос не удался.
+&nbsp;     */
+&nbsp;
+&nbsp;    public List&lt;Product&gt; findProductsByName(String name) {
+<b class="nc">&nbsp;        URI uri = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/search&quot;)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;name&quot;, name)</b>
+<b class="nc">&nbsp;                .build()</b>
+<b class="nc">&nbsp;                .encode() // Добавьте этот вызов для кодирования URL</b>
+<b class="nc">&nbsp;                .toUri();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Product[] products = restTemplate.getForObject(uri, Product[].class);</b>
+<b class="nc">&nbsp;            logger.info(&quot;Найдено продуктов: {}&quot;, products != null ? products.length : 0);</b>
+<b class="nc">&nbsp;            return Arrays.asList(products);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка поиска товаров по названию.&quot;, e);</b>
+<b class="nc">&nbsp;            return Collections.emptyList();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список продуктов, которые доступны в наличии.
+&nbsp;     *
+&nbsp;     * @return Список доступных продуктов.
+&nbsp;     * @throws ServiceException если запрос не удался.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findAvailableProducts() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Product[] products = restTemplate.getForObject(productServiceUrl + &quot;/available&quot;, Product[].class);</b>
+<b class="nc">&nbsp;            assert products != null;</b>
+<b class="nc">&nbsp;            return Arrays.asList(products);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении доступных продуктов.&quot;, e);</b>
+<b class="nc">&nbsp;            return Collections.emptyList();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Поиск продуктов по диапазону цен.
+&nbsp;     *
+&nbsp;     * @param startPrice Начальная цена диапазона.
+&nbsp;     * @param endPrice Конечная цена диапазона.
+&nbsp;     * @return Список продуктов в заданном диапазоне цен.
+&nbsp;     * @throws ServiceException если запрос не удался.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findProductsByPriceRange(BigDecimal startPrice, BigDecimal endPrice) {
+<b class="nc">&nbsp;        URI uri = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/by-price&quot;)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;from&quot;, startPrice)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;to&quot;, endPrice)</b>
+<b class="nc">&nbsp;                .build()</b>
+<b class="nc">&nbsp;                .toUri();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Product[] products = restTemplate.getForObject(uri, Product[].class);</b>
+<b class="nc">&nbsp;            return Arrays.asList(products);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка поиска товаров по ценовому диапазону.&quot;, e);</b>
+<b class="nc">&nbsp;            return Collections.emptyList();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Множественный поиск продуктов с использованием различных фильтров.
+&nbsp;     *
+&nbsp;     * @param name Имя продукта.
+&nbsp;     * @param available Доступность продукта.
+&nbsp;     * @param startPrice Начальная цена.
+&nbsp;     * @param endPrice Конечная цена.
+&nbsp;     * @return Список продуктов, соответствующих заданным критериям.
+&nbsp;     * @throws ServiceException если запрос не удался.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findProductsFiltered(String name, Boolean available, BigDecimal startPrice, BigDecimal endPrice) {
+<b class="nc">&nbsp;        URI uri = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/filtered&quot;)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;name&quot;, name)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;available&quot;, available)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;startPrice&quot;, startPrice)</b>
+<b class="nc">&nbsp;                .queryParam(&quot;endPrice&quot;, endPrice)</b>
+<b class="nc">&nbsp;                .build()</b>
+<b class="nc">&nbsp;                .encode()</b>
+<b class="nc">&nbsp;                .toUri();</b>
+&nbsp;        try {
+<b class="nc">&nbsp;            Product[] products = restTemplate.getForObject(uri, Product[].class);</b>
+<b class="nc">&nbsp;            assert products != null;</b>
+<b class="nc">&nbsp;            return Arrays.asList(products);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка поиска товаров с несколькими фильтрами&quot;, e);</b>
+<b class="nc">&nbsp;            return Collections.emptyList();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создает новый продукт или обновляет существующий в зависимости от наличия идентификатора.
+&nbsp;     *
+&nbsp;     * @param product Продукт для создания или обновления.
+&nbsp;     */
+&nbsp;    public void saveOrUpdateProduct(Product product, Long organizationId, Long employeeId) {
+<b class="nc">&nbsp;        if (product.getId() == null) {</b>
+&nbsp;            // Создание нового продукта
+&nbsp;            //product.setQuantity(BigDecimal.ZERO); // установите начальное количество, если нужно
+<b class="nc">&nbsp;            String url = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/create&quot;)</b>
+<b class="nc">&nbsp;                    .buildAndExpand(Map.of(&quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                    .toUriString();</b>
+<b class="nc">&nbsp;            restTemplate.postForObject(url, product, Product.class);</b>
+<b class="nc">&nbsp;        } else {</b>
+&nbsp;            // Обновление существующего продукта
+<b class="nc">&nbsp;            String url = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/{productId}&quot;)</b>
+<b class="nc">&nbsp;                    .buildAndExpand(Map.of(&quot;productId&quot;, product.getId(), &quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                    .toUriString();</b>
+<b class="nc">&nbsp;            restTemplate.put(url, product);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список продуктов по идентификатору организации.
+&nbsp;     *
+&nbsp;     * @return взвращает список товаров принадлежащих организации для продажи
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findProductsByOrganization(Long organizationId, Long employeeId) {
+<b class="nc">&nbsp;        String url = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/listByOrganization/&quot;)</b>
+<b class="nc">&nbsp;                .buildAndExpand(Map.of(&quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                .toUriString();</b>
+&nbsp;
+<b class="nc">&nbsp;        ResponseEntity&lt;List&lt;Product&gt;&gt; response = restTemplate.exchange(</b>
+&nbsp;                url,
+&nbsp;                HttpMethod.GET,
+&nbsp;                null,
+<b class="nc">&nbsp;                new ParameterizedTypeReference&lt;List&lt;Product&gt;&gt;() {});</b>
+<b class="nc">&nbsp;        return response.getBody();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список товаров, доступных для покупки в определенной организации.
+&nbsp;     * @param organizationId идетификатор оргаризации
+&nbsp;     * @return возвращает список доступных для покупки
+&nbsp;     */
+&nbsp;
+&nbsp;    public List&lt;Product&gt; findProductsNotBelongingToOrganization(Long organizationId, Long employeeId) {
+<b class="nc">&nbsp;        String url = UriComponentsBuilder.fromUriString(productServiceUrl + &quot;/availableForPurchase&quot;)</b>
+<b class="nc">&nbsp;                .buildAndExpand(Map.of(&quot;organizationId&quot;, organizationId, &quot;employeeId&quot;, employeeId))</b>
+<b class="nc">&nbsp;                .toUriString();</b>
+&nbsp;
+<b class="nc">&nbsp;        ResponseEntity&lt;List&lt;Product&gt;&gt; response = restTemplate.exchange(</b>
+&nbsp;                url,
+&nbsp;                HttpMethod.GET,
+&nbsp;                null,
+<b class="nc">&nbsp;                new ParameterizedTypeReference&lt;List&lt;Product&gt;&gt;() {});</b>
+<b class="nc">&nbsp;        return response.getBody();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает организацию по идентификатору товара.
+&nbsp;     * @param productId
+&nbsp;     * @return возвращает организацию
+&nbsp;     */
+&nbsp;    public Organization getOrganizationByProductId(Long productId) {
+<b class="nc">&nbsp;        String url = productServiceUrl + &quot;/getOrganizationByProductId/&quot; + productId;</b>
+<b class="nc">&nbsp;        ResponseEntity&lt;Organization&gt; response = restTemplate.exchange(</b>
+&nbsp;                url,
+&nbsp;                HttpMethod.GET,
+&nbsp;                null,
+<b class="nc">&nbsp;                new ParameterizedTypeReference&lt;Organization&gt;() {});</b>
+<b class="nc">&nbsp;        return response.getBody();</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

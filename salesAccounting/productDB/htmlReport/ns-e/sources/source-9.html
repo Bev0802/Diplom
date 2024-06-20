@@ -1,0 +1,346 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ProductController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/14)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/49)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Employee;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Product;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.EmployeeService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.ProductService;
+&nbsp;import jakarta.servlet.http.HttpSession;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Контроллер для управления товарами в приложении.
+&nbsp; * Обрабатывает веб-запросы, связанные с продуктами, и взаимодействует с сервисом {@link ProductService} для выполнения бизнес-логики.
+&nbsp; */
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;/organization/{organizationId}/employee/{employeeId}/product&quot;)
+<b class="nc">&nbsp;public class ProductController {</b>
+&nbsp;
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);</b>
+&nbsp;    @Autowired
+&nbsp;    private ProductService productService;
+&nbsp;    @Autowired
+&nbsp;    private EmployeeService employeeService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отображает список всех продуктов.
+&nbsp;     *
+&nbsp;     * @param model модель для передачи данных в представление.
+&nbsp;     * @return имя HTML шаблона для отображения списка продуктов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/&quot;)
+&nbsp;    public String getAllProducts(Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;products&quot;, productService.getAllProducts());</b>
+<b class="nc">&nbsp;        return &quot;listProducts&quot;; // Имя HTML шаблона для отображения списка продуктов</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Метод для получения списка товаров, принадлежащих определенной организации.
+&nbsp;     * @param organizationId ID организации
+&nbsp;     * @param model модель для передачи данных в представление
+&nbsp;     * @return имя HTML шаблона для отображения списка товаров
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/byOrganization/&quot;)
+&nbsp;        public String getProductsByOrganization (@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                                                 @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                                                 Model model) {
+<b class="nc">&nbsp;            List&lt;Product&gt; products = productService.findProductsByOrganization(organizationId, employeeId);</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;products&quot;, products);</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;            return &quot;listProducts&quot;;</b>
+&nbsp;        }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список товаров, доступных для покупки в определенной организации.
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @param employeeId идентификатор сотрудника
+&nbsp;     * @return возвращает список доступных для покупки
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/availableForPurchase&quot;)
+&nbsp;    public String productsAvailableForPurchase(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                                               @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                                               HttpSession session,
+&nbsp;                                               Model model) {
+<b class="nc">&nbsp;        List&lt;Product&gt; products = productService.findProductsNotBelongingToOrganization(organizationId, employeeId);</b>
+&nbsp;
+<b class="nc">&nbsp;        Organization organization = organizationService.findById(organizationId);</b>
+<b class="nc">&nbsp;        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);</b>
+&nbsp;
+<b class="nc">&nbsp;        logger.info(&quot;Products available for purchase: {}&quot;, products);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Products available for purchase size: {}&quot;, products.size());</b>
+<b class="nc">&nbsp;        logger.info(&quot;Organization ID: {}&quot;, organizationId);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Organization Name: {}&quot;, organization.getName());</b>
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;products&quot;, products);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organization.getName());</b>
+&nbsp;
+<b class="nc">&nbsp;        return &quot;market&quot;; // Имя шаблона для отображения списка товаров</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отображает страницу для создания нового продукта.
+&nbsp;     * @param organizationId Идентификатор организации, к которой принадлежит продукт.
+&nbsp;     * @param employeeId Идентификатор сотрудника, создающего продукт.
+&nbsp;     * @param model Модель Spring MVC для передачи данных в представление.
+&nbsp;     * @return Название HTML-шаблона для отображения формы деталей продукта.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/new&quot;)
+&nbsp;    public String newProduct(@PathVariable Long organizationId,
+&nbsp;                             @PathVariable Long employeeId,
+&nbsp;                             Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;product&quot;, new Product());</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        return &quot;detailProduct&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Поиск продуктов по наименованию.
+&nbsp;     *
+&nbsp;     * @param name имя продукта для поиска.
+&nbsp;     * @param model модель для передачи данных в представление.
+&nbsp;     * @return имя HTML шаблона для отображения списка продуктов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    public String findProductsByName(@RequestParam(&quot;name&quot;) String name, Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;products&quot;, productService.findProductsByName(name));</b>
+<b class="nc">&nbsp;        return &quot;listProducts&quot;; // Используйте тот же шаблон, что и для списка всех продуктов</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Множественный фильтр для продуктов.
+&nbsp;     *
+&nbsp;     * @param name имя продукта для поиска.
+&nbsp;     * @param available флаг наличия продукта.
+&nbsp;     * @param startPrice начальная цена для фильтрации.
+&nbsp;     * @param endPrice конечная цена для фильтрации.
+&nbsp;     * @param model модель для передачи данных в представление.
+&nbsp;     * @return имя HTML шаблона для отображения списка продуктов.
+&nbsp;     */
+&nbsp;    // Множественный фильтр для продуктов
+&nbsp;    @GetMapping(&quot;/filteredSearch&quot;)
+&nbsp;    public String filteredSearch(
+&nbsp;            @RequestParam(value = &quot;name&quot;, required = false) String name,
+&nbsp;            @RequestParam(value = &quot;available&quot;, required = false) Boolean available,
+&nbsp;            @RequestParam(value = &quot;startPrice&quot;, required = false) BigDecimal startPrice,
+&nbsp;            @RequestParam(value = &quot;endPrice&quot;, required = false) BigDecimal endPrice,
+&nbsp;            @RequestParam(value = &quot;templateName&quot;, required = false, defaultValue = &quot;listProducts&quot;) String templateName,
+&nbsp;            Model model) {
+<b class="nc">&nbsp;        List&lt;Product&gt; products = productService.findProductsFiltered(name, available, startPrice, endPrice);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;products&quot;, products);</b>
+&nbsp;        // Дополнительная мета-информация может быть добавлена здесь
+<b class="nc">&nbsp;        return templateName; // Использует имя шаблона, указанное в параметрах запроса или значение по умолчанию</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отображает страницу с деталями продукта, позволяя просмотреть и редактировать его информацию.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта.
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона страницы деталей продукта.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{productId}&quot;)
+&nbsp;    public String detailProduct(@PathVariable Long productId,
+&nbsp;                                @PathVariable Long organizationId,
+&nbsp;                                @PathVariable Long employeeId,Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;product&quot;, productService.getProductById(productId, organizationId, employeeId));</b>
+<b class="nc">&nbsp;        return &quot;detailProduct&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отображает страницу для создания нового продукта или редактирования существующего.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта для редактирования; null для создания нового.
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона страницы редактирования продукта.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/edit/{productId}&quot;)
+&nbsp;    public String editProduct(@PathVariable Long productId,
+&nbsp;                              @PathVariable Long organizationId,
+&nbsp;                              @PathVariable Long employeeId, Model model) {
+<b class="nc">&nbsp;        Product product = productId != null ? productService.getProductById(productId, organizationId, employeeId) : new Product();</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;product&quot;, product);</b>
+<b class="nc">&nbsp;        return &quot;detailProduct&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Сохраняет новый или обновлённый продукт.
+&nbsp;     *
+&nbsp;     * @param product Объект продукта, полученный из формы.
+&nbsp;     * @return Перенаправление на список продуктов.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/save&quot;)
+&nbsp;    public String saveProduct(@ModelAttribute Product product,
+&nbsp;                              @RequestParam Long organizationId,
+&nbsp;                              @RequestParam Long employeeId) {
+<b class="nc">&nbsp;        logger.info(&quot;Saving product: {}&quot;, product);</b>
+<b class="nc">&nbsp;        productService.saveOrUpdateProduct(product, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/product/byOrganization/&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создаёт копию существующего продукта по его идентификатору.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта для копирования.
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона страницы деталей продукта для новой копии.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/details/{productId}&quot;)
+&nbsp;    public String viewProductDetails(@PathVariable Long productId,
+&nbsp;                                     @PathVariable Long organizationId,
+&nbsp;                                     @PathVariable Long employeeId,
+&nbsp;                                     Model model) {
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId, organizationId, employeeId);</b>
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;product&quot;, product);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Инфо product: {}&quot;, product);</b>
+<b class="nc">&nbsp;        return &quot;detailProduct&quot;;  // Assuming you have a Thymeleaf template named detailProduct.html</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/clone/{productId}&quot;)
+&nbsp;    public String cloneProduct(@PathVariable Long productId,
+&nbsp;                               @PathVariable Long organizationId,
+&nbsp;                               @PathVariable Long employeeId,
+&nbsp;                               Model model) {
+<b class="nc">&nbsp;        Product clonedProduct = productService.getProductById(productId, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        clonedProduct.setId(null);  // Ensure the cloned product has a null ID to be saved as a new product</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;product&quot;, clonedProduct);</b>
+<b class="nc">&nbsp;        return &quot;detailProduct&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаляет продукт по его идентификатору и перенаправляет на список продуктов.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param productId Идентификатор продукта для удаления.
+&nbsp;     * @return Перенаправление на список продуктов.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/delete/{productId}&quot;)
+&nbsp;    public String deleteProduct(@PathVariable Long productId,
+&nbsp;                                @PathVariable Long organizationId,
+&nbsp;                                @PathVariable Long employeeId) {
+<b class="nc">&nbsp;        productService.deleteProduct(productId, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/product/byOrganization/&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

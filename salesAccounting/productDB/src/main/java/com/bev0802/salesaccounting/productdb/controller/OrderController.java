@@ -17,7 +17,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
-
+/**
+ * Контроллер для управления заказами.
+ */
 @RestController
 @RequestMapping("/api/organization/{organizationId}/employee/{employeeId}/orders")
 public class OrderController {
@@ -32,6 +34,7 @@ public class OrderController {
     @Autowired
     private OrganizationService organizationService;
 
+    //#region Создание и добавление товаров в заказ
 
     /**
      * Создает новый заказ для организации и для сотрудника которой авторизивался.
@@ -105,7 +108,8 @@ public class OrderController {
             return ResponseEntity.badRequest().body(ex.getMessage());
         }
     }
-    //#region получение списков
+    //#endregion
+    //#region Получение списков заказов
     /**
      * Получение списка всех заказов системы.
      * @return Список всех заказов.
@@ -116,7 +120,6 @@ public class OrderController {
         return ResponseEntity.ok(orders);
     }
 
-    //#region Получение заказов и данных их них
     /**
      * Получение списка заказов(покупок) по ID органиазции которая вошла.
      * @param buyerOrganizationId покупателя.
@@ -195,6 +198,19 @@ public class OrderController {
             return ResponseEntity.notFound().build();
         }
     }
+
+    @GetMapping("/employeeOrders")
+    public ResponseEntity<List<Order>> getOrdersByEmployee(@PathVariable Long organizationId, @PathVariable Long employee_id) {
+        try {
+            List<Order> orders = orderService.findOrdersByEmployeeId(employee_id);
+            return ResponseEntity.ok(orders);
+        } catch (Exception e) {
+            // Здесь можно обработать исключения, например, если сотрудник не найден
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
+    //#endregion
+
     //#region Изменение статусов заказов
     /**
      * Подтверждение заказа по его ID. Меняет статус NEW на CONFIRMED. И резервирует товар.
@@ -235,6 +251,15 @@ public class OrderController {
     public ResponseEntity<Order> cancelOrder(@PathVariable Long orderId) {
         return ResponseEntity.ok(orderService.cancelOrder(orderId));
     }
+
+    /**
+     * Получает список всех заказов, созданных конкретным сотрудником.
+     * Этот метод позволяет клиентам API получать данные о всех заказах, созданных сотрудником.
+     * @param organizationId ID организации, к которой принадлежит сотрудник.
+     * @param employee_id Идентификатор сотрудника, создавшего заказы.
+     * @return ResponseEntity, содержащий список заказов или ошибку, если таковая произойдет.
+     */
+
 //#endregion
     //todo: в фильтре работает только отбр по sellerId, все остальное не работает.
     /**
@@ -254,24 +279,6 @@ public class OrderController {
             @RequestParam(required = false) LocalDateTime endDate) {
         List<Order> orders = orderService.getFilteredOrders(sellerId, buyerId, status, startDate, endDate);
         return ResponseEntity.ok(orders);
-    }
-
-    /**
-     * Получает список всех заказов, созданных конкретным сотрудником.
-     * Этот метод позволяет клиентам API получать данные о всех заказах, созданных сотрудником.
-     * @param organizationId ID организации, к которой принадлежит сотрудник.
-     * @param employee_id Идентификатор сотрудника, создавшего заказы.
-     * @return ResponseEntity, содержащий список заказов или ошибку, если таковая произойдет.
-     */
-    @GetMapping("/employeeOrders")
-    public ResponseEntity<List<Order>> getOrdersByEmployee(@PathVariable Long organizationId, @PathVariable Long employee_id) {
-        try {
-            List<Order> orders = orderService.findOrdersByEmployeeId(employee_id);
-            return ResponseEntity.ok(orders);
-        } catch (Exception e) {
-            // Здесь можно обработать исключения, например, если сотрудник не найден
-            return ResponseEntity.badRequest().body(null);
-        }
     }
 
     /**
@@ -299,7 +306,6 @@ public class OrderController {
      * @param quantity
      * @return
      */
-
     @PostMapping("/updateQuantity/{orderId}/{orderItemId}")
     public ResponseEntity<?> updateProductQuantityInOrder(
             @PathVariable("orderId") Long orderId,

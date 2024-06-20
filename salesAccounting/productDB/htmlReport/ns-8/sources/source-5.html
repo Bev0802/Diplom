@@ -1,0 +1,140 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ProductRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductRepository (com.bev0802.salesaccounting.productdb.repository)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+</tr>
+<tr>
+  <td class="name">ProductRepository</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.repository;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Product;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Интерфейс репозитория для работы с объектами {@link Product} в базе данных.
+&nbsp; * Предоставляет базовые операции для работы с продуктами, такие как поиск, сохранение и удаление,
+&nbsp; * а также расширенные операции для поиска продуктов по определённым критериям.
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface ProductRepository extends JpaRepository&lt;Product, Long&gt;, JpaSpecificationExecutor&lt;Product&gt; {
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит продукт по его точному имени.
+&nbsp;     *
+&nbsp;     * @param name Имя продукта для поиска.
+&nbsp;     * @return Найденный продукт или {@code null}, если продукт не найден.
+&nbsp;     */
+&nbsp;    Product findByName(String name);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит список продуктов, игнорируя регистр букв в имени.
+&nbsp;     *
+&nbsp;     * @param name Имя продукта для поиска.
+&nbsp;     * @return Список продуктов с совпадающим именем.
+&nbsp;     */
+&nbsp;    List&lt;Product&gt; findByNameIgnoreCase(String name);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит список продуктов, содержащих заданную подстроку в имени, игнорируя регистр букв.
+&nbsp;     *
+&nbsp;     * @param name Подстрока для поиска в имени продукта.
+&nbsp;     * @return Список продуктов, содержащих указанную подстроку в имени.
+&nbsp;     */
+&nbsp;    List&lt;Product&gt; findByNameContainingIgnoreCase(String name);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит список продуктов, количество которых больше указанного значения.
+&nbsp;     *
+&nbsp;     * @param quantity Минимальное количество продукта для включения в результат.
+&nbsp;     * @return Список продуктов с количеством больше указанного.
+&nbsp;     */
+&nbsp;    List&lt;Product&gt; findByQuantityGreaterThan(BigDecimal quantity);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит список продуктов с ценой в заданном диапазоне.
+&nbsp;     *
+&nbsp;     * @param priceStart Нижняя граница диапазона цен.
+&nbsp;     * @param priceEnd Верхняя граница диапазона цен.
+&nbsp;     * @return Список продуктов с ценой в указанном диапазоне.
+&nbsp;     */
+&nbsp;    List&lt;Product&gt; findByPriceBetween(BigDecimal priceStart, BigDecimal priceEnd);
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, принадлежащих определенной организации.
+&nbsp;     * @param organizationId ID организации, которои? принадлежат товары.
+&nbsp;     * @return Список товаров, принадлежащих организации.
+&nbsp;     */
+&nbsp;    List&lt;Product&gt; findByOrganizationId(Long organizationId);
+&nbsp;
+&nbsp;    void deleteAllByOrganization(Organization organization);
+&nbsp;
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

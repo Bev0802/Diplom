@@ -1,0 +1,189 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > LoginController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: LoginController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LoginController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/16)
+  </span>
+</td>
+</tr>
+  <tr>
+    <td class="name">LoginController$1</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/4)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpServletResponse;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.*;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PostMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import org.springframework.core.ParameterizedTypeReference;
+&nbsp;import org.springframework.http.HttpMethod;
+&nbsp;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Controller
+<b class="nc">&nbsp;public class LoginController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private RestTemplate restTemplate;
+&nbsp;
+&nbsp;    @PostMapping(&quot;/login&quot;)
+&nbsp;    public String login(@RequestParam String inn, @RequestParam String password, HttpServletRequest request, HttpServletResponse response) {
+<b class="nc">&nbsp;        HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</b>
+&nbsp;
+<b class="nc">&nbsp;        MultiValueMap&lt;String, String&gt; map = new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        map.add(&quot;inn&quot;, inn);</b>
+<b class="nc">&nbsp;        map.add(&quot;password&quot;, password);</b>
+&nbsp;
+<b class="nc">&nbsp;        HttpEntity&lt;MultiValueMap&lt;String, String&gt;&gt; requestEntity = new HttpEntity&lt;&gt;(map, headers);</b>
+&nbsp;
+<b class="nc">&nbsp;        ParameterizedTypeReference&lt;Map&lt;String, Object&gt;&gt; responseType = new ParameterizedTypeReference&lt;Map&lt;String, Object&gt;&gt;() {};</b>
+&nbsp;
+<b class="nc">&nbsp;        ResponseEntity&lt;Map&lt;String, Object&gt;&gt; responseEntity = restTemplate.exchange(&quot;http://productDB/api/organization/authenticate&quot;, HttpMethod.POST, requestEntity, responseType);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (responseEntity.getStatusCode() == HttpStatus.OK &amp;&amp; responseEntity.getBody() != null) {</b>
+<b class="nc">&nbsp;            Long organizationId = Long.valueOf(responseEntity.getBody().get(&quot;organizationId&quot;).toString());</b>
+<b class="nc">&nbsp;            request.getSession().setAttribute(&quot;organizationId&quot;, organizationId);</b>
+&nbsp;
+<b class="nc">&nbsp;            return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/employeeLoginForm&quot;;</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            request.setAttribute(&quot;loginError&quot;, &quot;ИНН или пароль введены неверно.&quot;);</b>
+<b class="nc">&nbsp;            return &quot;index&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/register&quot;)
+&nbsp;    public String registerForm(Model model) {
+&nbsp;        // Добавьте любые атрибуты модели, если это необходимо
+<b class="nc">&nbsp;        return &quot;detailOrganization&quot;; // Имя файла вашего шаблона для регистрации организации</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

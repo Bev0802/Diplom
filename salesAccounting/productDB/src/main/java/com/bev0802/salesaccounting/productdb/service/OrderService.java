@@ -366,9 +366,11 @@ public class OrderService {
     }
 
     /**
+     * Удаляет продукт из заказа и сохраняет изменения в базе данных.
      *
-     * @param orderId
-     * @param orderItemId
+     * @param orderId Заказ, из которого нужно удалить продукт.
+     * @param orderItemId Идентификатор продукта, который нужно удалить.
+     * @return Обновленный заказ после удаления продукта.
      */
     @Transactional
     public void removeProductFromOrder(Long orderId, Long orderItemId) {
@@ -413,6 +415,9 @@ public class OrderService {
     public List<Order> findNewOrdersByBuyerId(Long buyerOrganizationId) {
         return orderRepository.findByBuyerOrganizationIdAndStatus(buyerOrganizationId, OrderStatus.NEW);
 
+    }
+    public List<Order> findOrdersByStatus(OrderStatus status) {
+        return orderRepository.findByStatus(status);
     }
 }
 

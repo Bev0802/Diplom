@@ -1,0 +1,227 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrganizationService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.service</a>
+</div>
+
+<h1>Coverage Summary for Class: OrganizationService (com.bev0802.salesaccounting.wholesale.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrganizationService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/7)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/30)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.service;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.exception.ServiceException;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Organization;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.beans.factory.annotation.Value;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.web.client.HttpClientErrorException;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.Arrays;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Сервис для работы с организациями.
+&nbsp; */
+<b class="nc">&nbsp;@Service</b>
+&nbsp;public class OrganizationService {
+&nbsp;
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(OrganizationService.class);</b>
+&nbsp;
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;
+&nbsp;    @Value(&quot;${productDB.service.url}/api/organization/&quot;)
+&nbsp;    private String productDBServiceUrl;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Конструктор класса OrganizationService.
+&nbsp;     *
+&nbsp;     * @param restTemplate RestTemplate для выполнения HTTP-запросов.
+&nbsp;     */
+&nbsp;    @Autowired
+<b class="nc">&nbsp;    public OrganizationService(RestTemplate restTemplate) {</b>
+<b class="nc">&nbsp;        this.restTemplate = restTemplate;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public String getOrganizationName(Long organizationId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Organization organization = restTemplate.getForObject(productDBServiceUrl + organizationId, Organization.class);</b>
+<b class="nc">&nbsp;            return organization != null ? organization.getName() : &quot;Неизвестная организация&quot;;</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении имени организации.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить имя организации: &quot; + e.getResponseBodyAsString());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список всех организаций.
+&nbsp;     *
+&nbsp;     * @return Список всех организаций.
+&nbsp;     * @throws ServiceException Если возникает ошибка при получении организаций.
+&nbsp;     */
+&nbsp;    public List&lt;Organization&gt; findAll() {
+&nbsp;        try {
+<b class="nc">&nbsp;            Organization[] organizations = restTemplate.getForObject(productDBServiceUrl, Organization[].class);</b>
+<b class="nc">&nbsp;            assert organizations != null;</b>
+<b class="nc">&nbsp;            return Arrays.asList(organizations);</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении всех организаций.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить организации: &quot; + e.getResponseBodyAsString());</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении всех организаций.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Произошла ошибка при получении организаций..&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает организацию по её идентификатору.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @return Организация с указанным идентификатором.
+&nbsp;     * @throws ServiceException Если возникает ошибка при получении организации.
+&nbsp;     */
+&nbsp;    public Organization findById(Long organizationId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            return restTemplate.getForObject(productDBServiceUrl + organizationId, Organization.class);</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении организации.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить организацию: &quot; + e.getResponseBodyAsString());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список контрагентов (организаций) для указанной организации, исключая текущую организацию.
+&nbsp;     * @param organizationId Идентификатор текущей организации.
+&nbsp;     * @return Список контрагентов (организаций).
+&nbsp;     * @throws ServiceException Если возникает ошибка при получении списка контрагентов.
+&nbsp;     */
+&nbsp;    /**
+&nbsp;     * Получает список контрагентов (организаций) для указанной организации, исключая текущую организацию.
+&nbsp;     * @param organizationId Идентификатор текущей организации.
+&nbsp;     * @return Список контрагентов (организаций).
+&nbsp;     * @throws ServiceException Если возникает ошибка при получении списка контрагентов.
+&nbsp;     */
+&nbsp;    public List&lt;Organization&gt; listCounterparty(Long organizationId) {
+<b class="nc">&nbsp;        List&lt;Organization&gt; allOrganizations = findAll();</b>
+&nbsp;        // Создаем копию списка
+<b class="nc">&nbsp;        List&lt;Organization&gt; counterparties = new ArrayList&lt;&gt;(allOrganizations);</b>
+&nbsp;        // Удаление организации с переданным ID из списка
+<b class="nc">&nbsp;        counterparties.removeIf(org -&gt; org.getId().equals(organizationId));</b>
+<b class="nc">&nbsp;        return counterparties;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает детали контрагента (организации) по её идентификатору.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @return Детали контрагента (организации).
+&nbsp;     * @throws ServiceException Если возникает ошибка при получении деталей контрагента.
+&nbsp;     */
+&nbsp;    public Organization detailCounterparty(Long organizationId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            return restTemplate.getForObject(productDBServiceUrl + organizationId, Organization.class);</b>
+<b class="nc">&nbsp;        } catch (HttpClientErrorException e) {</b>
+<b class="nc">&nbsp;            logger.error(&quot;Ошибка при получении данных контрагента.&quot;, e);</b>
+<b class="nc">&nbsp;            throw new ServiceException(&quot;Не удалось получить данные контрагента: &quot; + e.getResponseBodyAsString());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

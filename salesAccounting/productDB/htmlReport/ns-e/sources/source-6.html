@@ -1,0 +1,153 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > LogoutController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: LogoutController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">LogoutController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;
+&nbsp;/**
+&nbsp; * Контроллер для завершения работы приложения
+&nbsp; */
+&nbsp;@Controller
+&nbsp;    @RequestMapping(&quot;/logout&quot;)
+<b class="nc">&nbsp;    public class LogoutController {</b>
+&nbsp;    /**
+&nbsp;     * Метод завершает работу текущего пользователя и перенаправляет на главную страницу ввода логина
+&nbsp;     * @return /login
+&nbsp;     */
+&nbsp;
+&nbsp;    @GetMapping(&quot;/exit&quot;)
+&nbsp;    public String exit() {
+&nbsp;        // Завершение работы текущего пользователя
+<b class="nc">&nbsp;        return &quot;redirect:/login&quot;; // Перенаправление на главную страницу</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Метод полнотю завершает работу приложения
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/close&quot;)
+&nbsp;    public String close() {
+&nbsp;        // Запуск нового потока для задержки перед завершением работы приложения
+<b class="nc">&nbsp;        new Thread(() -&gt; {</b>
+&nbsp;            try {
+<b class="nc">&nbsp;                Thread.sleep(5000); // Задержка для выполнения JavaScript</b>
+<b class="nc">&nbsp;                shutdownApplication(); // Завершение работы приложения после задержки</b>
+<b class="nc">&nbsp;            } catch (InterruptedException e) {</b>
+<b class="nc">&nbsp;                e.printStackTrace();</b>
+<b class="nc">&nbsp;            }</b>
+<b class="nc">&nbsp;        }).start();</b>
+&nbsp;
+&nbsp;        // Возвращение страницы с JavaScript для перенаправления
+<b class="nc">&nbsp;        return &quot;redirect:https://www.google.com&quot;; // Перенаправление на главную страницу</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    private void shutdownApplication() {
+&nbsp;            // Логика для завершения работы приложения
+<b class="nc">&nbsp;            System.exit(0);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

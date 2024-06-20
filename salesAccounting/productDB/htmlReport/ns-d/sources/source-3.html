@@ -1,0 +1,128 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > WebConfig</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.config</a>
+</div>
+
+<h1>Coverage Summary for Class: WebConfig (com.bev0802.salesaccounting.wholesale.config)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">WebConfig</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/2)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.config;
+&nbsp;
+&nbsp;import org.springframework.context.annotation.Bean;
+&nbsp;import org.springframework.context.annotation.Configuration;
+&nbsp;import org.springframework.web.filter.HiddenHttpMethodFilter;
+&nbsp;
+&nbsp;/**
+&nbsp; * Конфигурационный класс для настройки веб-слоя приложения.
+&nbsp; * Содержит настройки, необходимые для корректной работы веб-компонентов.
+&nbsp; */
+&nbsp;@Configuration
+<b class="nc">&nbsp;public class WebConfig {</b>
+&nbsp;    /**
+&nbsp;     * Создает и возвращает фильтр, который позволяет использовать HTTP-методы, такие как PUT, DELETE и PATCH
+&nbsp;     * в веб-формах путем добавления скрытого поля с указанием желаемого метода. Это необходимо, поскольку
+&nbsp;     * HTML формы нативно поддерживают только GET и POST методы.
+&nbsp;     *
+&nbsp;     * @return экземпляр {@link HiddenHttpMethodFilter}, настроенный для использования в приложении.
+&nbsp;     */
+&nbsp;    @Bean
+&nbsp;    public HiddenHttpMethodFilter hiddenHttpMethodFilter() {
+<b class="nc">&nbsp;        return new HiddenHttpMethodFilter();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

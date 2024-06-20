@@ -1,0 +1,267 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > EmployeeController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployeeController (com.bev0802.salesaccounting.productdb.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmployeeController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/37)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Employee;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.EmployeeService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.dao.DataIntegrityViolationException;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Контроллер для управления сотрудниками.
+&nbsp; * Обеспечивает API для операций CRUD и аутентификации сотрудников.
+&nbsp; */
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;api/organization/{organizationId}/employee&quot;)
+<b class="nc">&nbsp;public class EmployeeController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EmployeeService employeeService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список всех сотрудников.
+&nbsp;     *
+&nbsp;     * @return список всех сотрудников
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/getAllEmployees&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Employee&gt;&gt; getAllEmployees() {
+<b class="nc">&nbsp;        List&lt;Employee&gt; employees = employeeService.findAllEmployees();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(employees);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список сотрудников по идентификатору организации.
+&nbsp;     *
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @return список сотрудников
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/getEmployeesByOrganizationId&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Employee&gt;&gt; getEmployeesByOrganizationId(@PathVariable Long organizationId) {
+<b class="nc">&nbsp;        List&lt;Employee&gt; employees = employeeService.findEmployeesByOrganizationId(organizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(employees);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает сотрудника по идентификатору.
+&nbsp;     *
+&nbsp;     * @param employeeId идентификатор сотрудника
+&nbsp;     * @return сотрудник, если найден, иначе статус 404
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{employeeId}&quot;)
+&nbsp;    public ResponseEntity&lt;Employee&gt; getEmployeeById(@PathVariable Long employeeId) {
+<b class="nc">&nbsp;        Optional&lt;Employee&gt; employee = employeeService.findById(employeeId);</b>
+<b class="nc">&nbsp;        if (employee.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(employee.get());</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Регистрирует нового сотрудника в указанной организации.
+&nbsp;     *
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @param employee данные сотрудника
+&nbsp;     * @return зарегистрированный сотрудник или сообщение об ошибке
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/register&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; registerEmployee(@PathVariable Long organizationId, @RequestBody Employee employee) {
+&nbsp;        try {
+&nbsp;            // Передаем organizationId вместе с объектом employee в сервис для регистрации
+<b class="nc">&nbsp;            Employee savedEmployee = employeeService.registerEmployee(employee, organizationId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(savedEmployee);</b>
+<b class="nc">&nbsp;        } catch (DataIntegrityViolationException e) {</b>
+&nbsp;            // Обработка исключения и возврат клиенту сообщения об ошибке
+<b class="nc">&nbsp;            return ResponseEntity</b>
+<b class="nc">&nbsp;                    .status(HttpStatus.BAD_REQUEST)</b>
+<b class="nc">&nbsp;                    .body(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создает нового сотрудника в указанной организации.
+&nbsp;     *
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @param employee данные сотрудника
+&nbsp;     * @return созданный сотрудник или сообщение об ошибке
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/new&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; createEmployee(@PathVariable Long organizationId, @RequestBody Employee employee) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Employee savedEmployee = employeeService.registerEmployee(employee, organizationId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(savedEmployee);</b>
+<b class="nc">&nbsp;        } catch (DataIntegrityViolationException e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).</b>
+<b class="nc">&nbsp;                    body(e.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Клонирует сотрудника.
+&nbsp;     *
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @param employeeId идентификатор сотрудника для клонирования
+&nbsp;     * @return клонированный сотрудник или сообщение об ошибке
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/clone/{employeeId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; cloneEmployee(@PathVariable Long organizationId, @PathVariable Long employeeId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Employee clonedEmployee = employeeService.cloneEmployee(employeeId, organizationId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(clonedEmployee);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Не удалось клонировать сотрудника.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаляет сотрудника.
+&nbsp;     *
+&nbsp;     * @param employeeId идентификатор сотрудника для удаления
+&nbsp;     * @return сообщение об успешном удалении или сообщение об ошибке
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/delete/{employeeId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; deleteEmployee(@PathVariable Long employeeId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            employeeService.deleteEmployee(employeeId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(&quot;Сотрудник успешно удален.&quot;);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(&quot;Не удалось удалить сотрудника.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Аутентифицирует сотрудника.
+&nbsp;     *
+&nbsp;     * @param email электронная почта сотрудника
+&nbsp;     * @param password пароль сотрудника
+&nbsp;     * @param organizationId идентификатор организации
+&nbsp;     * @return сообщение об успешной аутентификации и данные сотрудника или сообщение об ошибке
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/authenticate&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; authenticateEmployee(
+&nbsp;            @RequestParam String email,
+&nbsp;            @RequestParam String password,
+&nbsp;            @PathVariable Long organizationId) { // Убедитесь, что используете @PathVariable для organizationId
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;Employee&gt; employee = employeeService.authenticateEmployee(email, password, organizationId);</b>
+<b class="nc">&nbsp;        if (employee.isPresent()) {</b>
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            response.put(&quot;message&quot;, &quot;Аутентификация успешна&quot;);</b>
+<b class="nc">&nbsp;            response.put(&quot;organizationId&quot;, employee.get().getOrganization().getId());</b>
+<b class="nc">&nbsp;            response.put(&quot;employeeId&quot;, employee.get().getId());</b>
+<b class="nc">&nbsp;            response.put(&quot;employeeName&quot;, employee.get().getName());</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(response);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(&quot;Сотрудник не найден или неверные учетные данные&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

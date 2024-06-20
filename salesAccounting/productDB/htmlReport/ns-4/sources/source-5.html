@@ -1,0 +1,324 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ProductController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductController (com.bev0802.salesaccounting.productdb.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/40)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Product;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.ProductService;
+&nbsp;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * REST контроллер для управления товарами в базе данных.
+&nbsp; * Предоставляет API для создания, получения, обновления и удаления товаров.
+&nbsp; */
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/organization/{organizationId}/employee/{employeeId}/product&quot;)
+<b class="nc">&nbsp;public class ProductController {</b>
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(ProductController.class);</b>
+&nbsp;    @Autowired
+&nbsp;    private ProductService productService;
+&nbsp;
+&nbsp;    //#region Создание товара
+&nbsp;    /**
+&nbsp;     * Создает новый товар в базе данных.
+&nbsp;     *
+&nbsp;     * @param product Объект товара для создания.
+&nbsp;     * @param organizationId ID организации, к которой будет привязан товар.
+&nbsp;     * @return Созданный товар.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/create&quot;)
+&nbsp;    public ResponseEntity&lt;Product&gt; createProduct(@RequestBody Product product, @PathVariable Long organizationId) {
+<b class="nc">&nbsp;        Product createdProduct = productService.saveProduct(product, organizationId);</b>
+<b class="nc">&nbsp;        return new ResponseEntity&lt;&gt;(createdProduct, HttpStatus.CREATED);</b>
+&nbsp;    }
+&nbsp;//#endregion
+&nbsp;
+&nbsp;//#region Получение данных товаров
+&nbsp;    /**
+&nbsp;     * Возвращает список всех товаров из базы данных.
+&nbsp;     *
+&nbsp;     * @return Список товаров.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/&quot;)
+&nbsp;    public List&lt;Product&gt; getAllProducts() {
+<b class="nc">&nbsp;        return productService.getAllProducts();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает товар по его ID.
+&nbsp;     *
+&nbsp;     * @param productId ID товара, который нужно получить.
+&nbsp;     * @return ResponseEntity с товаром, если он найден, или с кодом 404, если не найден.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{productId}&quot;)
+&nbsp;    public ResponseEntity&lt;Product&gt; getProductById(@PathVariable Long productId) {
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;        if (product != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(product);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, принадлежащих определенной организации.
+&nbsp;     * @param organizationId ID организации, которои? принадлежат товары.
+&nbsp;     * @return Список товаров, принадлежащих организации.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/listByOrganization/&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Product&gt;&gt; getProductsByOrganization(@PathVariable Long organizationId) {
+<b class="nc">&nbsp;        List&lt;Product&gt; products = productService.findByOrganizationId(organizationId);</b>
+<b class="nc">&nbsp;        if (products != null &amp;&amp; !products.isEmpty()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(products);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит организащию, которой прнадлежит товар с заданным ID
+&nbsp;     * @param productId
+&nbsp;     * @return Организация
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/getOrganizationByProductId/{productId}&quot;)
+&nbsp;    public ResponseEntity&lt;Organization&gt; getOrganizationByProductId(@PathVariable Long productId) {
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;        if (product != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(product.getOrganization());</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, доступных для покупки в определенной организации.
+&nbsp;     * @param organizationId ID организации, для которои? нужно получить доступные для покупки
+&nbsp;     * @return Список доступных для покупки
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/availableForPurchase&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Product&gt;&gt; getProductsAvailableForPurchaseByOrganizationId(@PathVariable Long organizationId) {
+<b class="nc">&nbsp;        List&lt;Product&gt; products = productService.findProductsNotBelongingToOrganization(organizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(products);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, соответствующих заданному имени.
+&nbsp;     *
+&nbsp;     * @param name Имя товара для поиска.
+&nbsp;     * @return Список товаров с заданным именем.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    public List&lt;Product&gt; getProductsByName(@RequestParam String name) {
+<b class="nc">&nbsp;        return productService.getProductsByName(name);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, доступных в наличии.
+&nbsp;     * Товары считаются доступными, если их количество больше 0.
+&nbsp;     *
+&nbsp;     * @return Список доступных товаров.
+&nbsp;     */
+&nbsp;//#endregion
+&nbsp;    //#region Обновление данных
+&nbsp;    @GetMapping(&quot;/available&quot;)
+&nbsp;    public List&lt;Product&gt; getAvailableProducts() {
+<b class="nc">&nbsp;        return productService.getAvailableProducts();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Обновляет информацию о существующем товаре в базе данных.
+&nbsp;     * Если товар с указанным ID не найден, возвращает статус 404 Not Found.
+&nbsp;     *
+&nbsp;     * @param productId ID товара для обновления.
+&nbsp;     * @param productDetails Детали товара для обновления.
+&nbsp;     * @return Обновленный товар, или статус 404, если товар не найден.
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/{productId}&quot;)
+&nbsp;    public ResponseEntity&lt;Product&gt; updateProduct(@PathVariable Long productId, @RequestBody Product productDetails) {
+<b class="nc">&nbsp;        logger.info(&quot;Received productId: {}&quot;, productId);</b>
+<b class="nc">&nbsp;        logger.info(&quot;Received productDetails: {}&quot;, productDetails);</b>
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;        if (product == null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        product.setName(productDetails.getName());</b>
+<b class="nc">&nbsp;        product.setDescription(productDetails.getDescription());</b>
+<b class="nc">&nbsp;        product.setPrice(productDetails.getPrice());</b>
+<b class="nc">&nbsp;        product.setQuantity(productDetails.getQuantity());</b>
+&nbsp;
+<b class="nc">&nbsp;        Product updatedProduct = productService.saveProduct(product, product.getOrganization().getId());</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(updatedProduct);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, цена которых находится в заданном диапазоне.
+&nbsp;     *
+&nbsp;     * @param from Нижняя граница диапазона цены.
+&nbsp;     * @param to Верхняя граница диапазона цены.
+&nbsp;     * @return Список товаров с ценой в указанном диапазоне.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/by-price&quot;)
+&nbsp;    public List&lt;Product&gt; getProductsByPriceRange(@RequestParam BigDecimal from, @RequestParam BigDecimal to) {
+<b class="nc">&nbsp;        return productService.getProductsByPriceRange(from, to);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, соответствующих заданным критериям фильтрации.
+&nbsp;     * Параметры фильтрации включают имя товара, наличие на складе, и диапазон цен.
+&nbsp;     *
+&nbsp;     * @param name Имя товара для поиска.
+&nbsp;     * @param available Фильтр по наличию товара на складе.
+&nbsp;     * @param startPrice Начальная граница диапазона цен.
+&nbsp;     * @param endPrice Конечная граница диапазона цен.
+&nbsp;     * @return Список товаров, соответствующих заданным критериям.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/filtered&quot;)
+&nbsp;    public List&lt;Product&gt; findProducts(@RequestParam(required = false) String name,
+&nbsp;                                      @RequestParam(required = false) Boolean available,
+&nbsp;                                      @RequestParam(required = false) BigDecimal startPrice,
+&nbsp;                                      @RequestParam(required = false) BigDecimal endPrice) {
+<b class="nc">&nbsp;        return productService.findProducts(name, available, startPrice, endPrice);}</b>
+&nbsp;//#endregion
+&nbsp;    /**
+&nbsp;     * Удаляет товар из базы данных по его ID, если его количество больше 0.
+&nbsp;     *
+&nbsp;     * @param productId ID товара для удаления.
+&nbsp;     * @return ResponseEntity без тела, с кодом 200, если товар удален, или с кодом 404, если не найден.
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/{productId}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt; deleteProduct(@PathVariable Long productId) {
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;        if (product != null) {</b>
+<b class="nc">&nbsp;            productService.deleteProduct(productId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok().build();</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Обрабатывает исключение ProductNotFoundException.
+&nbsp;     * Возвращает сообщение об ошибке и статус 404 Not Found.
+&nbsp;     *
+&nbsp;     * @param ex Исключение, содержащее информацию об ошибке.
+&nbsp;     * @return Сообщение об ошибке.
+&nbsp;     */
+&nbsp;    @ExceptionHandler(ProductNotFoundException.class)
+&nbsp;    @ResponseStatus(HttpStatus.NOT_FOUND)
+&nbsp;    public String handleProductNotFound(ProductNotFoundException ex) {
+<b class="nc">&nbsp;        return ex.getMessage();</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

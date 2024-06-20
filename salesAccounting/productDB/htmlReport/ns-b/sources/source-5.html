@@ -1,0 +1,340 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > ProductService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.service</a>
+</div>
+
+<h1>Coverage Summary for Class: ProductService (com.bev0802.salesaccounting.productdb.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">ProductService</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/15)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/57)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.service;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.exceptions.ProductInStockException;
+&nbsp;import com.bev0802.salesaccounting.productdb.exceptions.ProductNotFoundException;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Product;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.OrganizationRepository;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.ProductRepository;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.specification.ProductSpecifications;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.data.jpa.domain.Specification;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;/**
+&nbsp; * Сервис для управления продуктами в базе данных.
+&nbsp; * Предоставляет методы для создания, поиска, обновления и удаления продуктов.
+&nbsp; */
+&nbsp;@Service
+<b class="nc">&nbsp;public class ProductService {</b>
+&nbsp;    @Autowired
+&nbsp;    private ProductRepository productRepository;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationRepository organizationRepository;
+<b class="nc">&nbsp;    private final Logger log = LoggerFactory.getLogger(ProductService.class);</b>
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Сохраняет продукт в базе данных, привязывая его к организации.
+&nbsp;     *
+&nbsp;     * @param product Продукт для сохранения.
+&nbsp;     * @param organizationId ID организации, к которой будет привязан продукт.
+&nbsp;     * @return Сохраненный продукт.
+&nbsp;     */
+&nbsp;    public Product saveProduct(Product product, Long organizationId) {
+<b class="nc">&nbsp;        Organization organization = organizationRepository.findById(organizationId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Organization not found with ID: &quot; + organizationId));</b>
+<b class="nc">&nbsp;        product.setOrganization(organization); // Установка организации для продукта</b>
+<b class="nc">&nbsp;        return productRepository.save(product);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список всех продуктов из базы данных.
+&nbsp;     *
+&nbsp;     * @return Список продуктов.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; getAllProducts() {
+<b class="nc">&nbsp;        return productRepository.findAll();</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Находит продукт по его идентификатору.
+&nbsp;     *
+&nbsp;     * @param productId Идентификатор продукта.
+&nbsp;     * @return Найденный продукт или null, если продукт не найден.
+&nbsp;     */
+&nbsp;    public Product getProductById(Long productId) {
+<b class="nc">&nbsp;        return productRepository.findById(productId)</b>
+<b class="nc">&nbsp;                .orElseThrow(()-&gt; new ProductNotFoundException(&quot;Product with id &quot; + productId + &quot; not found&quot;));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список продуктов, содержащих заданное имя, не учитывая регистр.
+&nbsp;     *
+&nbsp;     * @param name Имя для поиска в названиях продуктов.
+&nbsp;     * @return Список найденных продуктов.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; getProductsByName(String name) {
+<b class="nc">&nbsp;        return productRepository.findByNameContainingIgnoreCase(name);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список продуктов, количество которых больше нуля.
+&nbsp;     *
+&nbsp;     * @return Список продуктов в наличии.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; getAvailableProducts() {
+<b class="nc">&nbsp;        return productRepository.findByQuantityGreaterThan(BigDecimal.valueOf(0));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Возвращает список продуктов с ценой в указанном диапазоне.
+&nbsp;     *
+&nbsp;     * @param priceStart Начальная цена диапазона.
+&nbsp;     * @param priceEnd Конечная цена диапазона.
+&nbsp;     * @return Список продуктов в заданном диапазоне цен.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; getProductsByPriceRange(BigDecimal priceStart, BigDecimal priceEnd) {
+<b class="nc">&nbsp;        return productRepository.findByPriceBetween(priceStart, priceEnd);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Находит продукты, соответствующие заданным критериям фильтрации.
+&nbsp;     *
+&nbsp;     * @param name Имя продукта для поиска.
+&nbsp;     * @param available Фильтр по наличию продукта.
+&nbsp;     * @param startPrice Начальная цена для фильтрации.
+&nbsp;     * @param endPrice Конечная цена для фильтрации.
+&nbsp;     * @return Список продуктов, соответствующих заданным критериям.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findProducts(String name, Boolean available, BigDecimal startPrice, BigDecimal endPrice) {
+&nbsp;        // Начинаем с неограниченной спецификации
+<b class="nc">&nbsp;        Specification&lt;Product&gt; spec = Specification.where(null);</b>
+&nbsp;
+&nbsp;        // Фильтр по имени
+<b class="nc">&nbsp;        if (name != null &amp;&amp; !name.trim().isEmpty()) {</b>
+<b class="nc">&nbsp;            spec = spec.and(ProductSpecifications.hasNameLike(name));</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Фильтр по наличию
+<b class="nc">&nbsp;        if (available != null) {</b>
+<b class="nc">&nbsp;            if (available) {</b>
+&nbsp;                // Добавляем условие, что количество товара больше нуля
+<b class="nc">&nbsp;                spec = spec.and(ProductSpecifications.quantityGreaterThanZero());</b>
+&nbsp;            } else {
+&nbsp;                // Добавляем условие, что количество товара равно нулю или товар не указан как доступный
+<b class="nc">&nbsp;                spec = spec.and(ProductSpecifications.quantityEqualToZero());</b>
+&nbsp;            }
+&nbsp;        }
+&nbsp;
+&nbsp;        // Фильтр по цене
+<b class="nc">&nbsp;        if (startPrice != null &amp;&amp; endPrice != null) {</b>
+<b class="nc">&nbsp;            spec = spec.and(ProductSpecifications.priceBetween(startPrice, endPrice));</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return productRepository.findAll(spec);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаляет продукт из базы данных по его идентификатору.
+&nbsp;     *
+&nbsp;     * @param id Идентификатор продукта для удаления.
+&nbsp;     * @throws ProductNotFoundException если продукт не найден.
+&nbsp;     * @throws ProductInStockException если продукт в наличии и не может быть удален.
+&nbsp;     */
+&nbsp;    public void deleteProduct(Long id) {
+&nbsp;
+<b class="nc">&nbsp;        Product product = productRepository.findById(id)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new ProductNotFoundException(&quot;Product with id &quot; + id + &quot; not found&quot;));</b>
+<b class="nc">&nbsp;        if (product.getQuantity() != null &amp;&amp; product.getQuantity().compareTo(BigDecimal.ZERO) &gt; 0) {</b>
+<b class="nc">&nbsp;            throw new ProductInStockException(&quot;Товар с идентификатором &quot; + id + &quot; есть на складе и не может быть удален&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        if (product.getQuantity().compareTo(BigDecimal.ZERO) &gt; 0) {</b>
+<b class="nc">&nbsp;            throw new ProductInStockException(&quot;Product with id &quot; + id + &quot; is in stock and cannot be deleted&quot;);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        log.info(&quot;Deleting product: {}&quot;, product);</b>
+<b class="nc">&nbsp;        productRepository.delete(product);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Обновляет информацию о продукте в базе данных.
+&nbsp;     *
+&nbsp;     * @param id Идентификатор продукта для обновления.
+&nbsp;     * @param productDetails Новые детали продукта для сохранения.
+&nbsp;     * @return Обновленный продукт.
+&nbsp;     * @throws ProductNotFoundException если продукт не найден.
+&nbsp;     */
+&nbsp;    public Product updateProduct(Long id, Product productDetails) {
+<b class="nc">&nbsp;        return productRepository.findById(id)</b>
+<b class="nc">&nbsp;                .map(existingProduct -&gt; {</b>
+<b class="nc">&nbsp;                    existingProduct.setName(productDetails.getName());</b>
+<b class="nc">&nbsp;                    existingProduct.setDescription(productDetails.getDescription());</b>
+<b class="nc">&nbsp;                    existingProduct.setPrice(productDetails.getPrice());</b>
+<b class="nc">&nbsp;                    log.info(&quot;Updating product: {}&quot;, existingProduct);</b>
+<b class="nc">&nbsp;                    return productRepository.save(existingProduct);</b>
+&nbsp;                })
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new ProductNotFoundException(&quot;Product with id &quot; + id + &quot; not found&quot;));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список товаров, принадлежащих определенной организации.
+&nbsp;     * @param organizationId ID организации, которои? принадлежат товары.
+&nbsp;     * @return Список товаров, принадлежащих организации.
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findByOrganizationId(Long organizationId) {
+<b class="nc">&nbsp;        return productRepository.findByOrganizationId(organizationId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     *  Возвращает список товаров, не принадлежащих заданной организации
+&nbsp;     * @param organizationId ID организации, которои? не принадлежат товары.
+&nbsp;     * @return Список товаров, не принадлежащих организации. (для возможности формирования заказа на закупку.)
+&nbsp;     */
+&nbsp;    public List&lt;Product&gt; findProductsNotBelongingToOrganization(Long organizationId) {
+&nbsp;        // Получаем список всех товаров
+<b class="nc">&nbsp;        List&lt;Product&gt; allProducts = productRepository.findAll();</b>
+&nbsp;
+&nbsp;        // Фильтруем товары, исключая те, что принадлежат заданной организации
+<b class="nc">&nbsp;        List&lt;Product&gt; availableForPurchase = new ArrayList&lt;&gt;();</b>
+<b class="nc">&nbsp;        for (Product product : allProducts) {</b>
+<b class="nc">&nbsp;            if (!product.getOrganization().getId().equals(organizationId)) {</b>
+<b class="nc">&nbsp;                availableForPurchase.add(product);</b>
+&nbsp;            }
+<b class="nc">&nbsp;        }</b>
+&nbsp;
+<b class="nc">&nbsp;        return availableForPurchase;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Резервирование указанного количества товара по его идентификатору.
+&nbsp;     * @param ProductId Идентификатор товара.
+&nbsp;     * @param quantity Количество товара для резервирования.
+&nbsp;     */
+&nbsp;    //TODO: доделать метод
+&nbsp;    @Transactional
+&nbsp;    public void reserveProduct(Long ProductId, int quantity) {
+<b class="nc">&nbsp;        Product product = productRepository.findById(ProductId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Товар не найден по идентификатору: &quot; + ProductId));</b>
+&nbsp;
+&nbsp;        // Проверка, достаточно ли товара на складе для резервирования
+<b class="nc">&nbsp;        if (product.getQuantity().compareTo(BigDecimal.valueOf(quantity)) &lt; 0) {</b>
+<b class="nc">&nbsp;            throw new RuntimeException(&quot;Недостаточное количество товара для резервирования&quot;);</b>
+&nbsp;        }
+&nbsp;
+&nbsp;        // Уменьшение количества товара на складе
+<b class="nc">&nbsp;        product.setQuantity(product.getQuantity().subtract(BigDecimal.valueOf(quantity)));</b>
+<b class="nc">&nbsp;        log.info(&quot;Product: &quot; + product);</b>
+<b class="nc">&nbsp;        productRepository.save(product);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возврат указанного количества ранее зарезервированного товара по его идентификатору.
+&nbsp;     * @param ProductId Идентификатор товара.
+&nbsp;     * @param quantity Количество товара для возврата.
+&nbsp;     */
+&nbsp;    //TODO: доделать метод
+&nbsp;    @Transactional
+&nbsp;    public void returnProduct(Long ProductId, int quantity) {
+<b class="nc">&nbsp;        Product product = productRepository.findById(ProductId)</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Product not found with ID: &quot; + ProductId));</b>
+&nbsp;
+&nbsp;        // Увеличение количества товара на складе при возврате
+<b class="nc">&nbsp;        product.setQuantity(product.getQuantity().add(BigDecimal.valueOf(quantity)));</b>
+<b class="nc">&nbsp;        productRepository.save(product);</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

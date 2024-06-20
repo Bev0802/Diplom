@@ -1,0 +1,438 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrderController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: OrderController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/13)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/80)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Order;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.OrderItem;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrderService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
+&nbsp;import jakarta.servlet.http.HttpServletRequest;
+&nbsp;import jakarta.servlet.http.HttpSession;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.util.*;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;organization/{organizationId}/employee/{employeeId}/orders&quot;)
+<b class="nc">&nbsp;public class OrderController {</b>
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);</b>
+&nbsp;    @Autowired
+&nbsp;    private OrderService orderService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;
+&nbsp;    //#region Создание и добавление товаров в заказ
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создает новый заказ.
+&nbsp;     *
+&nbsp;     * @param order Заказ, который нужно создать.
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param productId ID товара.
+&nbsp;     * @param quantity Количество товара.
+&nbsp;     * @return Созданный заказ.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/newOrder&quot;)
+&nbsp;    public Order createOrder(@RequestBody Order order,
+&nbsp;                             @RequestParam Long organizationId,
+&nbsp;                             @RequestParam Long employeeId,
+&nbsp;                             @RequestParam Long productId,
+&nbsp;                             @RequestParam BigDecimal quantity) {
+<b class="nc">&nbsp;        logger.info(&quot;Creating new order {} for organization {} and employee {}&quot;, order, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return orderService.createOrder(order, organizationId, employeeId, productId, quantity);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Добавляет продукт в заказ.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param productId ID товара.
+&nbsp;     * @param quantity Количество товара.
+&nbsp;     * @return Редирект на страницу доступных для покупки товаров.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/addProductToOrder&quot;)
+&nbsp;    public String addProductToOrder(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                                    @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                                    @RequestParam Long productId,
+&nbsp;                                    @RequestParam BigDecimal quantity) {
+<b class="nc">&nbsp;        logger.info(&quot;Adding product {} with quantity {} to order for organization {} and employee {}&quot;, productId, quantity, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        orderService.addProductToOrder(organizationId, employeeId, productId, quantity);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/product/availableForPurchase&quot;;</b>
+&nbsp;    }
+&nbsp;//#endregion
+&nbsp;
+&nbsp;    //#region Получение заказов
+&nbsp;
+&nbsp;//#region getMapping
+&nbsp;    /**
+&nbsp;     * Получение списка заказов по ID продавца, исключая новые.
+&nbsp;     *
+&nbsp;     * @param organizationId ID продавца.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param source Источник запроса (опционально).
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона Thymeleaf для отображения списка заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/sellerList&quot;)
+&nbsp;    public String getOrdersBySeller(@PathVariable Long organizationId,
+&nbsp;                                    @PathVariable Long employeeId,
+&nbsp;                                    @RequestParam(required = false) String source,
+&nbsp;                                    Model model) {
+&nbsp;            // Получение списка заказов, исключая новые, по идентификатору организации продавца и сотрудника
+<b class="nc">&nbsp;            List&lt;Order&gt; orders = orderService.findOrdersBySellerIdExcludingNew(organizationId, employeeId);</b>
+&nbsp;            // Перевод статусов на русский
+<b class="nc">&nbsp;            orders = orderService.translateOrderStatuses(orders);</b>
+&nbsp;            // Добавление данных в модель для отображения в шаблоне
+<b class="nc">&nbsp;            model.addAttribute(&quot;orders&quot;, orders);</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;            logger.info(&quot;Orders for organization {} and employee {} retrieved: {}&quot;, organizationId, employeeId, orders);</b>
+&nbsp;
+&nbsp;        // Сохранить путь возвращения в модель
+<b class="nc">&nbsp;        model.addAttribute(&quot;returnUrl&quot;, Objects.requireNonNullElseGet(source, () -&gt; &quot;/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/orders/sellerList&quot;));</b>
+&nbsp;            // Возвращение имени шаблона Thymeleaf для отображения списка заказов
+<b class="nc">&nbsp;            return &quot;listOrders&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка заказов по ID покупателя, исключая новые.
+&nbsp;     *
+&nbsp;     * @param organizationId ID покупателя.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param source Источник запроса (опционально).
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона Thymeleaf для отображения списка заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/buyerList&quot;)
+&nbsp;    public String getOrdersByBuyer(@PathVariable Long organizationId,
+&nbsp;                                   @PathVariable Long employeeId,
+&nbsp;                                   @RequestParam(required = false) String source,
+&nbsp;                                    Model model) {
+&nbsp;        // Получение списка заказов, исключая новые, по идентификатору организации продавца и сотрудника
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findOrdersByBuyerIdExcludingNew(organizationId, employeeId);</b>
+&nbsp;        // Перевод статусов на русский
+<b class="nc">&nbsp;        orders = orderService.translateOrderStatuses(orders);</b>
+&nbsp;        // Добавление данных в модель для отображения в шаблоне
+<b class="nc">&nbsp;        model.addAttribute(&quot;orders&quot;, orders);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isSeller&quot;, false); // Организация не является продавцом</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isActive&quot;, true); // Можно определить активность кнопок в зависимости от нужд</b>
+<b class="nc">&nbsp;        logger.info(&quot;Orders for organization {} and employee {} retrieved: {}&quot;, organizationId, employeeId, orders);</b>
+&nbsp;
+&nbsp;        // Сохранить путь возвращения в модель
+<b class="nc">&nbsp;        model.addAttribute(&quot;returnUrl&quot;, Objects.requireNonNullElseGet(source, () -&gt; &quot;/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/orders/buyerList&quot;));</b>
+&nbsp;        // Возвращение имени шаблона Thymeleaf для отображения списка заказов
+<b class="nc">&nbsp;        return &quot;listOrders&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка новых заказов.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param source Источник запроса (опционально).
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @return Имя шаблона Thymeleaf для отображения списка заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/newList&quot;)
+&nbsp;    public String getNewOrders(@PathVariable Long organizationId,
+&nbsp;                               @PathVariable Long employeeId,
+&nbsp;                               @RequestParam(required = false) String source,
+&nbsp;                               Model model) {
+&nbsp;        // Получение списка заказов, исключая новые, по идентификатору организации продавца и сотрудника
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findNewOrdersByBuyerId(organizationId, employeeId);</b>
+<b class="nc">&nbsp;        orders.sort(Comparator.comparing(Order::getId).reversed());</b>
+&nbsp;        // Перевод статусов на русский
+<b class="nc">&nbsp;        orders = orderService.translateOrderStatuses(orders);</b>
+&nbsp;        /* Добавление данных в модель для отображения в шаблоне */
+<b class="nc">&nbsp;        model.addAttribute(&quot;orders&quot;, orders);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isSeller&quot;, false); // Организация не является продавцом</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isActive&quot;, true); // Можно определить активность кнопок в зависимости от нужд</b>
+<b class="nc">&nbsp;        logger.info(&quot;Orders for organization {} and employee {} retrieved: {}&quot;, organizationId, employeeId, orders);</b>
+<b class="nc">&nbsp;        return &quot;listOrders&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение деталей заказа.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @param model Модель для передачи данных в представление.
+&nbsp;     * @param request HTTP запрос.
+&nbsp;     * @param returnUrl URL для возврата.
+&nbsp;     * @param session HTTP сессия.
+&nbsp;     * @return Имя шаблона Thymeleaf для отображения деталей заказа.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{orderId}&quot;)
+&nbsp;    public String getOrderDetails(@PathVariable Long organizationId,
+&nbsp;                                  @PathVariable Long employeeId,
+&nbsp;                                  @PathVariable Long orderId,
+&nbsp;                                  Model model,
+&nbsp;                                  HttpServletRequest request,
+&nbsp;                                  @RequestParam(required = false) String returnUrl,
+&nbsp;                                  HttpSession session) {
+&nbsp;        // Получаем заказ по его ID и данным организации и сотрудника
+<b class="nc">&nbsp;        Order order = orderService.findOrderById(orderId, organizationId, employeeId);</b>
+&nbsp;        // Получаем название организации
+<b class="nc">&nbsp;        String organizationName = organizationService.findById(organizationId).getName();</b>
+&nbsp;        // Переводим статусы заказа на русский
+<b class="nc">&nbsp;        order = orderService.translateOrderStatuses(order);</b>
+&nbsp;
+&nbsp;        // Получаем список товаров в заказе
+&nbsp;        //List&lt;OrderItem&gt; items = orderService.getOrderItems(organizationId, orderId);
+&nbsp;        //order.setItems(new HashSet&lt;&gt;(items));
+&nbsp;
+&nbsp;        // Получаем список товаров в заказе и сортируем по ID
+<b class="nc">&nbsp;        List&lt;OrderItem&gt; items = new ArrayList&lt;&gt;(orderService.getOrderItems(organizationId, orderId));</b>
+<b class="nc">&nbsp;        items.sort(Comparator.comparing(OrderItem::getId).reversed()); // Сортировка по ID в обратном порядке</b>
+<b class="nc">&nbsp;        order.setItems(new HashSet&lt;&gt;(items));</b>
+&nbsp;
+&nbsp;        // Получаем ID организации продавца из заказа
+<b class="nc">&nbsp;        Long sellerOrganizationId = order.getSellerOrganization().getId();</b>
+&nbsp;        // Проверяем, является ли текущая организация продавцом или покупателем
+<b class="nc">&nbsp;        boolean isSeller = organizationId.equals(sellerOrganizationId);</b>
+&nbsp;        // Определяем, какие кнопки должны быть активными
+<b class="nc">&nbsp;        boolean isActiveSeller = isSeller;</b>
+<b class="nc">&nbsp;        boolean isActiveBuyer = !isSeller;</b>
+&nbsp;
+&nbsp;
+&nbsp;        // Передаем данные в модель для отображения на странице
+<b class="nc">&nbsp;        model.addAttribute(&quot;order&quot;, order);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationName);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;items&quot;, items);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isActiveSeller&quot;, isActiveSeller); // Флаг, указывающий, нужно ли активировать кнопки для текущей организации</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;isActiveBuyer&quot;, isActiveBuyer); // Флаг, указывающий, нужно ли активировать кнопки для текущей организации</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;httpServletRequest&quot;, request);</b>
+&nbsp;
+&nbsp;
+&nbsp;        // Логируем информацию о полученных товарах
+<b class="nc">&nbsp;        logger.info(&quot;Items for order {} of organization {} and employee {} retrieved: {}&quot;, orderId, organizationId, employeeId, order, items);</b>
+&nbsp;
+&nbsp;        // Сохранить returnUrl в сессии
+<b class="nc">&nbsp;        if (returnUrl != null) {</b>
+<b class="nc">&nbsp;            session.setAttribute(&quot;returnUrl&quot;, returnUrl);</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return &quot;detailOrder&quot;; // Возвращаем имя шаблона Thymeleaf для отображения страницы</b>
+&nbsp;
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка заказов для сотрудника.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @return Список заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/employeeOrders&quot;)
+&nbsp;    public List&lt;Order&gt; getOrdersByEmployee(@RequestParam Long organizationId,
+&nbsp;                                           @RequestParam Long employeeId) {
+<b class="nc">&nbsp;        logger.info(&quot;Getting orders for organization {} and employee {}&quot;, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return orderService.getOrdersByEmployee(organizationId, employeeId);</b>
+&nbsp;    }
+&nbsp;    //#endregion
+&nbsp;
+&nbsp;//#region изменение статусов
+&nbsp;    /**
+&nbsp;     * Отмена заказа.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @param request HTTP запрос.
+&nbsp;     * @return Редирект на предыдущую страницу.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/cancel/{orderId}&quot;)
+&nbsp;    public String cancelOrder(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                              @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                              @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;                              HttpServletRequest request) {
+<b class="nc">&nbsp;        orderService.cancelOrder(orderId, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        String referer = request.getHeader(&quot;Referer&quot;);</b>
+<b class="nc">&nbsp;        return &quot;redirect:&quot; + referer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Подтверждение заказа.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @param request HTTP запрос.
+&nbsp;     * @return Редирект на предыдущую страницу.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/confirm/{orderId}&quot;)
+&nbsp;    public String confirmOrder(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                              @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                              @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;                              HttpServletRequest request) {
+<b class="nc">&nbsp;        logger.info(&quot;Confirming order {} for organization {}&quot;, orderId, organizationId);</b>
+<b class="nc">&nbsp;        orderService.confirmOrder(orderId, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        String referer = request.getHeader(&quot;Referer&quot;);</b>
+<b class="nc">&nbsp;        return &quot;redirect:&quot; + referer;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Оплата заказа.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @param request HTTP запрос.
+&nbsp;     * @return Редирект на предыдущую страницу.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/pay/{orderId}&quot;)
+&nbsp;    public String payOrder(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                          @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                          @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;                          HttpServletRequest request){
+<b class="nc">&nbsp;        logger.info(&quot;Paying order {} for organization {}&quot;, orderId, organizationId);</b>
+<b class="nc">&nbsp;        orderService.payOrder(orderId, organizationId, employeeId);</b>
+<b class="nc">&nbsp;        String referer = request.getHeader(&quot;Referer&quot;);</b>
+<b class="nc">&nbsp;        return &quot;redirect:&quot; + referer;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Отгрузка заказа.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @param employeeId ID сотрудника.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @param request HTTP запрос.
+&nbsp;     * @param redirectAttributes Атрибуты для редиректа.
+&nbsp;     * @return Редирект на предыдущую страницу или на страницу ошибки в случае ошибки.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/ship/{orderId}&quot;)
+&nbsp;    public String shipOrder(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                            @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                            @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;                            HttpServletRequest request,
+&nbsp;                            RedirectAttributes redirectAttributes) {
+<b class="nc">&nbsp;        logger.info(&quot;Shipping order {} for organization {}&quot;, orderId, organizationId);</b>
+<b class="nc">&nbsp;        String errorMessage = orderService.shipOrder(orderId, organizationId, employeeId);</b>
+&nbsp;
+<b class="nc">&nbsp;        if (errorMessage != null) {</b>
+<b class="nc">&nbsp;            redirectAttributes.addFlashAttribute(&quot;errorMessage&quot;, errorMessage);</b>
+<b class="nc">&nbsp;            return &quot;redirect:/error&quot;;</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        String referer = request.getHeader(&quot;Referer&quot;);</b>
+<b class="nc">&nbsp;        return &quot;redirect:&quot; + referer;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    //#endregion
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

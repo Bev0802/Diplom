@@ -28,6 +28,7 @@ public class ProductController {
     @Autowired
     private ProductService productService;
 
+    //#region Создание товара
     /**
      * Создает новый товар в базе данных.
      *
@@ -40,7 +41,9 @@ public class ProductController {
         Product createdProduct = productService.saveProduct(product, organizationId);
         return new ResponseEntity<>(createdProduct, HttpStatus.CREATED);
     }
+//#endregion
 
+//#region Получение данных товаров
     /**
      * Возвращает список всех товаров из базы данных.
      *
@@ -123,7 +126,8 @@ public class ProductController {
      *
      * @return Список доступных товаров.
      */
-
+//#endregion
+    //#region Обновление данных
     @GetMapping("/available")
     public List<Product> getAvailableProducts() {
         return productService.getAvailableProducts();
@@ -183,7 +187,7 @@ public class ProductController {
                                       @RequestParam(required = false) BigDecimal startPrice,
                                       @RequestParam(required = false) BigDecimal endPrice) {
         return productService.findProducts(name, available, startPrice, endPrice);}
-
+//#endregion
     /**
      * Удаляет товар из базы данных по его ID, если его количество больше 0.
      *

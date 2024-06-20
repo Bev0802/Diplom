@@ -22,11 +22,29 @@ public class Product {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+    /**
+     * Название товара. Не может быть пусто
+     */
     private String name;
+    /**
+     * Описание товара
+     */
     private String description;
+    /**
+     * Колличество товара на складе
+     */
     private BigDecimal quantity;
+    /**
+     * Зарезервированное колличество на складе
+     */
     private BigDecimal reserved;
+    /**
+     * Цена за единицу
+     */
     private BigDecimal price;
+    /**
+     * путь к изображению
+     */
     private String imageUrl;
 
     /**
@@ -40,6 +58,9 @@ public class Product {
     @JoinColumn(name = "organization_id")
     private Organization organization;
 
+    /**
+     * Список элементов заказов, в которых упоминается данный продукт.
+     */
     @OneToMany(mappedBy = "product")
     private Set<OrderItem> orderItems;
 

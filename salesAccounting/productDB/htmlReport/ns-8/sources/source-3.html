@@ -1,0 +1,105 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > EmployeeRepository</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.repository</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployeeRepository (com.bev0802.salesaccounting.productdb.repository)</h1>
+
+<table class="coverageStats">
+
+<tr>
+  <th class="name">Class</th>
+</tr>
+  <tr>
+    <td class="name">EmployeeRepository$MockitoMock$j4BDdqdP</td>
+  </tr>
+  <tr>
+    <td class="name">EmployeeRepository$MockitoMock$j4BDdqdP$auxiliary$J93ea4TL</td>
+  </tr>
+  <tr>
+    <td class="name">EmployeeRepository$MockitoMock$j4BDdqdP$auxiliary$pdxENWnS</td>
+  </tr>
+<tr>
+  <td class="name"><strong>Total</strong></td>
+</tr>
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.repository;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Employee;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import org.springframework.data.jpa.repository.JpaRepository;
+&nbsp;import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+&nbsp;import org.springframework.stereotype.Repository;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Интерфейс репозитория для работы с объектами {@link Employee} в базе данных.
+&nbsp; * Предоставляет базовые операции для работы с сотрудниками, такие как поиск, сохранение и удаление,
+&nbsp; * а также расширенные операции для поиска сотрудников по определённым критериям.*
+&nbsp; */
+&nbsp;@Repository
+&nbsp;public interface EmployeeRepository extends JpaRepository&lt;Employee, Long&gt;, JpaSpecificationExecutor&lt;Employee&gt; {
+&nbsp;
+&nbsp;    List&lt;Employee&gt; findByOrganizationId(Long organizationId);
+&nbsp;    Optional&lt;Employee&gt; findByEmailAndPasswordAndOrganizationId
+&nbsp;                        (String email, String password, Long organizationId);
+&nbsp;
+&nbsp;    List&lt;Employee&gt; findAllByOrganization(Organization organization);
+&nbsp;    void deleteAllByOrganization(Organization organization);
+&nbsp;
+&nbsp;    Optional&lt;Object&gt; findByNameOrEmail(String name, String email);
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

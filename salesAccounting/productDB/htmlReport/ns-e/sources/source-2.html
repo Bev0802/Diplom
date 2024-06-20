@@ -1,0 +1,282 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > EmployeeController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployeeController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmployeeController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/11)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Employee;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.EmployeeService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
+&nbsp;import jakarta.servlet.http.HttpSession;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.*;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.util.LinkedMultiValueMap;
+&nbsp;import org.springframework.util.MultiValueMap;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.client.RestClientException;
+&nbsp;import org.springframework.web.client.RestTemplate;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;/organization/{organizationId}/employee&quot;)
+&nbsp;public class EmployeeController {
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(EmployeeController.class);</b>
+&nbsp;    @Autowired
+&nbsp;    private EmployeeService employeeService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;    private final RestTemplate restTemplate;
+&nbsp;
+<b class="nc">&nbsp;    public EmployeeController(RestTemplate restTemplate) {</b>
+<b class="nc">&nbsp;        this.restTemplate = restTemplate; }</b>
+&nbsp;
+&nbsp;    @GetMapping(&quot;/employeeLoginForm&quot;)
+&nbsp;    public String showEmployeeLoginForm(@PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+&nbsp;        // Подготавливаем данные для отображения страницы входа для сотрудника
+<b class="nc">&nbsp;        Organization organization = organizationService.findById(organizationId);</b>
+&nbsp;
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organization.getName());</b>
+<b class="nc">&nbsp;        return &quot;employeeLogin&quot;; // Возвращаем имя файла шаблона страницы входа для сотрудника</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @PostMapping(&quot;/authenticate/&quot;)
+&nbsp;    public String authenticateEmployee(@RequestParam String email, @RequestParam String password, @PathVariable(&quot;organizationId&quot;) Long organizationId, Model model, HttpSession session) {
+&nbsp;        // Строим URL для запроса к REST API
+<b class="nc">&nbsp;        String url = &quot;http://productDB/api/organization/&quot; + organizationId + &quot;/employee/authenticate&quot;;</b>
+&nbsp;
+&nbsp;        // Подготавливаем данные для запроса
+<b class="nc">&nbsp;        HttpHeaders headers = new HttpHeaders();</b>
+<b class="nc">&nbsp;        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);</b>
+<b class="nc">&nbsp;        MultiValueMap&lt;String, String&gt; map = new LinkedMultiValueMap&lt;&gt;();</b>
+<b class="nc">&nbsp;        map.add(&quot;email&quot;, email);</b>
+<b class="nc">&nbsp;        map.add(&quot;password&quot;, password);</b>
+&nbsp;
+<b class="nc">&nbsp;        HttpEntity&lt;MultiValueMap&lt;String, String&gt;&gt; requestEntity = new HttpEntity&lt;&gt;(map, headers);</b>
+&nbsp;
+&nbsp;        try {
+&nbsp;            // Отправляем запрос
+<b class="nc">&nbsp;            ResponseEntity&lt;Map&gt; responseEntity = restTemplate.postForEntity(url, requestEntity, Map.class);</b>
+&nbsp;            // Логирование ответа
+<b class="nc">&nbsp;            System.out.println(&quot;Response Status: &quot; + responseEntity.getStatusCode());</b>
+<b class="nc">&nbsp;            System.out.println(&quot;Response Body: &quot; + responseEntity.getBody());</b>
+&nbsp;
+<b class="nc">&nbsp;            if (responseEntity.getStatusCode() == HttpStatus.OK &amp;&amp; responseEntity.getBody() != null) {</b>
+<b class="nc">&nbsp;                Map&lt;String, Object&gt; responseBody = responseEntity.getBody();</b>
+&nbsp;
+&nbsp;                // Извлекаем employeeId из ответа
+<b class="nc">&nbsp;                Long employeeId = Long.valueOf(responseBody.get(&quot;employeeId&quot;).toString());</b>
+<b class="nc">&nbsp;                session.setAttribute(&quot;employeeId&quot;, employeeId);</b>
+&nbsp;
+&nbsp;                // Дальнейшая логика...
+<b class="nc">&nbsp;                return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/&quot; + employeeId + &quot;/startWork&quot;;</b>
+&nbsp;            } else {
+<b class="nc">&nbsp;                model.addAttribute(&quot;loginError&quot;, &quot;Ошибка аутентификации.&quot;);</b>
+<b class="nc">&nbsp;                return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/employeeLoginForm&quot;;</b>
+&nbsp;            }
+<b class="nc">&nbsp;        } catch (RestClientException e) {</b>
+<b class="nc">&nbsp;            model.addAttribute(&quot;loginError&quot;, &quot;Техническая ошибка.&quot;);</b>
+<b class="nc">&nbsp;            return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/employeeLoginForm&quot;;</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;{employeeId}/startWork&quot;)
+&nbsp;    public String startWork(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                            @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                            HttpSession session, Model model) {
+&nbsp;        // Подготавливаем данные для отображения страницы приветствия сотрудника
+&nbsp;        //Employee employee = (Employee) session.getAttribute(&quot;employee&quot;); // Получаем сотрудника из сессии
+&nbsp;        //Long employeeId = (Long) session.getAttribute(&quot;employeeId&quot;); // Получаем ID сотрудника из сессии
+<b class="nc">&nbsp;        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;EmployeeName&quot;, employee.getName());</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, employee.getOrganization().getName());</b>
+<b class="nc">&nbsp;        logger.info(&quot;Employee ID from session: {}&quot;, employeeId);</b>
+<b class="nc">&nbsp;        if (employeeId == null) {</b>
+<b class="nc">&nbsp;            return &quot;redirect:/organization/&quot; + organizationId + &quot;/employeeLogin&quot;; // Если ID сотрудника не найден, возвращаем на страницу входа</b>
+&nbsp;        }
+<b class="nc">&nbsp;        return &quot;startWork&quot;; // Имя шаблона страницы приветствия сотрудника</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/listEmployees&quot;)
+&nbsp;    public String listEmployees(@PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+<b class="nc">&nbsp;        List&lt;Employee&gt; employees = employeeService.findEmployeesByOrganizationId(organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employees&quot;, employees);</b>
+<b class="nc">&nbsp;        return &quot;listEmployees&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Метод для отображения формы создания нового сотрудника
+&nbsp;    @GetMapping(&quot;/new&quot;)
+&nbsp;    public String showCreateEmployeeForm(@PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+<b class="nc">&nbsp;        model.addAttribute(&quot;employee&quot;, new Employee());</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        return &quot;detailEmployees&quot;; // Имя шаблона для формы создания сотрудника</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{employeeId}&quot;)
+&nbsp;    public String getEmployeeDetails(@PathVariable(&quot;organizationId&quot;) Long organizationId, @PathVariable(&quot;employeeId&quot;) Long employeeId, Model model) {
+<b class="nc">&nbsp;        Employee employee = employeeService.getEmployeeById(employeeId, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employee&quot;, employee);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        return &quot;detailEmployees&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Метод для сохранения нового сотрудника
+&nbsp;    @PostMapping(&quot;/save&quot;)
+&nbsp;    public String saveEmployee(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                               @ModelAttribute Employee employee) {
+<b class="nc">&nbsp;        employeeService.saveEmployee(organizationId, employee);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/listEmployees&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Метод для клонирования сотрудника
+&nbsp;    @GetMapping(&quot;/clone/{employeeId}&quot;)
+&nbsp;    public String cloneEmployee(@PathVariable(&quot;organizationId&quot;) Long organizationId,
+&nbsp;                                @PathVariable(&quot;employeeId&quot;) Long employeeId) {
+<b class="nc">&nbsp;        employeeService.cloneEmployee(organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/listEmployees&quot;;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Метод для удаления сотрудника
+&nbsp;    @PostMapping(&quot;/delete/{employeeId}&quot;)
+&nbsp;    public String deleteEmployee(@PathVariable(&quot;organizationId&quot;) Long organizationId, @PathVariable(&quot;employeeId&quot;) Long employeeId) {
+<b class="nc">&nbsp;        employeeService.deleteEmployee(organizationId, employeeId);</b>
+<b class="nc">&nbsp;        return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/listEmployees&quot;;</b>
+&nbsp;    }
+&nbsp;}
+&nbsp;
+&nbsp;//todo: Добавить логику редактирования сотрудника.  @PostMapping(&quot;/save&quot;)
+&nbsp;//    public String saveEmployee(@ModelAttribute Employee employee, @PathVariable(&quot;organizationId&quot;) Long organizationId, Model model) {
+&nbsp;//        try {
+&nbsp;//            if (employee.getId() != null) {
+&nbsp;//                // Обновление существующего сотрудника
+&nbsp;//                employeeService.updateEmployee(employee, organizationId);
+&nbsp;//            } else {
+&nbsp;//                // Создание нового сотрудника
+&nbsp;//                employeeService.createEmployee(employee, organizationId);
+&nbsp;//            }
+&nbsp;//            return &quot;redirect:/organization/&quot; + organizationId + &quot;/employee/listEmployees&quot;;
+&nbsp;//        } catch (Exception e) {
+&nbsp;//            model.addAttribute(&quot;error&quot;, &quot;Ошибка при сохранении сотрудника: &quot; + e.getMessage());
+&nbsp;//            model.addAttribute(&quot;employee&quot;, employee);
+&nbsp;//            model.addAttribute(&quot;organizationId&quot;, organizationId);
+&nbsp;//            return &quot;detailEmployees&quot;;
+&nbsp;//        }
+&nbsp;//        public void updateEmployee(Employee employee, Long organizationId) {
+&nbsp;//    // Логика обновления сотрудника
+&nbsp;//    employeeRepository.save(employee);}
+&nbsp;//
+&nbsp;//public void createEmployee(Employee employee, Long organizationId) {
+&nbsp;//    // Логика создания нового сотрудника
+&nbsp;//    employee.setOrganization(organizationService.findById(organizationId));
+&nbsp;//    employeeRepository.save(employee);
+&nbsp;//}
+&nbsp;
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

@@ -13,6 +13,11 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Контроллер для управления сотрудниками.
+ * Обеспечивает API для операций CRUD и аутентификации сотрудников.
+ */
+
 @RestController
 @RequestMapping("api/organization/{organizationId}/employee")
 public class EmployeeController {
@@ -20,7 +25,11 @@ public class EmployeeController {
     @Autowired
     private EmployeeService employeeService;
 
-    // Получение списка всех сотрудников
+    /**
+     * Получает список всех сотрудников.
+     *
+     * @return список всех сотрудников
+     */
     @GetMapping("/getAllEmployees")
     public ResponseEntity<List<Employee>> getAllEmployees() {
         List<Employee> employees = employeeService.findAllEmployees();
@@ -28,11 +37,11 @@ public class EmployeeController {
     }
 
     /**
-     * Получение списка сотрудников по organizationId
-     * @param organizationId
+     * Получает список сотрудников по идентификатору организации.
+     *
+     * @param organizationId идентификатор организации
      * @return список сотрудников
      */
-
     @GetMapping("/getEmployeesByOrganizationId")
     public ResponseEntity<List<Employee>> getEmployeesByOrganizationId(@PathVariable Long organizationId) {
         List<Employee> employees = employeeService.findEmployeesByOrganizationId(organizationId);
@@ -40,9 +49,10 @@ public class EmployeeController {
     }
 
     /**
-     * Получение сотрудника по ID
-     * @param employeeId
-     * @return сотрудника
+     * Получает сотрудника по идентификатору.
+     *
+     * @param employeeId идентификатор сотрудника
+     * @return сотрудник, если найден, иначе статус 404
      */
     @GetMapping("/{employeeId}")
     public ResponseEntity<Employee> getEmployeeById(@PathVariable Long employeeId) {
@@ -53,7 +63,13 @@ public class EmployeeController {
             return ResponseEntity.notFound().build();
         }
     }
-
+    /**
+     * Регистрирует нового сотрудника в указанной организации.
+     *
+     * @param organizationId идентификатор организации
+     * @param employee данные сотрудника
+     * @return зарегистрированный сотрудник или сообщение об ошибке
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerEmployee(@PathVariable Long organizationId, @RequestBody Employee employee) {
         try {
@@ -68,7 +84,13 @@ public class EmployeeController {
         }
     }
 
-    // Регистрация нового сотрудника
+    /**
+     * Создает нового сотрудника в указанной организации.
+     *
+     * @param organizationId идентификатор организации
+     * @param employee данные сотрудника
+     * @return созданный сотрудник или сообщение об ошибке
+     */
     @PostMapping("/new")
     public ResponseEntity<?> createEmployee(@PathVariable Long organizationId, @RequestBody Employee employee) {
         try {
@@ -79,8 +101,12 @@ public class EmployeeController {
                     body(e.getMessage());
         }
     }
-    /*
-     * Клонирование сотрудника
+    /**
+     * Клонирует сотрудника.
+     *
+     * @param organizationId идентификатор организации
+     * @param employeeId идентификатор сотрудника для клонирования
+     * @return клонированный сотрудник или сообщение об ошибке
      */
     @PostMapping("/clone/{employeeId}")
     public ResponseEntity<?> cloneEmployee(@PathVariable Long organizationId, @PathVariable Long employeeId) {
@@ -92,8 +118,11 @@ public class EmployeeController {
         }
     }
 
-    /*
-    * Удаление сотрудника
+    /**
+     * Удаляет сотрудника.
+     *
+     * @param employeeId идентификатор сотрудника для удаления
+     * @return сообщение об успешном удалении или сообщение об ошибке
      */
     @PostMapping("/delete/{employeeId}")
     public ResponseEntity<?> deleteEmployee(@PathVariable Long employeeId) {
@@ -105,8 +134,13 @@ public class EmployeeController {
         }
     }
 
-    /*
-    * Аутентификация
+    /**
+     * Аутентифицирует сотрудника.
+     *
+     * @param email электронная почта сотрудника
+     * @param password пароль сотрудника
+     * @param organizationId идентификатор организации
+     * @return сообщение об успешной аутентификации и данные сотрудника или сообщение об ошибке
      */
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticateEmployee(

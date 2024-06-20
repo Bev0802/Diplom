@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrganizationController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: OrganizationController (com.bev0802.salesaccounting.productdb.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrganizationController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.OrganizationRepository;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.OrganizationService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.HttpStatus;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;import org.springframework.web.server.ResponseStatusException;
+&nbsp;
+&nbsp;import java.util.HashMap;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Контроллер для управления организациями.
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;api/organization&quot;) // Базовый URL для всех операций с организациями
+<b class="nc">&nbsp;public class OrganizationController {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationRepository organizationRepository;
+&nbsp;
+&nbsp;    //#region Получение данных организаций
+&nbsp;    /**
+&nbsp;     * Получение списка всех организаций.
+&nbsp;     *
+&nbsp;     * @return Список организаций.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Organization&gt;&gt; getAllOrganizations() {
+<b class="nc">&nbsp;        List&lt;Organization&gt; organizations = organizationService.findAll();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(organizations);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение организации по её ID.
+&nbsp;     *
+&nbsp;     * @param id ID организации.
+&nbsp;     * @return Организация, если найдена.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; getById(@PathVariable Long id) {
+<b class="nc">&nbsp;        return organizationService.findById(id)</b>
+<b class="nc">&nbsp;                .map(organization -&gt; ResponseEntity.ok(organization))</b>
+<b class="nc">&nbsp;                .orElseThrow(() -&gt; new ResponseStatusException(HttpStatus.NOT_FOUND, &quot;Organization not found&quot;));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение наименования организации по её ID.
+&nbsp;     *
+&nbsp;     * @param organizationId ID организации.
+&nbsp;     * @return Наименование организации, если найдена.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{organizationId}/name&quot;)
+&nbsp;    public ResponseEntity&lt;String&gt; getOrganizationName(@PathVariable Long organizationId) {
+<b class="nc">&nbsp;        Optional&lt;Organization&gt; organization = organizationRepository.findById(organizationId);</b>
+<b class="nc">&nbsp;        if (organization.isPresent()) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(organization.get().getName());</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Поиск организаций по наименованию и/или ИНН.
+&nbsp;     *
+&nbsp;     * @param name Наименование организации.
+&nbsp;     * @param inn  ИНН организации.
+&nbsp;     * @return Список подходящих организаций.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/search&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Organization&gt;&gt; searchOrganizations(
+&nbsp;            @RequestParam(required = false) String name,
+&nbsp;            @RequestParam(required = false) String inn) {
+<b class="nc">&nbsp;        List&lt;Organization&gt; organizations = organizationService.searchByNameOrInn(name, inn);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(organizations);</b>
+&nbsp;    }
+&nbsp;//#endregion
+&nbsp;
+&nbsp;    //#region Регистрация и аутентификация
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Регистрация новой организации.
+&nbsp;     *
+&nbsp;     * @param organization Данные организации.
+&nbsp;     * @return Зарегистрированная организация.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/register&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; registerOrganization(@RequestBody Organization organization) {
+<b class="nc">&nbsp;        Organization savedOrganization = organizationService.registerOrganization(organization);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(savedOrganization);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Аутентификация организации.
+&nbsp;     *
+&nbsp;     * @param inn      ИНН организации.
+&nbsp;     * @param password Пароль организации.
+&nbsp;     * @return Результат аутентификации.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/authenticate&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; authenticateOrganization(@RequestParam String inn, @RequestParam String password) {
+&nbsp;
+<b class="nc">&nbsp;        Optional&lt;Organization&gt; organization = organizationRepository.findByInnAndPassword(inn, password);</b>
+<b class="nc">&nbsp;        if (organization.isPresent()) {</b>
+&nbsp;            // Сюда можно добавить логику создания и возврата токена аутентификации
+<b class="nc">&nbsp;            Map&lt;String, Object&gt; response = new HashMap&lt;&gt;();</b>
+<b class="nc">&nbsp;            response.put(&quot;message&quot;, &quot;Аутентификация успешна&quot;);</b>
+&nbsp;            // Допустим, возвращаем ID организации, который может быть использован для дальнейших запросов
+<b class="nc">&nbsp;            response.put(&quot;organizationId&quot;, organization.get().getId());</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(response);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(&quot;Организация не найдена или неверный пароль&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    //#endregion
+&nbsp;
+&nbsp;    //#region Обновление и удаление данных организации
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Обновление данных организации.
+&nbsp;     *
+&nbsp;     * @param id                ID организации.
+&nbsp;     * @param organizationDetails Обновленные данные организации.
+&nbsp;     * @return Обновленная организация.
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; updateOrganization(@PathVariable Long id, @RequestBody Organization organizationDetails) {
+<b class="nc">&nbsp;        Organization updatedOrganization = organizationService.updateOrganization(id, organizationDetails);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(updatedOrganization);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаление организации по её ID.
+&nbsp;     *
+&nbsp;     * @param id ID организации.
+&nbsp;     * @return Ответ с результатом удаления.
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/{id}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; deleteOrganization(@PathVariable Long id) {
+<b class="nc">&nbsp;        organizationService.deleteOrganization(id);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok().build();</b>
+&nbsp;    }
+&nbsp;    //#endregion
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

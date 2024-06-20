@@ -14,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
+/**
+ * Контроллер для управления организациями.
+ */
 @RestController
 @RequestMapping("api/organization") // Базовый URL для всех операций с организациями
 public class OrganizationController {
@@ -23,20 +26,35 @@ public class OrganizationController {
     @Autowired
     private OrganizationRepository organizationRepository;
 
-    // Метод для получения списка всех организаций
+    //#region Получение данных организаций
+    /**
+     * Получение списка всех организаций.
+     *
+     * @return Список организаций.
+     */
     @GetMapping("/")
     public ResponseEntity<List<Organization>> getAllOrganizations() {
         List<Organization> organizations = organizationService.findAll();
         return ResponseEntity.ok(organizations);
     }
-
+    /**
+     * Получение организации по её ID.
+     *
+     * @param id ID организации.
+     * @return Организация, если найдена.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<?> getById(@PathVariable Long id) {
         return organizationService.findById(id)
                 .map(organization -> ResponseEntity.ok(organization))
                 .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Organization not found"));
     }
-
+    /**
+     * Получение наименования организации по её ID.
+     *
+     * @param organizationId ID организации.
+     * @return Наименование организации, если найдена.
+     */
     @GetMapping("/{organizationId}/name")
     public ResponseEntity<String> getOrganizationName(@PathVariable Long organizationId) {
         Optional<Organization> organization = organizationRepository.findById(organizationId);
@@ -47,8 +65,13 @@ public class OrganizationController {
         }
     }
 
-
-    // Метод для поиска организаций по наименованию и/или ИНН
+    /**
+     * Поиск организаций по наименованию и/или ИНН.
+     *
+     * @param name Наименование организации.
+     * @param inn  ИНН организации.
+     * @return Список подходящих организаций.
+     */
     @GetMapping("/search")
     public ResponseEntity<List<Organization>> searchOrganizations(
             @RequestParam(required = false) String name,
@@ -56,15 +79,28 @@ public class OrganizationController {
         List<Organization> organizations = organizationService.searchByNameOrInn(name, inn);
         return ResponseEntity.ok(organizations);
     }
+//#endregion
 
-    // Метод для регистрации новой организации
+    //#region Регистрация и аутентификация
+
+    /**
+     * Регистрация новой организации.
+     *
+     * @param organization Данные организации.
+     * @return Зарегистрированная организация.
+     */
     @PostMapping("/register")
     public ResponseEntity<?> registerOrganization(@RequestBody Organization organization) {
         Organization savedOrganization = organizationService.registerOrganization(organization);
         return ResponseEntity.ok(savedOrganization);
     }
-
-    // Метод для аутентификации организации
+    /**
+     * Аутентификация организации.
+     *
+     * @param inn      ИНН организации.
+     * @param password Пароль организации.
+     * @return Результат аутентификации.
+     */
     @PostMapping("/authenticate")
     public ResponseEntity<?> authenticateOrganization(@RequestParam String inn, @RequestParam String password) {
 
@@ -81,18 +117,33 @@ public class OrganizationController {
         }
     }
 
-    // Метод для обновления данных организации
+    //#endregion
+
+    //#region Обновление и удаление данных организации
+
+    /**
+     * Обновление данных организации.
+     *
+     * @param id                ID организации.
+     * @param organizationDetails Обновленные данные организации.
+     * @return Обновленная организация.
+     */
     @PutMapping("/{id}")
     public ResponseEntity<?> updateOrganization(@PathVariable Long id, @RequestBody Organization organizationDetails) {
         Organization updatedOrganization = organizationService.updateOrganization(id, organizationDetails);
         return ResponseEntity.ok(updatedOrganization);
     }
 
-    // Метод для удаления организации по ID
+    /**
+     * Удаление организации по её ID.
+     *
+     * @param id ID организации.
+     * @return Ответ с результатом удаления.
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<?> deleteOrganization(@PathVariable Long id) {
         organizationService.deleteOrganization(id);
         return ResponseEntity.ok().build();
     }
-
+    //#endregion
 }

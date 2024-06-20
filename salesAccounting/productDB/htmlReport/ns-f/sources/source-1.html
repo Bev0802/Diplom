@@ -1,0 +1,151 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > GlobalExceptionHandler</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.exception</a>
+</div>
+
+<h1>Coverage Summary for Class: GlobalExceptionHandler (com.bev0802.salesaccounting.wholesale.exception)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">GlobalExceptionHandler</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/3)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/10)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.exception;
+&nbsp;
+&nbsp;import org.springframework.web.bind.annotation.ControllerAdvice;
+&nbsp;import org.springframework.web.bind.annotation.ExceptionHandler;
+&nbsp;import org.springframework.web.client.HttpClientErrorException;
+&nbsp;import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+&nbsp;/**
+&nbsp; * Глобальный обработчик исключений для контроллеров в приложении.
+&nbsp; * Обрабатывает исключения типа HttpClientErrorException и Exception.
+&nbsp; */
+&nbsp;@ControllerAdvice
+<b class="nc">&nbsp;public class GlobalExceptionHandler {</b>
+&nbsp;    /**
+&nbsp;     * Обработчик исключения HttpClientErrorException.
+&nbsp;     * Проверяет содержимое тела ответа и определяет сообщение для отображения пользователю.
+&nbsp;     *
+&nbsp;     * @param ex                 Исключение HttpClientErrorException.
+&nbsp;     * @param redirectAttributes Атрибуты для передачи сообщения об ошибке в следующий запрос.
+&nbsp;     * @return Перенаправление на страницу ошибки с сообщением об ошибке.
+&nbsp;     */
+&nbsp;    @ExceptionHandler(HttpClientErrorException.class)
+&nbsp;    public String handleHttpClientErrorException(HttpClientErrorException ex, RedirectAttributes redirectAttributes) {
+<b class="nc">&nbsp;        String responseBody = ex.getResponseBodyAsString();</b>
+&nbsp;
+<b class="nc">&nbsp;        if (responseBody.contains(&quot;is in stock and cannot be deleted&quot;)) {</b>
+<b class="nc">&nbsp;            String userFriendlyMessage = &quot;Вы не можете удалить эту позицию. Она еще есть на складе или участвует в документообороте.&quot;;</b>
+<b class="nc">&nbsp;            redirectAttributes.addFlashAttribute(&quot;errorMessage&quot;, userFriendlyMessage);</b>
+<b class="nc">&nbsp;        } else {</b>
+<b class="nc">&nbsp;            redirectAttributes.addFlashAttribute(&quot;errorMessage&quot;, responseBody);</b>
+&nbsp;        }
+&nbsp;
+<b class="nc">&nbsp;        return &quot;redirect:/error&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Обработчик общего исключения типа Exception.
+&nbsp;     * Передает общее сообщение об ошибке пользователю.
+&nbsp;     *
+&nbsp;     * @param ex                 Исключение Exception.
+&nbsp;     * @param redirectAttributes Атрибуты для передачи сообщения об ошибке в следующий запрос.
+&nbsp;     * @return Перенаправление на страницу ошибки с сообщением об ошибке.
+&nbsp;     */
+&nbsp;    @ExceptionHandler(Exception.class)
+&nbsp;    public String handleGenericException(Exception ex, RedirectAttributes redirectAttributes) {
+<b class="nc">&nbsp;        redirectAttributes.addFlashAttribute(&quot;errorMessage&quot;, &quot;Произошла ошибка: &quot; + ex.getMessage());</b>
+<b class="nc">&nbsp;        return &quot;redirect:/error&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

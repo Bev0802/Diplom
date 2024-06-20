@@ -1,0 +1,425 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrderController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: OrderController (com.bev0802.salesaccounting.productdb.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrderController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/20)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/58)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.controller;
+&nbsp;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.*;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.enumerator.OrderStatus;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.DocumentService;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.OrderService;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.OrganizationService;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.ProductService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.math.BigDecimal;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Map;
+&nbsp;/**
+&nbsp; * Контроллер для управления заказами.
+&nbsp; */
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/organization/{organizationId}/employee/{employeeId}/orders&quot;)
+<b class="nc">&nbsp;public class OrderController {</b>
+&nbsp;
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(OrderController.class);</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private OrderService orderService;
+&nbsp;    @Autowired
+&nbsp;    private DocumentService documentService;
+&nbsp;    @Autowired ProductService productService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;
+&nbsp;    //#region Создание и добавление товаров в заказ
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создает новый заказ для организации и для сотрудника которой авторизивался.
+&nbsp;     * @param order Данные заказ(покупку)
+&nbsp;     * @param buyerOrganizationId ID организации
+&nbsp;     * @param employeeId ID сотрудника
+&nbsp;     * @return Созданный заказ.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/newOrder/{productId}/{quantity}&quot;)
+&nbsp;    public ResponseEntity&lt;Order&gt; createOrder(@RequestBody Order order,
+&nbsp;                                             @PathVariable(&quot;organizationId&quot;) Long buyerOrganizationId,
+&nbsp;                                             @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;                                             @PathVariable(&quot;productId&quot;) Long productId,
+&nbsp;                                             @PathVariable(&quot;quantity&quot;) BigDecimal quantity) {
+&nbsp;        // Получение продукта и организации продавца
+<b class="nc">&nbsp;        Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;        Organization sellerOrganization = product.getOrganization();</b>
+&nbsp;
+<b class="nc">&nbsp;        return ResponseEntity.ok(orderService.createOrder(buyerOrganizationId, employeeId, productId, quantity, sellerOrganization));</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Добавляет продукт в заказ, если заказа нет создает новый и добавляет туда товар,
+&nbsp;     * а если заказ уже есть добавляет в существующий при этом отбирает заказ по продавцу и владельцу товара.
+&nbsp;     *
+&nbsp;     * @param buyerOrganizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param productId Идентификатор продукта для добавления.
+&nbsp;     * @param quantity Количество добавляемого продукта.
+&nbsp;     * @return ResponseEntity с обновленным заказом или ошибкой.
+&nbsp;     */
+&nbsp;
+&nbsp;    @PostMapping(&quot;/addProductToOrder/{productId}/{quantity}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; addProductToOrder(
+&nbsp;            @PathVariable(&quot;organizationId&quot;) Long buyerOrganizationId,
+&nbsp;            @PathVariable(&quot;employeeId&quot;) Long employeeId,
+&nbsp;            @PathVariable Long productId,
+&nbsp;            @PathVariable BigDecimal quantity) {
+&nbsp;        try {
+&nbsp;            // Логирование полученных данных
+<b class="nc">&nbsp;            logger.info(&quot;Получен запрос на добавление товара в заказ. Идентификатор организации покупателя: {}, &quot; +</b>
+&nbsp;                            &quot;Идентификатор сотрудника: {}, Идентификатор продукта: {}, Количество: {}&quot;,
+&nbsp;                    buyerOrganizationId, employeeId, productId, quantity);
+&nbsp;
+&nbsp;            // Получение продукта и организации продавца
+<b class="nc">&nbsp;            Product product = productService.getProductById(productId);</b>
+<b class="nc">&nbsp;            Organization sellerOrganization = product.getOrganization();</b>
+&nbsp;
+&nbsp;            // Поиск существующих заказов
+<b class="nc">&nbsp;            List&lt;Order&gt; orders = orderService.findNewOrdersByBuyerId(buyerOrganizationId);</b>
+<b class="nc">&nbsp;            Order order = orders.stream()</b>
+<b class="nc">&nbsp;                    .filter(o -&gt; o.getSellerOrganization().getId().equals(sellerOrganization.getId()))</b>
+<b class="nc">&nbsp;                    .findFirst()</b>
+<b class="nc">&nbsp;                    .orElseGet(() -&gt; {</b>
+<b class="nc">&nbsp;                        logger.info(&quot;Существующих заказов от того же продавца не найдено. Создание нового заказа.&quot;);</b>
+<b class="nc">&nbsp;                        return orderService.createOrder(buyerOrganizationId, employeeId, productId, quantity, sellerOrganization);</b>
+&nbsp;                    });
+&nbsp;
+<b class="nc">&nbsp;            if (!orders.contains(order)) {</b>
+&nbsp;                // Новый заказ был создан, товар уже добавлен в него в createOrder методе
+<b class="nc">&nbsp;                logger.info(&quot;Товар уже добавлен в новый заказ.&quot;);</b>
+&nbsp;            } else {
+&nbsp;                // Добавляем товар в существующий заказ
+<b class="nc">&nbsp;                logger.info(&quot;Добавление товара в существующий заказ.&quot;);</b>
+<b class="nc">&nbsp;                orderService.addItemToOrder(order, product, quantity);</b>
+&nbsp;            }
+&nbsp;
+<b class="nc">&nbsp;            return ResponseEntity.ok(order);</b>
+<b class="nc">&nbsp;        } catch (RuntimeException ex) {</b>
+&nbsp;            // Логирование исключения
+<b class="nc">&nbsp;            logger.error(&quot;Произошла ошибка при обработке запроса: {}&quot;, ex.getMessage(), ex);</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(ex.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    //#endregion
+&nbsp;    //#region Получение списков заказов
+&nbsp;    /**
+&nbsp;     * Получение списка всех заказов системы.
+&nbsp;     * @return Список всех заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/all&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getAllOrders() {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findAll();</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение списка заказов(покупок) по ID органиазции которая вошла.
+&nbsp;     * @param buyerOrganizationId покупателя.
+&nbsp;     * @return Список заказов покупателя.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/buyerList&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getOrdersByBuyer(@PathVariable(&quot;organizationId&quot;) Long buyerOrganizationId,
+&nbsp;                                                        @PathVariable(&quot;employeeId&quot;) Long employeeId) {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findOrdersByBuyerId(buyerOrganizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение списка заказов по ID продавца, исключая новые.
+&nbsp;     * @param sellerOrganizationId ID продавца.
+&nbsp;     * @return Список заказов.
+&nbsp;     * */
+&nbsp;    @GetMapping(&quot;/sellerList&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getOrdersBySeller(@PathVariable(&quot;organizationId&quot;) Long sellerOrganizationId,
+&nbsp;                                                         @PathVariable(&quot;employeeId&quot;) Long employeeId) {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findOrdersBySellerIdExcludingNew(sellerOrganizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка новых заказов по ID покупателя.
+&nbsp;     * @param buyerOrganizationId ID покупателя.
+&nbsp;     * @return Список новых заказов.
+&nbsp;     */
+&nbsp;
+&nbsp;    @GetMapping(&quot;/newList&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getNewOrdersByBuyer(@PathVariable(&quot;organizationId&quot;) Long buyerOrganizationId,
+&nbsp;                                                           @PathVariable(&quot;employeeId&quot;) Long employeeId) {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findNewOrdersByBuyerId(buyerOrganizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;  //#endregion
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение заказа по идентификатору
+&nbsp;     *
+&nbsp;     * @param order_id
+&nbsp;     * @return Заказ
+&nbsp;     */
+&nbsp;
+&nbsp;    @GetMapping(&quot;/{order_id}&quot;)
+&nbsp;    public Order getOrderById(@PathVariable(&quot;order_id&quot;) Long order_id) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(orderService.findById(order_id)).getBody();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;    //todo: добавить в уведомление о новом заказе в web приложении.
+&nbsp;    /**
+&nbsp;     * Получение списка подтвержденных заказов по ID продавца.
+&nbsp;     * @param seller_id ID продавца.
+&nbsp;     * @return Список подтвержденных заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/seller/confirmed&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getConfirmedOrdersBySeller(@PathVariable(&quot;organizationId&quot;) Long seller_id) {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.findConfirmedOrdersBySellerId(seller_id);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;    //#endregion
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение списка товарных позиций по идентификатору заказа.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @return Список товарных позиций в заказе.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{order_id}/items&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;OrderItem&gt;&gt; getOrderItems(@PathVariable(&quot;order_id&quot;) Long orderId) {
+<b class="nc">&nbsp;        List&lt;OrderItem&gt; items = orderService.findOrderItemsByOrderId(orderId);</b>
+<b class="nc">&nbsp;        if (items != null) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(items);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            return ResponseEntity.notFound().build();</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    @GetMapping(&quot;/employeeOrders&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getOrdersByEmployee(@PathVariable Long organizationId, @PathVariable Long employee_id) {
+&nbsp;        try {
+<b class="nc">&nbsp;            List&lt;Order&gt; orders = orderService.findOrdersByEmployeeId(employee_id);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(orders);</b>
+<b class="nc">&nbsp;        } catch (Exception e) {</b>
+&nbsp;            // Здесь можно обработать исключения, например, если сотрудник не найден
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(null);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    //#endregion
+&nbsp;
+&nbsp;    //#region Изменение статусов заказов
+&nbsp;    /**
+&nbsp;     * Подтверждение заказа по его ID. Меняет статус NEW на CONFIRMED. И резервирует товар.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @return Обновленный заказ.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/confirm/{order_id}&quot;)
+&nbsp;    public ResponseEntity&lt;Order&gt; confirmOrder(@PathVariable(&quot;order_id&quot;) Long orderId) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(orderService.confirmOrder(orderId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Оплата заказа по его ID. Меняет статус CONFIRMED на PAID. И оплачивает заказ.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/pay/{order_id}&quot;)
+&nbsp;    public ResponseEntity&lt;Order&gt; payOrder(@PathVariable(&quot;order_id&quot;) Long orderId) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(orderService.payOrder(orderId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отгрузка заказа по его ID. Меняет статус PAID на SHIPPED.
+&nbsp;     * @param orderId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/ship/{order_id}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; shipOrderAndCreateDocument(@PathVariable(&quot;order_id&quot;) Long orderId) {
+<b class="nc">&nbsp;        Order shippedOrder = orderService.shipOrder(orderId);</b>
+<b class="nc">&nbsp;        Document document = documentService.createDocumentFromOrder(orderId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(Map.of(&quot;order&quot;, shippedOrder, &quot;document&quot;, document));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Отмена заказа по его ID.
+&nbsp;     * @param orderId ID заказа.
+&nbsp;     * @return Обновленный заказ.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/cancel/{orderId}&quot;)
+&nbsp;    public ResponseEntity&lt;Order&gt; cancelOrder(@PathVariable Long orderId) {
+<b class="nc">&nbsp;        return ResponseEntity.ok(orderService.cancelOrder(orderId));</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список всех заказов, созданных конкретным сотрудником.
+&nbsp;     * Этот метод позволяет клиентам API получать данные о всех заказах, созданных сотрудником.
+&nbsp;     * @param organizationId ID организации, к которой принадлежит сотрудник.
+&nbsp;     * @param employee_id Идентификатор сотрудника, создавшего заказы.
+&nbsp;     * @return ResponseEntity, содержащий список заказов или ошибку, если таковая произойдет.
+&nbsp;     */
+&nbsp;
+&nbsp;//#endregion
+&nbsp;    //todo: в фильтре работает только отбр по sellerId, все остальное не работает.
+&nbsp;    /**
+&nbsp;     * Получение списка заказов по фильтрам.
+&nbsp;     * @param sellerId Продавец.
+&nbsp;     * @param buyerId Покупатель.
+&nbsp;     * @param status Статус заказа.
+&nbsp;     * @param startDate Начальная дата.
+&nbsp;     * @return Отфильтрованный список заказов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/filter&quot;)
+&nbsp;    public ResponseEntity&lt;List&lt;Order&gt;&gt; getFilteredOrders(
+&nbsp;            @RequestParam(required = false) Long sellerId,
+&nbsp;            @RequestParam(required = false) Long buyerId,
+&nbsp;            @RequestParam(required = false) OrderStatus status,
+&nbsp;            @RequestParam(required = false) LocalDateTime startDate,
+&nbsp;            @RequestParam(required = false) LocalDateTime endDate) {
+<b class="nc">&nbsp;        List&lt;Order&gt; orders = orderService.getFilteredOrders(sellerId, buyerId, status, startDate, endDate);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(orders);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Удаление товара из заказа
+&nbsp;     * @param orderId
+&nbsp;     * @param orderItemId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/removeProduct/{orderId}/{orderItemId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; removeProductFromOrder(
+&nbsp;            @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;            @PathVariable(&quot;orderItemId&quot;) Long orderItemId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            orderService.removeProductFromOrder(orderId, orderItemId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok().build();</b>
+<b class="nc">&nbsp;        } catch (RuntimeException ex) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(ex.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Изменение количества продукта в заказе
+&nbsp;     * @param orderId
+&nbsp;     * @param orderItemId
+&nbsp;     * @param quantity
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/updateQuantity/{orderId}/{orderItemId}&quot;)
+&nbsp;    public ResponseEntity&lt;?&gt; updateProductQuantityInOrder(
+&nbsp;            @PathVariable(&quot;orderId&quot;) Long orderId,
+&nbsp;            @PathVariable(&quot;orderItemId&quot;) Long orderItemId,
+&nbsp;            @RequestParam(&quot;quantity&quot;) BigDecimal quantity) {
+&nbsp;        try {
+<b class="nc">&nbsp;            orderService.updateProductQuantityInOrder(orderId, orderItemId, quantity);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok().build();</b>
+<b class="nc">&nbsp;        } catch (RuntimeException ex) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(ex.getMessage());</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

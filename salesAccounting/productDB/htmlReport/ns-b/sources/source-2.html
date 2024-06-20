@@ -1,0 +1,193 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > EmployeeService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.service</a>
+</div>
+
+<h1>Coverage Summary for Class: EmployeeService (com.bev0802.salesaccounting.productdb.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">EmployeeService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    88,9%
+  </span>
+  <span class="absValue">
+    (8/9)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    50%
+  </span>
+  <span class="absValue">
+    (13/26)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.service;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Employee;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.EmployeeRepository;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.dao.DataIntegrityViolationException;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;import java.util.Optional;
+&nbsp;
+&nbsp;/**
+&nbsp; * Сервис для управления сотрудниками в базе данных.
+&nbsp; */
+&nbsp;@Service
+&nbsp;
+<b class="fc">&nbsp;public class EmployeeService {</b>
+&nbsp;
+&nbsp;    @Autowired
+&nbsp;    private EmployeeRepository employeeRepository;
+&nbsp;
+&nbsp;    // Получение списка всех сотрудников
+&nbsp;    public List&lt;Employee&gt; findAllEmployees() {
+<b class="fc">&nbsp;        return employeeRepository.findAll();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    // Получение списка сотрудников по ID организации
+&nbsp;    public List&lt;Employee&gt; findEmployeesByOrganizationId(Long organizationId) {
+&nbsp;
+<b class="fc">&nbsp;        return employeeRepository.findByOrganizationId(organizationId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public Optional&lt;Employee&gt; authenticateEmployee(String email, String password, Long organizationId) {
+&nbsp;
+<b class="fc">&nbsp;        return employeeRepository.findByEmailAndPasswordAndOrganizationId(email, password, organizationId);</b>
+&nbsp;    }
+&nbsp;    @Transactional
+&nbsp;    public Employee registerEmployee(Employee employee, Long organizationId) {
+&nbsp;        // Проверка на уникальность имени и электронной почты
+<b class="fc">&nbsp;        employeeRepository.findByNameOrEmail(employee.getName(), employee.getEmail())</b>
+<b class="fc">&nbsp;                .ifPresent(e -&gt; {</b>
+<b class="fc">&nbsp;                    throw new DataIntegrityViolationException(&quot;Сотрудник с таким именем или электронной почтой уже существует.&quot;);</b>
+&nbsp;                });
+&nbsp;
+&nbsp;        // Установка organizationId для сотрудника без извлечения организации из базы данных
+<b class="fc">&nbsp;        Organization organization = new Organization();</b>
+<b class="fc">&nbsp;        organization.setId(organizationId);</b>
+<b class="fc">&nbsp;        employee.setOrganization(organization);</b>
+<b class="fc">&nbsp;        return employeeRepository.save(employee);</b>
+&nbsp;    }
+&nbsp;    /*
+&nbsp;    * Получение сотрудника по ID
+&nbsp;    */
+&nbsp;    public Optional&lt;Employee&gt; findById(Long employeeId) {
+<b class="fc">&nbsp;        return employeeRepository.findById(employeeId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /*
+&nbsp;    * Клонирование сотрудника
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public Employee cloneEmployee(Long employeeId, Long organizationId) {
+<b class="nc">&nbsp;        Optional&lt;Employee&gt; employeeOpt = employeeRepository.findById(employeeId);</b>
+<b class="nc">&nbsp;        if (employeeOpt.isPresent()) {</b>
+<b class="nc">&nbsp;            Employee originalEmployee = employeeOpt.get();</b>
+<b class="nc">&nbsp;            Employee clonedEmployee = new Employee();</b>
+<b class="nc">&nbsp;            clonedEmployee.setName(originalEmployee.getName());</b>
+<b class="nc">&nbsp;            clonedEmployee.setPosition(originalEmployee.getPosition());</b>
+<b class="nc">&nbsp;            clonedEmployee.setEmail(originalEmployee.getEmail());</b>
+<b class="nc">&nbsp;            clonedEmployee.setPassword(originalEmployee.getPassword());</b>
+<b class="nc">&nbsp;            Organization organization = new Organization();</b>
+<b class="nc">&nbsp;            organization.setId(organizationId);</b>
+<b class="nc">&nbsp;            clonedEmployee.setOrganization(organization);</b>
+<b class="nc">&nbsp;            return employeeRepository.save(clonedEmployee);</b>
+&nbsp;        } else {
+<b class="nc">&nbsp;            throw new IllegalArgumentException(&quot;Сотрудник с ID &quot; + employeeId + &quot; не найден.&quot;);</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;
+&nbsp;    // Удаление сотрудника
+&nbsp;    @Transactional
+&nbsp;    public void deleteEmployee(Long employeeId) {
+<b class="fc">&nbsp;        employeeRepository.deleteById(employeeId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;}
+&nbsp;
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

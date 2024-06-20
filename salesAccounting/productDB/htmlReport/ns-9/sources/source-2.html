@@ -1,0 +1,121 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > OrganizationSpecifications</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.repository.specification</a>
+</div>
+
+<h1>Coverage Summary for Class: OrganizationSpecifications (com.bev0802.salesaccounting.productdb.repository.specification)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">OrganizationSpecifications</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.repository.specification;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Organization;
+&nbsp;import org.springframework.data.jpa.domain.Specification;
+&nbsp;
+<b class="nc">&nbsp;public class OrganizationSpecifications {</b>
+&nbsp;
+&nbsp;    public static Specification&lt;Organization&gt; nameContains(String name) {
+<b class="nc">&nbsp;        return (root, query, criteriaBuilder) -&gt;</b>
+<b class="nc">&nbsp;                criteriaBuilder.like(criteriaBuilder.lower(root.get(&quot;name&quot;)), &quot;%&quot; + name.toLowerCase() + &quot;%&quot;);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    public static Specification&lt;Organization&gt; innContains(String inn) {
+<b class="nc">&nbsp;        return (root, query, criteriaBuilder) -&gt;</b>
+<b class="nc">&nbsp;                criteriaBuilder.like(root.get(&quot;inn&quot;), &quot;%&quot; + inn + &quot;%&quot;);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

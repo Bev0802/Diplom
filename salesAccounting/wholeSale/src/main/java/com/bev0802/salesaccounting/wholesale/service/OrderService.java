@@ -50,13 +50,16 @@ public class OrderService {
     @Value("${productDB.service.url}")
     private String productDBServiceUrl;
 
+    //#region Создание и добавление товаров в заказ
     /**
-     * Создание нового заказа
+     * Создание нового заказа.
      *
-     * @param order          заказ
-     * @param organizationId идентификатор организации
-     * @param employeeId     идентификатор сотрудника
-     * @return созданный заказ
+     * @param order          Заказ для создания.
+     * @param organizationId Идентификатор организации.
+     * @param employeeId     Идентификатор сотрудника.
+     * @param productId      Идентификатор продукта.
+     * @param quantity       Количество продукта.
+     * @return Созданный заказ.
      */
     public Order createOrder(Order order, Long organizationId, Long employeeId, Long productId, BigDecimal quantity) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/addProductToOrder/" + productId + "/" + quantity;
@@ -77,7 +80,9 @@ public class OrderService {
         logger.info("URL: " + url);
         restTemplate.postForObject(url, null, Void.class);
     }
+//#endregion
 
+    //#region Получение заказов
     /**
      * Перевод статусов в строковые значения
      *
@@ -90,6 +95,12 @@ public class OrderService {
         }
         return orders;
     }
+    /**
+     * Перевод статуса заказа в строковое значение.
+     *
+     * @param order Заказ.
+     * @return Заказ с переведенным статусом.
+     */
     public Order translateOrderStatuses(Order order) {
         order.setStatus(STATUS_TRANSLATIONS.getOrDefault(order.getStatus(), order.getStatus()));
         return order;
@@ -157,7 +168,13 @@ public class OrderService {
             return "Произошла ошибка при отправке заказа";
         }
     }
-
+    /**
+     * Отмена заказа.
+     *
+     * @param orderId        Идентификатор заказа.
+     * @param organizationId Идентификатор организации.
+     * @param employeeId     Идентификатор сотрудника.
+     */
     public void cancelOrder(Long orderId, Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/cancel/" + orderId;
         logger.info("URL: " + url);
@@ -165,19 +182,25 @@ public class OrderService {
     }
 
 //#endregion
-//#region get запросы
+    //#region Получение данных о заказах
     /**
- * Получение заказа по идентификатору
- * @param orderId
- * @return Заказ
- */
+     * Получение заказа по его идентификатору.
+     *
+     * @param orderId        Идентификатор заказа.
+     * @param organizationId Идентификатор организации.
+     * @param employeeId     Идентификатор сотрудника.
+     * @return Заказ.
+     */
     public Order findOrderById(Long orderId, Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/" + orderId;
         logger.info("URL: " + url);
         return restTemplate.getForObject(url, Order.class);
-    } /**
-     * Получение списка товарных позиций по идентификатору заказа.
-     * @param orderId ID заказа.
+    }
+    /**
+     * Получение списка товарных позиций в заказе по его идентификатору.
+     *
+     * @param organizationId Идентификатор организации.
+     * @param orderId        Идентификатор заказа.
      * @return Список товарных позиций в заказе.
      */
     public List<OrderItem> getOrderItems(Long organizationId, Long orderId) {
@@ -234,6 +257,13 @@ public class OrderService {
             throw new RuntimeException("Ошибка при анализе ответа JSON", e);
         }
     }
+    /**
+     * Получение списка заказов покупателя исключая новые заказы.
+     *
+     * @param organizationId Идентификатор покупателя.
+     * @param employeeId     Идентификатор сотрудника.
+     * @return Список заказов.
+     */
     public List<Order> findOrdersByBuyerIdExcludingNew(Long organizationId, Long employeeId) {
         String url = productDBServiceUrl + "/api/organization/" + organizationId + "/employee/" + employeeId + "/orders/buyerList";
         logger.info("URL: {}", url);

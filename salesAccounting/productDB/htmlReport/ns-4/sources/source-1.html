@@ -1,0 +1,199 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > DocumentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: DocumentController (com.bev0802.salesaccounting.productdb.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DocumentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/8)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/17)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.Document;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.DocumentItem;
+&nbsp;import com.bev0802.salesaccounting.productdb.service.DocumentService;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.http.ResponseEntity;
+&nbsp;import org.springframework.web.bind.annotation.*;
+&nbsp;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@RestController
+&nbsp;@RequestMapping(&quot;/api/organization/{organizationId}/employee/{employeeID}/document&quot;)
+<b class="nc">&nbsp;public class DocumentController {</b>
+&nbsp;    @Autowired
+&nbsp;    private DocumentService documentService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Создает документ на основе заказа.
+&nbsp;     * @param orderId Идентификатор заказа, на основе которого будет создан документ.
+&nbsp;     * @return ResponseEntity с созданным документом.
+&nbsp;     */
+&nbsp;    @PostMapping(&quot;/createFromOrder/{orderId}&quot;)
+&nbsp;    public ResponseEntity&lt;Document&gt; createDocumentFromOrder(@PathVariable(&quot;orderId&quot;) Long orderId) {
+&nbsp;        try {
+<b class="nc">&nbsp;            Document document = documentService.createDocumentFromOrder(orderId);</b>
+<b class="nc">&nbsp;            return ResponseEntity.ok(document);</b>
+<b class="nc">&nbsp;        } catch (RuntimeException e) {</b>
+<b class="nc">&nbsp;            return ResponseEntity.badRequest().body(null); // В идеале следует возвращать более информативное сообщение об ошибке.</b>
+&nbsp;        }
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Находит документ по идентификатору
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{documentId}&quot;)
+&nbsp;    public ResponseEntity &lt;Document&gt;getDocumentById(@PathVariable(&quot;documentId&quot;) Long documentId) {
+<b class="nc">&nbsp;        Document document = documentService.findDocumentById(documentId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(document);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получение списка документов, по идентификатору организации продавца
+&nbsp;     * @param sellerOrganizationId
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/sellerList&quot;)
+&nbsp;    public ResponseEntity &lt;List&lt;Document&gt;&gt;getDocumentsBySeller(@PathVariable(&quot;organizationId&quot;) Long sellerOrganizationId) {
+<b class="nc">&nbsp;        List&lt;Document&gt; documents = documentService.findOrdersBySellerId(sellerOrganizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(documents);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка документов, по идентификатору организации покупателя
+&nbsp;     * @param buyerOrganizationId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/buyerList&quot;)
+&nbsp;    public ResponseEntity &lt;List&lt;Document&gt;&gt;getDocumentsByBuyer(@PathVariable(&quot;organizationId&quot;) Long buyerOrganizationId) {
+<b class="nc">&nbsp;        List&lt;Document&gt; documents = documentService.findOrdersByBuyerId(buyerOrganizationId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(documents);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получение списка товаров, по идентификатору документа
+&nbsp;     * @param documentId
+&nbsp;     * @return Список товаров в документе
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/productList/{documentId}&quot;)
+&nbsp;    public ResponseEntity &lt;List&lt;DocumentItem&gt;&gt;findItemsByDocumentId(@PathVariable(&quot;documentId&quot;) Long documentId) {
+<b class="nc">&nbsp;        List&lt;DocumentItem&gt; items = documentService.findItemsByDocumentId(documentId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(items);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Обновляет документ
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @PutMapping(&quot;/update/{documentId}&quot;)
+&nbsp;    public ResponseEntity &lt;Document&gt;updateDocument(@PathVariable(&quot;documentId&quot;) Long documentId) {
+<b class="nc">&nbsp;        Document document = documentService.updateDocument(documentId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok(document);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Удаляет документ
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    @DeleteMapping(&quot;/delete/{documentId}&quot;)
+&nbsp;    public ResponseEntity&lt;Void&gt;deleteDocument(@PathVariable(&quot;documentId&quot;) Long documentId) {
+<b class="nc">&nbsp;        documentService.deleteDocument(documentId);</b>
+<b class="nc">&nbsp;        return ResponseEntity.ok().build();</b>
+&nbsp;    }
+&nbsp;
+&nbsp;
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

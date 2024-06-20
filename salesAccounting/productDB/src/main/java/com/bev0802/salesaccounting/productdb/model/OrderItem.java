@@ -7,6 +7,10 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
+/**
+ * Модель товарной позиции в заказе.
+ * Содержит информацию о её идентификаторе, ссылке на заказ, товаре, количестве, цене, сумме и методе для получения идентификатора продукта.
+ */
 @Entity
 @Table(name = "order_items")
 @Data
@@ -18,8 +22,8 @@ public class OrderItem {
     private Long id;
 
     /**
-     * Ссылка на заказ
-     * */
+     * Ссылка на идентификатор заказа.
+     */
     @JoinColumn(name = "order_id", nullable = false)
     @JsonBackReference
     private Long orderId;
@@ -46,7 +50,10 @@ public class OrderItem {
     * Сумма товара вычисляемая из количества и цены
     */
     private BigDecimal amount;
-
+    /**
+     * Метод для вычисления суммы товара перед сохранением в базу данных.
+     * Вызывается автоматически перед сохранением и обновлением записи.
+     */
     @PrePersist
     @PreUpdate
     public void calculateAmount() {

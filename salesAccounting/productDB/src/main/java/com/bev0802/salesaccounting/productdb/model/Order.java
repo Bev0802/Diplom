@@ -13,7 +13,12 @@ import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
+/**
+ * Модель заказа.
+ * Содержит информацию о его идентификаторе, организации-покупателе, организации-продавце,
+ * сотруднике-оформителе, наборе товарных позиций, статусе заказа, дате создания, уникальном номере,
+ * дате изменения статуса, общей сумме заказа, комментариях и зарезервированных товарах.
+ */
 @Entity
 @Table(name = "orders")
 @Data
@@ -92,10 +97,14 @@ public class Order {
      */
     @Column
     private String comments;
-
+    /**
+     * Идентификатор связанного документа, на основании которого создан заказ.
+     */
     @JoinColumn(name = "document_id")
     private Long documentId;
-
+    /**
+     * Маппинг для зарезервированных товаров в заказе.
+     */
     @ElementCollection
     private Map<Long, BigDecimal> reservedProducts = new HashMap<>();
 }

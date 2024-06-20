@@ -1,0 +1,267 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > DocumentService</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.productdb.service</a>
+</div>
+
+<h1>Coverage Summary for Class: DocumentService (com.bev0802.salesaccounting.productdb.service)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DocumentService</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (1/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    100%
+  </span>
+  <span class="absValue">
+    (10/10)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    94,1%
+  </span>
+  <span class="absValue">
+    (48/51)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.productdb.service;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.productdb.model.*;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.DocumentItemRepository;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.DocumentRepository;
+&nbsp;import com.bev0802.salesaccounting.productdb.repository.OrderRepository;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Service;
+&nbsp;import org.springframework.transaction.annotation.Transactional;
+&nbsp;
+&nbsp;import java.time.LocalDateTime;
+&nbsp;import java.util.ArrayList;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Service
+<b class="fc">&nbsp;public class DocumentService {</b>
+&nbsp;
+<b class="fc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(DocumentService.class);</b>
+&nbsp;    @Autowired
+&nbsp;    OrderRepository orderRepository;
+&nbsp;    @Autowired
+&nbsp;    DocumentRepository documentRepository;
+&nbsp;    @Autowired
+&nbsp;    ProductService productService;
+&nbsp;    @Autowired
+&nbsp;    DocumentItemRepository documentItemRepository;
+&nbsp;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Метод создает документ из заказа по идентификатору заказа
+&nbsp;     * @param orderId идентификатор заказа
+&nbsp;     * @return созданный документ
+&nbsp;     */
+&nbsp;    @Transactional
+&nbsp;    public Document createDocumentFromOrder(Long orderId) {
+<b class="fc">&nbsp;        Order order = orderRepository.findById(orderId)</b>
+<b class="fc">&nbsp;                .orElseThrow(() -&gt; new RuntimeException(&quot;Order not found with ID: &quot; + orderId));</b>
+&nbsp;
+&nbsp;        // Создание и заполнение документа данными из заказа
+<b class="fc">&nbsp;        Document document = new Document();</b>
+<b class="fc">&nbsp;        document.setOrderId(orderId);</b>
+<b class="fc">&nbsp;        document.setBuyerOrganization(order.getBuyerOrganization());</b>
+<b class="fc">&nbsp;        document.setSellerOrganization(order.getSellerOrganization());</b>
+<b class="fc">&nbsp;        document.setResponsibleEmployeeBuyer(order.getEmployee());</b>
+<b class="fc">&nbsp;        document.setDocumentNumber(generateSellerDocumentNumber(order.getSellerOrganization()));</b>
+<b class="fc">&nbsp;        document.setDocumentDate(LocalDateTime.now());</b>
+<b class="fc">&nbsp;        document.setTotalAmount(order.getTotalAmount());</b>
+&nbsp;        // Сохранение документа
+<b class="fc">&nbsp;        documentRepository.save(document);</b>
+<b class="fc">&nbsp;        logger.info(&quot;Документ создан: id {}, покупатель {}, продавец {}, номер {}, дата документа {}&quot;,</b>
+<b class="fc">&nbsp;                document.getId(), document.getBuyerOrganization(), document.getSellerOrganization(),</b>
+<b class="fc">&nbsp;                document.getDocumentNumber(), document.getDocumentDate());</b>
+&nbsp;
+&nbsp;        // todo: перенос данных из OrderItem в DocumentItem
+&nbsp;        // Получение списка товаров из заказа
+<b class="fc">&nbsp;        List&lt;OrderItem&gt; orderItems = new ArrayList&lt;&gt;(order.getItems());</b>
+&nbsp;// Создание списка документов
+<b class="fc">&nbsp;        List&lt;DocumentItem&gt; documentItems = new ArrayList&lt;&gt;();</b>
+&nbsp;
+&nbsp;// Перенос данных из OrderItem в DocumentItem
+<b class="fc">&nbsp;        for (OrderItem orderItem : orderItems) {</b>
+<b class="fc">&nbsp;            DocumentItem documentItem = new DocumentItem();</b>
+<b class="fc">&nbsp;            documentItem.setDocumentId(document.getId());</b>
+<b class="fc">&nbsp;            documentItem.setProduct(orderItem.getProduct());</b>
+<b class="fc">&nbsp;            documentItem.setQuantity(orderItem.getQuantity());</b>
+<b class="fc">&nbsp;            documentItem.setPrice(orderItem.getPrice());</b>
+<b class="fc">&nbsp;            documentItem.setAmount(orderItem.getAmount());</b>
+<b class="fc">&nbsp;            documentItemRepository.save(documentItem);</b>
+<b class="fc">&nbsp;            documentItems.add(documentItem);</b>
+<b class="fc">&nbsp;            logger.info(&quot;Товар добавлен в документ: {}&quot;, documentItem);</b>
+<b class="fc">&nbsp;        }</b>
+<b class="fc">&nbsp;        document.setItems(documentItems);</b>
+<b class="fc">&nbsp;        documentRepository.save(document);</b>
+&nbsp;
+&nbsp;
+<b class="fc">&nbsp;        logger.info(&quot;Документ создан: id {}, покупатель {}, продавец {}, номер {}, дата документа {}, товары: {}&quot;,</b>
+<b class="fc">&nbsp;                document.getId(), document.getBuyerOrganization(), document.getSellerOrganization(),</b>
+<b class="fc">&nbsp;                document.getDocumentNumber(), document.getDocumentDate(), document.getItems());</b>
+&nbsp;
+<b class="fc">&nbsp;        return document;</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Генерация номера документа для продавца
+&nbsp;     * @param sellerOrganization оргоаниация продавец
+&nbsp;     * @return генерированный номер
+&nbsp;     */
+&nbsp;    public String generateSellerDocumentNumber(Organization sellerOrganization) {
+&nbsp;        // Найти последний документ для данной организации
+<b class="fc">&nbsp;        Document lastDocument = documentRepository.findTopBySellerOrganizationOrderByDocumentDateDesc(sellerOrganization);</b>
+&nbsp;
+&nbsp;        Long nextNumber;
+<b class="fc">&nbsp;        if (lastDocument != null &amp;&amp; lastDocument.getDocumentNumber() != null) {</b>
+&nbsp;            try {
+<b class="fc">&nbsp;                nextNumber = Long.parseLong(lastDocument.getDocumentNumber()) + 1;</b>
+<b class="nc">&nbsp;            } catch (NumberFormatException e) {</b>
+<b class="nc">&nbsp;                logger.error(&quot;Ошибка преобразования номера документа в число: {}&quot;, lastDocument.getDocumentNumber(), e);</b>
+<b class="nc">&nbsp;                nextNumber = 1L; // Установим значение по умолчанию, если произошла ошибка</b>
+<b class="fc">&nbsp;            }</b>
+&nbsp;        } else {
+<b class="fc">&nbsp;            nextNumber = 1L;</b>
+&nbsp;        }
+&nbsp;
+<b class="fc">&nbsp;        return String.valueOf(nextNumber);</b>
+&nbsp;    }
+&nbsp;//#region Lists
+&nbsp;    /**
+&nbsp;     *
+&nbsp;     * Возвращает список документов по идентификатору организации продавца
+&nbsp;     * @param sellerOrganizationId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;
+&nbsp;    public List&lt;Document&gt; findOrdersBySellerId(Long sellerOrganizationId) {
+<b class="fc">&nbsp;        return documentRepository.findBySellerOrganizationId(sellerOrganizationId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Возвращает список документов по идентификатору организации покупателя
+&nbsp;     * @param buyerOrganizationId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public List&lt;Document&gt; findOrdersByBuyerId(Long buyerOrganizationId) {
+<b class="fc">&nbsp;        return documentRepository.findByBuyerOrganizationId(buyerOrganizationId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит список товаров в документе
+&nbsp;     * @param documentId  - идентификатор документа
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public List&lt;DocumentItem&gt; findItemsByDocumentId(Long documentId) {
+<b class="fc">&nbsp;        return documentItemRepository.findItemsByDocumentId(documentId);</b>
+&nbsp;    }
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Находит документ по идентификатору
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public Document findDocumentById(Long documentId) {
+<b class="fc">&nbsp;        return documentRepository.findById(documentId).orElse(null);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Обновляет документ
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public Document updateDocument(Long documentId) {
+<b class="fc">&nbsp;        Document document = findDocumentById(documentId);</b>
+<b class="fc">&nbsp;        return documentRepository.save(document);</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Удаляет документ
+&nbsp;     * @param documentId
+&nbsp;     * @return
+&nbsp;     */
+&nbsp;    public void deleteDocument(Long documentId) {
+<b class="fc">&nbsp;        documentRepository.deleteById(documentId);</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>

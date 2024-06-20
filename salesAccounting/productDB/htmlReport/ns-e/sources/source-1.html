@@ -1,0 +1,212 @@
+
+
+
+<!DOCTYPE html>
+<html id="htmlId">
+<head>
+  <meta http-equiv="Content-Type" content="text/html;charset=windows-1251"> 
+  <title>Coverage Report > DocumentController</title>
+  <style type="text/css">
+    @import "../../css/coverage.css";
+    @import "../../css/idea.min.css";
+  </style>
+  <script type="text/javascript" src="../../js/highlight.min.js"></script>
+  <script type="text/javascript" src="../../js/highlightjs-line-numbers.min.js"></script>
+</head>
+
+<body>
+<div class="content">
+<div class="breadCrumbs">
+Current scope:     <a href="../../index.html">all classes</a>
+    <span class="separator">|</span>
+    <a href="../index.html">com.bev0802.salesaccounting.wholesale.controller</a>
+</div>
+
+<h1>Coverage Summary for Class: DocumentController (com.bev0802.salesaccounting.wholesale.controller)</h1>
+
+<table class="coverageStats">
+<tr>
+  <th class="name">Class</th>
+<th class="coverageStat 
+">
+  Class, %
+</th>
+<th class="coverageStat 
+">
+  Method, %
+</th>
+<th class="coverageStat 
+">
+  Line, %
+</th>
+</tr>
+<tr>
+  <td class="name">DocumentController</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/1)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/5)
+  </span>
+</td>
+<td class="coverageStat">
+  <span class="percent">
+    0%
+  </span>
+  <span class="absValue">
+    (0/25)
+  </span>
+</td>
+</tr>
+
+</table>
+
+<br/>
+<br/>
+
+
+<pre>
+<code class="sourceCode" id="sourceCode">&nbsp;package com.bev0802.salesaccounting.wholesale.controller;
+&nbsp;
+&nbsp;import com.bev0802.salesaccounting.wholesale.model.Document;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.DocumentService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrderService;
+&nbsp;import com.bev0802.salesaccounting.wholesale.service.OrganizationService;
+&nbsp;import org.slf4j.Logger;
+&nbsp;import org.slf4j.LoggerFactory;
+&nbsp;import org.springframework.beans.factory.annotation.Autowired;
+&nbsp;import org.springframework.stereotype.Controller;
+&nbsp;import org.springframework.ui.Model;
+&nbsp;import org.springframework.web.bind.annotation.GetMapping;
+&nbsp;import org.springframework.web.bind.annotation.PathVariable;
+&nbsp;import org.springframework.web.bind.annotation.RequestMapping;
+&nbsp;import org.springframework.web.bind.annotation.RequestParam;
+&nbsp;
+&nbsp;import java.util.Comparator;
+&nbsp;import java.util.List;
+&nbsp;
+&nbsp;@Controller
+&nbsp;@RequestMapping(&quot;organization/{organizationId}/employee/{employeeId}/documents/&quot;)
+<b class="nc">&nbsp;public class DocumentController {</b>
+<b class="nc">&nbsp;    private static final Logger logger = LoggerFactory.getLogger(DocumentController.class);</b>
+&nbsp;    @Autowired
+&nbsp;    private OrderService orderService;
+&nbsp;    @Autowired
+&nbsp;    private DocumentService documentService;
+&nbsp;    @Autowired
+&nbsp;    private OrganizationService organizationService;
+&nbsp;
+&nbsp;    /**
+&nbsp;     * Получает список документов на основе идентификаторов организации и сотрудников.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param source Необязательный параметр для фильтрации документов по источнику.
+&nbsp;     * @param model Модель для добавления атрибутов для отображения в шаблоне.
+&nbsp;     * @return Имя представления для списка документов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/sellerList&quot;)
+&nbsp;    public String getDocumentsBySeller(@PathVariable Long organizationId,
+&nbsp;                                       @PathVariable Long employeeId,
+&nbsp;                                       @RequestParam(required = false) String source,
+&nbsp;                                       Model model) {
+&nbsp;        //Получение списка документов, по идентификатору организации продавца и сотрудника
+<b class="nc">&nbsp;        List&lt;Document&gt; documents = documentService.findDocumentsBySellerId(organizationId, employeeId);</b>
+<b class="nc">&nbsp;        documents.sort(Comparator.comparing(Document::getId).reversed());</b>
+&nbsp;
+&nbsp;        //Добавление данных в модель для отображения в шаблоне
+<b class="nc">&nbsp;        model.addAttribute(&quot;documents&quot;, documents);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;        logger.info(&quot;Documents for organization {} and employee {} retrieved: {}&quot;, organizationId, employeeId, documents);</b>
+<b class="nc">&nbsp;        return &quot;listDocuments&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получает список документов на основе идентификаторов организации и сотрудников.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param source Необязательный параметр для фильтрации документов по источнику.
+&nbsp;     * @param model Модель для добавления атрибутов для рендеринга шаблона.
+&nbsp;     * @return Имя представления для отображения списка документов.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/buyerList&quot;)
+&nbsp;    public String getDocumentsByBuyer(@PathVariable Long organizationId,
+&nbsp;                                      @PathVariable Long employeeId,
+&nbsp;                                      @RequestParam(required = false) String source,
+&nbsp;                                      Model model) {
+&nbsp;        //Получение списка документов, по идентификатору организации покупателя и сотрудника
+<b class="nc">&nbsp;        List&lt;Document&gt; documents = documentService.findDocumentsByBuyerId(organizationId, employeeId);</b>
+<b class="nc">&nbsp;        documents.sort(Comparator.comparing(Document::getId).reversed());</b>
+&nbsp;        //Добавление данных в модель для отображения в шаблоне
+<b class="nc">&nbsp;        model.addAttribute(&quot;documents&quot;, documents);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;        logger.info(&quot;Documents for organization {} and employee {} retrieved: {}&quot;, organizationId, employeeId, documents);</b>
+<b class="nc">&nbsp;        return &quot;listDocuments&quot;;</b>
+&nbsp;    }
+&nbsp;    /**
+&nbsp;     * Получить документ по его идентификатору.
+&nbsp;     *
+&nbsp;     * @param organizationId Идентификатор организации.
+&nbsp;     * @param employeeId Идентификатор сотрудника.
+&nbsp;     * @param documentId Идентификатор документа, который требуется получить.
+&nbsp;     * @param source Источник документа (необязательно).
+&nbsp;     * @param model Модель для добавления атрибутов для отрисовки шаблона.
+&nbsp;     * @return Имя шаблона для отображения сведений о документе.
+&nbsp;     */
+&nbsp;    @GetMapping(&quot;/{documentId}&quot;)
+&nbsp;    public String getDocumentById(@PathVariable Long organizationId,
+&nbsp;                                  @PathVariable Long employeeId,
+&nbsp;                                  @PathVariable Long documentId,
+&nbsp;                                  @RequestParam(required = false) String source,
+&nbsp;                                  Model model) {
+&nbsp;        //Получение документа по идентификатору
+<b class="nc">&nbsp;        Document document = documentService.findById(documentId, organizationId, employeeId);</b>
+&nbsp;        //Добавление данных в модель для отображения в шаблоне
+<b class="nc">&nbsp;        model.addAttribute(&quot;document&quot;, document);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationId&quot;, organizationId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;employeeId&quot;, employeeId);</b>
+<b class="nc">&nbsp;        model.addAttribute(&quot;organizationName&quot;, organizationService.getOrganizationName(organizationId));</b>
+<b class="nc">&nbsp;        logger.info(&quot;Document {} for organization {} and employee {} retrieved: {}&quot;, documentId, organizationId, employeeId, document);</b>
+<b class="nc">&nbsp;        return &quot;detailDocument&quot;;</b>
+&nbsp;    }
+&nbsp;}
+</code>
+</pre>
+</div>
+
+<script type="text/javascript">
+(function() {
+    var msie = false, msie9 = false;
+    /*@cc_on
+      msie = true;
+      @if (@_jscript_version >= 9)
+        msie9 = true;
+      @end
+    @*/
+
+    if (!msie || msie && msie9) {
+      hljs.highlightAll()
+      hljs.initLineNumbersOnLoad();
+    }
+})();
+</script>
+
+<div class="footer">
+    
+    <div style="float:right;">generated on 2024-06-20 23:37</div>
+</div>
+</body>
+</html>
