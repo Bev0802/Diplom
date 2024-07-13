@@ -12,7 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @Service
 public class DocumentService {
@@ -136,6 +138,72 @@ public class DocumentService {
     }
 
     /**
+     * Выводит список товаров по идентификатору покупателя
+     * @param buyerOrganizationId - идентификатор покупателя
+     * @return - список товаров
+     */
+    public List<DocumentItem> findDocumentItemsByBuyer(Long buyerOrganizationId) {
+        List<Document> documents = documentRepository.findByBuyerOrganizationId(buyerOrganizationId);
+        Map<Long, DocumentItem> documentItemMap = new HashMap<>();
+
+        for (Document document : documents) {
+            for (DocumentItem item : document.getItems()) {
+                Long productId = item.getProduct().getId();
+                if (documentItemMap.containsKey(productId)) {
+                    DocumentItem existingItem = documentItemMap.get(productId);
+                    existingItem.setQuantity(existingItem.getQuantity().add(item.getQuantity()));
+                    existingItem.setAmount(existingItem.getAmount().add(item.getAmount()));
+                } else {
+                    DocumentItem newItem = new DocumentItem(
+                            null, // or any other ID if needed
+                            item.getDocumentId(),
+                            item.getProduct(),
+                            item.getQuantity(),
+                            item.getPrice(),
+                            item.getAmount()
+                    );
+                    documentItemMap.put(productId, newItem);
+                }
+            }
+        }
+        return new ArrayList<>(documentItemMap.values());
+    }
+
+    /** Выводит список товаров по идентификатору продавца
+     *
+     * @param sellerOrganizationId - идентификатор продавца
+     * @return - список товаров
+     */
+    public List<DocumentItem> findDocumentItemsBySeller(Long sellerOrganizationId) {
+        List<Document> documents = documentRepository.findBySellerOrganizationId(sellerOrganizationId);
+        Map<Long, DocumentItem> documentItemMap = new HashMap<>();
+
+        for (Document document : documents) {
+            for (DocumentItem item : document.getItems()) {
+                Long productId = item.getProduct().getId();
+                if (documentItemMap.containsKey(productId)) {
+                    DocumentItem existingItem = documentItemMap.get(productId);
+                    existingItem.setQuantity(existingItem.getQuantity().add(item.getQuantity()));
+                    existingItem.setAmount(existingItem.getAmount().add(item.getAmount()));
+                } else {
+                    DocumentItem newItem = new DocumentItem(
+                            null, // or any other ID if needed
+                            item.getDocumentId(),
+                            item.getProduct(),
+                            item.getQuantity(),
+                            item.getPrice(),
+                            item.getAmount()
+                    );
+                    documentItemMap.put(productId, newItem);
+                }
+            }
+        }
+        return new ArrayList<>(documentItemMap.values());
+    }
+
+
+
+    /**
      * Находит документ по идентификатору
      * @param documentId
      * @return
@@ -160,4 +228,7 @@ public class DocumentService {
     public void deleteDocument(Long documentId) {
         documentRepository.deleteById(documentId);
     }
+
+
+
 }

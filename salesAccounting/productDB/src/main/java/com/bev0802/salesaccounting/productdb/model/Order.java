@@ -10,8 +10,6 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 /**
  * Модель заказа.
@@ -105,6 +103,6 @@ public class Order {
     /**
      * Маппинг для зарезервированных товаров в заказе.
      */
-    @ElementCollection
-    private Map<Long, BigDecimal> reservedProducts = new HashMap<>();
+//    @ElementCollection
+//    private Map<Long, BigDecimal> reservedProducts = new HashMap<>();
 }

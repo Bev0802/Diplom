@@ -71,6 +71,26 @@ public class DocumentController {
     }
 
     /**
+     * Получает список купленных товаров, по идентификатору организации покупателя и сотрудника
+     * @param buyerOrganizationId - идентификатор организации покупателя
+     * @return - список купленных товаров
+     */
+    @GetMapping("/ListDocumentItemsByBuyer")
+    public List<DocumentItem> getDocumentItemsByBuyer(@PathVariable("organizationId") Long buyerOrganizationId) {
+        return documentService.findDocumentItemsByBuyer(buyerOrganizationId);
+    }
+
+    /**
+     * Получает список проданных товаров, по идентификатору организации продавца и сотрудника
+     * @param sellerOrganizationId - идентификатор организации продавца
+     * @return - список проданных товаров
+     */
+    @GetMapping("/ListDocumentItemsBySeller")
+    public List<DocumentItem> getDocumentItemsBySeller(@PathVariable("organizationId") Long sellerOrganizationId) {
+        return documentService.findDocumentItemsBySeller(sellerOrganizationId);
+    }
+
+    /**
      * Обновляет документ
      * @param documentId
      * @return

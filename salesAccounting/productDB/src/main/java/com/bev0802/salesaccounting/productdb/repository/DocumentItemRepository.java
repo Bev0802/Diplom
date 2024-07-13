@@ -12,3 +12,4 @@ public interface DocumentItemRepository extends JpaRepository<DocumentItem, Long
                                                 JpaSpecificationExecutor<DocumentItem>{
     List<DocumentItem> findItemsByDocumentId(Long documentId);
 }
+

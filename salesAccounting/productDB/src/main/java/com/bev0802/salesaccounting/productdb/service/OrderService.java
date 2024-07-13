@@ -252,12 +252,8 @@ public class OrderService {
         if (order.getStatus() == OrderStatus.NEW) {
             order.setStatus(OrderStatus.CONFIRMED);
             order.setStatusChangeDate(LocalDateTime.now()); // Обновление времени изменения статуса
-            //todo: реализовать резервирование товара
-            order.getItems().forEach(item -> {
-                int quantity = item.getQuantity().intValueExact(); // Безопасное преобразование, бросает ArithmeticException, если есть дробная часть.
-                productService.reserveProduct(item.getProduct().getId(), quantity);
-                logger.info("Product: " + item.getProduct());
-            });
+        } else {
+            throw new IllegalStateException("Заказ уже подтвержден");
         }
         return orderRepository.save(order);
     }
@@ -276,9 +272,8 @@ public class OrderService {
             order.setStatus(OrderStatus.PAID);
             order.setStatusChangeDate(LocalDateTime.now());
         } else {
-            throw new IllegalStateException("Заказ должен быть заказ уже оплачен");
+            throw new IllegalStateException("Заказ уже оплачен");
         }
-        //todo: реализовать оплату
         //todo: реализовать создание документа оплаты
         //todo: реализовать резервирование товара
         return orderRepository.save(order);
@@ -298,8 +293,9 @@ public class OrderService {
         if (order.getStatus() == OrderStatus.PAID) {
             order.setStatus(OrderStatus.SHIPPED);
             order.setStatusChangeDate(LocalDateTime.now());
+
         }else {
-            throw new IllegalStateException("Заказ должен быть ОПЛАТЕН, прежде чем его можно будет ОТПРАВИТЬ");
+            throw new IllegalStateException("Заказ должен быть ОПЛАЧЕН, прежде чем его можно будет ОТПРАВИТЬ");
         }
         return orderRepository.save(order);
     }
@@ -330,7 +326,59 @@ public class OrderService {
         return orderRepository.save(order);
     }
     //#endregion
+//#region обработка количества товара(резервирование, списание, возврат)
+/**
+ * Уменьшает количество резервированных продуктов на складе по заказу.
+ * @param order Заказ
+ *
+ */
+@Transactional
+public void updateProductQuantities(Order order) {
+    List<Product> products = order.getItems().stream()
+            .map(OrderItem::getProduct)
+            .toList();
 
+    for (Product product : products) {
+        BigDecimal quantityToShip = order.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .map(OrderItem::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        if (product.getQuantity().compareTo(quantityToShip) < 0) {
+            throw new RuntimeException("Недостаточно товара с ID: " + product.getId());
+        }
+
+        product.setQuantity(product.getQuantity().subtract(quantityToShip));
+        logger.info("Отгрузка товара: {}. Новое количество: {}", product, product.getQuantity());
+        productRepository.save(product);
+    }
+}
+/**
+ * Резервирует продукт на складе по заказу. Переносит продукты из заказа в резерв, уменьшая количество на складе.
+ */
+@Transactional
+public void reserveProductsForOrder(Order order) {
+    List<Product> products = order.getItems().stream()
+            .map(OrderItem::getProduct)
+            .toList();
+
+    for (Product product : products) {
+        System.out.println(product);
+        BigDecimal quantityToConfirm = order.getItems().stream()
+                .filter(item -> item.getProduct().getId().equals(product.getId()))
+                .map(OrderItem::getQuantity)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+//        product.reserveQuantity(quantityToConfirm);
+        product.setQuantity(product.getQuantity().subtract(quantityToConfirm));
+        product.setReserved(product.getReserved().add(quantityToConfirm));
+
+        logger.info("Резервирование товара: {}. Новое количество: {}, Новый резерв: {}",
+                product.getId(), product.getQuantity(), product.getReserved());
+
+        productRepository.save(product);
+    }
+}
 
 
     /**

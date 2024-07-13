@@ -171,5 +171,5 @@ docker-compose up --build
 ![DetalOrder.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalOrder.JPG)
 ![ListDocs.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FListDocs.JPG)
 ![DetalDoc.JPG](wholeSale%2Fsrc%2Fmain%2Fresources%2Fstatic%2Fimg%2FDetalDoc.JPG)
-
-
+![Reports.JPG](wholeSale/src/main/resources/static/img/Reports.JPG)
+![Diagram.JPG](wholeSale/src/main/resources/static/img/Diagram.JPG)

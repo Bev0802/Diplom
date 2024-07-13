@@ -139,7 +139,9 @@ public class ProductController {
             @RequestParam(value = "templateName", required = false, defaultValue = "listProducts") String templateName,
             Model model) {
         List<Product> products = productService.findProductsFiltered(name, available, startPrice, endPrice);
+
         model.addAttribute("products", products);
+
         // Дополнительная мета-информация может быть добавлена здесь
         return templateName; // Использует имя шаблона, указанное в параметрах запроса или значение по умолчанию
     }

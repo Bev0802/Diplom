@@ -36,6 +36,11 @@ public class Product {
     private BigDecimal price;
 
     /**
+     * Зарезервированное количество продукта.
+     */
+    private BigDecimal reserved;
+
+    /**
      * Орагниазация, к которой принадлежит продукт.
      */
     private Organization organization;

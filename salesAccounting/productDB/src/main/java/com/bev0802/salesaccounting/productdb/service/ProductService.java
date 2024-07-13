@@ -159,6 +159,8 @@ public class ProductService {
                     existingProduct.setName(productDetails.getName());
                     existingProduct.setDescription(productDetails.getDescription());
                     existingProduct.setPrice(productDetails.getPrice());
+                    existingProduct.setQuantity(productDetails.getQuantity());
+                    existingProduct.setReserved(productDetails.getReserved());
                     log.info("Updating product: {}", existingProduct);
                     return productRepository.save(existingProduct);
                 })

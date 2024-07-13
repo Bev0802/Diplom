@@ -219,7 +219,9 @@ public class OrderController {
      */
     @PostMapping("/confirm/{order_id}")
     public ResponseEntity<Order> confirmOrder(@PathVariable("order_id") Long orderId) {
-        return ResponseEntity.ok(orderService.confirmOrder(orderId));
+        Order confirmedOrder = orderService.confirmOrder(orderId);
+        orderService.reserveProductsForOrder(confirmedOrder);
+        return ResponseEntity.ok(confirmedOrder);
     }
 
     /**
@@ -237,8 +239,12 @@ public class OrderController {
      */
     @PostMapping("/ship/{order_id}")
     public ResponseEntity<?> shipOrderAndCreateDocument(@PathVariable("order_id") Long orderId) {
+        //меняем статус
         Order shippedOrder = orderService.shipOrder(orderId);
+        //создаем документ
         Document document = documentService.createDocumentFromOrder(orderId);
+        //обновляем количество товара на резерве
+        orderService.updateProductQuantities(shippedOrder);
         return ResponseEntity.ok(Map.of("order", shippedOrder, "document", document));
     }
 
